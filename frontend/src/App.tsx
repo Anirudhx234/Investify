@@ -1,3 +1,7 @@
+import useTheme from "./hooks/useTheme";
+
 export default function App() {
-  return <div className="~h-4/20 text-red-500">Hello World</div>;
+  useTheme();
+
+  return <div>Hello World</div>;
 }
