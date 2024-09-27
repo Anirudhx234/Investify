@@ -1,9 +1,12 @@
 import { configureStore } from "@reduxjs/toolkit";
 import { api } from "../api/api";
 
+import themeReducer from "../features/theme/themeSlice";
+
 /* Centralized state store */
 export const store = configureStore({
   reducer: {
+    theme: themeReducer,
     [api.reducerPath]: api.reducer,
   },
   middleware: (getDefaultMiddleware) =>
