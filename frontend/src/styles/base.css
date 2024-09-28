@@ -1,3 +1,5 @@
+/* base layer styles */
+
 @layer base {
   body {
     @apply font-body overscroll-none bg-primary-background text-primary-text;

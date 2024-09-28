@@ -8,7 +8,7 @@ import { IconContext } from "react-icons";
 
 import App from "./App";
 
-/* Render Providers, App component */
+/* render providers, app component */
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <Provider store={store}>

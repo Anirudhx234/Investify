@@ -4,6 +4,7 @@ export interface UnderlayProps {
   onClick?: MouseEventHandler<HTMLDivElement>;
 }
 
+/* this component adds a translucent underlay in the container */
 export default function Underlay({ onClick }: UnderlayProps) {
   return (
     <div
