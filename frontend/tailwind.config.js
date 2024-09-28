@@ -7,7 +7,15 @@ export default {
     extract,
   },
   theme: {
-    extend: {},
+    extend: {
+      fontFamily: {
+        header: ["Montserrat", "sans-serif"],
+        body: ["Roboto", "sans-serif"],
+      },
+      zIndex: {
+        999: "999",
+      },
+    },
     colors: {
       "primary-background": "var(--primary-background)",
       "secondary-background": "var(--secondary-background)",

@@ -4,13 +4,17 @@ import "./styles/index.css";
 
 import { Provider } from "react-redux";
 import { store } from "./store/store";
+import { IconContext } from "react-icons";
+
 import App from "./App";
 
 /* Render Providers, App component */
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <Provider store={store}>
-      <App />
+      <IconContext.Provider value={{}}>
+        <App />
+      </IconContext.Provider>
     </Provider>
   </StrictMode>,
 );
