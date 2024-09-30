@@ -2,7 +2,7 @@
 
 @layer base {
   body {
-    @apply font-body overscroll-none bg-primary-background text-primary-text;
+    @apply font-body overscroll-none;
   }
   
   h1, h2, h3, h4, h5, h6 {

@@ -1,10 +1,8 @@
 import type CreateAccountAttributes from "../types/CreateAccountAttributes";
-
 import { useForm } from "react-hook-form";
-import Underlay from "../components/Underlay";
 import emailRegex from "../utils/emailRegex";
 import passwordStrengthCheck from "../utils/passwordStrengthCheck";
-import FormErrorMessage from "../components/FormErrorMessage";
+import FormTextInput from "../components/FormTextInput";
 
 /* account creation form */
 export default function CreateAccount() {
@@ -38,72 +36,46 @@ export default function CreateAccount() {
     },
   });
 
+  const onSubmit = () => {};
+
   return (
-    <>
-      <Underlay />
-      <div className="absolute bottom-0 left-0 right-0 top-0 flex items-center justify-center">
-        <div>
-          <h2>Create Account</h2>
-          <form
-            onSubmit={handleSubmit(() => console.log("Submit"))}
-            aria-label="form"
-          >
-            <label htmlFor="create-email">Email</label>
-            <input
-              id="create-email"
-              type="text"
-              {...emailRegister}
-              aria-describedby="create-email-error"
-            />
-            <FormErrorMessage
-              id="create-email-error"
-              errors={errors}
-              name="email"
-            />
-
-            <label htmlFor="create-username">Username</label>
-            <input
-              id="create-username"
-              type="text"
-              {...usernameRegister}
-              aria-describedby="create-username-error"
-            />
-            <FormErrorMessage
-              id="create-username-error"
-              errors={errors}
-              name="username"
-            />
-
-            <label htmlFor="create-password">Password</label>
-            <input
-              id="create-password"
-              type="password"
-              {...passwordRegister}
-              aria-describedby="create-password-error"
-            />
-            <FormErrorMessage
-              id="create-password-error"
-              errors={errors}
-              name="password"
-            />
-
-            <label htmlFor="create-confirm-password">Confirm Password</label>
-            <input
-              id="create-confirm-password"
-              type="password"
-              {...confirmPasswordRegister}
-              aria-describedby="create-confirm-password-error"
-            />
-            <FormErrorMessage
-              id="create-confirm-password-error"
-              errors={errors}
-              name="confirmPassword"
-            />
-
-            <input type="submit" />
-          </form>
+    <div className="bg-primary-translucent border-primary flex h-full w-full flex-col rounded-lg border shadow-md ~gap-4/8 ~px-8/20 ~py-4/12">
+      <h2 className="text-center font-semibold ~text-2xl/3xl">
+        Create your account
+      </h2>
+      <form
+        className="flex flex-col"
+        onSubmit={handleSubmit(onSubmit)}
+        aria-label="form"
+      >
+        <FormTextInput
+          name="email"
+          labelText="Email"
+          register={emailRegister}
+          errors={errors}
+        />
+        <FormTextInput
+          name="username"
+          labelText="Username"
+          register={usernameRegister}
+          errors={errors}
+        />
+        <FormTextInput
+          name="password"
+          labelText="Password"
+          register={passwordRegister}
+          errors={errors}
+        />
+        <FormTextInput
+          name="confirmPassword"
+          labelText="Confirm Password"
+          register={confirmPasswordRegister}
+          errors={errors}
+        />
+        <div className="flex justify-center ~mt-4/8">
+          <button className="btn btn-primary btn-wide">Submit</button>
         </div>
-      </div>
-    </>
+      </form>
+    </div>
   );
 }

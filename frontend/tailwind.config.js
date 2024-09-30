@@ -1,5 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 import fluid, { extract, screens, fontSize } from "fluid-tailwind";
+import daisyui from "daisyui";
 
 export default {
   content: {
@@ -15,16 +16,9 @@ export default {
       zIndex: {
         999: "999",
       },
-    },
-    colors: {
-      "primary-background": "var(--primary-background)",
-      "secondary-background": "var(--secondary-background)",
-      "primary-text": "var(--primary-text)",
-      "secondary-text": "var(--secondary-text)",
-      "primary-accent": "var(--primary-accent)",
-      "secondary-accent": "var(--secondary-accent)",
-      "warning-accent": "var(--warning-accent)",
-      "error-accent": "var(--error-accent)",
+      colors: {
+        "primary-translucent": "oklch(0.4912 0.3096 275.75 / 0.02)",
+      },
     },
     screens,
     fontSize,
@@ -33,5 +27,8 @@ export default {
       defaultScreens: ["20rem", theme("screens.2xl")],
     }),
   },
-  plugins: [fluid],
+  plugins: [fluid, daisyui],
+  daisyui: {
+    themes: ["light", "dark"],
+  },
 };
