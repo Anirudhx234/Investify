@@ -11,10 +11,16 @@ public class AppConfig {
     @Autowired
     private PolygonService polygonService;
 
+    @Autowired
+    private AlphaVantageService alphaVantageService;
+
     @PostConstruct
     public void initialize() {
         // For temporary testing of the polygonService
         String stockData = polygonService.getStockData("AAPL").block();
         System.out.println(stockData);
+
+        String popularStocks = alphaVantageService.getPopularStocks().block();
+        System.out.println(popularStocks);
     }
 }
