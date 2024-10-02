@@ -1,7 +1,7 @@
 /* Light Mode vs Dark Mode */
 
 interface ThemeState {
-  mode: "light" | "dark";
+  mode: "corporate" | "dark";
 }
 
 export default ThemeState;

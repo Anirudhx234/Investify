@@ -13,12 +13,6 @@ export default {
         header: ["Montserrat", "sans-serif"],
         body: ["Roboto", "sans-serif"],
       },
-      zIndex: {
-        999: "999",
-      },
-      colors: {
-        "primary-translucent": "oklch(0.4912 0.3096 275.75 / 0.02)",
-      },
     },
     screens,
     fontSize,
@@ -29,6 +23,6 @@ export default {
   },
   plugins: [fluid, daisyui],
   daisyui: {
-    themes: ["light", "dark"],
+    themes: ["corporate", "dark"],
   },
 };

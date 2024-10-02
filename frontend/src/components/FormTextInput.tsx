@@ -1,37 +1,36 @@
 import type { FieldErrors, UseFormRegisterReturn } from "react-hook-form";
+
 import { ErrorMessage } from "@hookform/error-message";
 import { MdErrorOutline } from "react-icons/md";
 
 export interface FormTextInputProps {
   name: string;
   labelText: string;
-  register: UseFormRegisterReturn;
-  errors: FieldErrors;
-  inputType?: string;
+  registerInputProps: UseFormRegisterReturn;
+  type?: "text" | "email" | "password" | undefined;
+  errors?: FieldErrors | undefined;
 }
 
-/* component for text input in forms, includes error message, and a label */
 export default function FormTextInput({
   name,
   labelText,
-  register,
+  registerInputProps,
+  type,
   errors,
-  inputType,
 }: FormTextInputProps) {
   return (
     <label className="form-control">
       <div className="label">
-        <span className="~text-xs/sm">{labelText}</span>
+        <span>{labelText}</span>
       </div>
       <input
-        className="input input-primary"
-        type={inputType ?? "text"}
-        {...register}
+        className="input input-bordered"
+        type={type ?? "text"}
+        {...registerInputProps}
       />
       <div className="label">
-        <span className="label-text-alt flex">
-          <div className="text-error flex items-center gap-1">
-            <span className="invisible">{errors[name] ? "" : "no error"}</span>
+        <span className="label-text-alt">
+          <div className="flex items-center gap-1 text-error">
             <ErrorMessage
               errors={errors}
               name={name}

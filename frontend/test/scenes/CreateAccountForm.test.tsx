@@ -2,10 +2,10 @@
 
 import { render, screen, fireEvent } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import CreateAccount from "../../src/scenes/CreateAccount";
+import CreateAccountForm from "../../src/scenes/CreateAccountForm";
 
 describe("CreateAccount scene", () => {
-  const renderComponent = () => render(<CreateAccount />);
+  const renderComponent = () => render(<CreateAccountForm />);
 
   it("renders the form with all input fields and submit button", () => {
     renderComponent();
