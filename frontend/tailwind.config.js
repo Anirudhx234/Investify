@@ -23,6 +23,6 @@ export default {
   },
   plugins: [fluid, daisyui],
   daisyui: {
-    themes: ["corporate", "dark"],
+    themes: ["light", "dark"],
   },
 };
