@@ -4,6 +4,7 @@ import { Link, useLocation } from "wouter";
 import DrawerBurger from "../components/DrawerBurger";
 import { IoMdArrowDropdown } from "react-icons/io";
 import twMerge from "../utils/twMerge";
+import ThemeSwitcher from "../components/ThemeSwitcher";
 
 function routeToText(route: string) {
   return route.substring(1).replace("-", " ");
@@ -21,7 +22,8 @@ export default function Navbar() {
           <Logo />
         </div>
       </div>
-      <div className="navbar-end">
+      <div className="navbar-end flex items-center">
+        <ThemeSwitcher />
         <div className="dropdown dropdown-end lg:hidden">
           <div
             tabIndex={0}
@@ -33,7 +35,7 @@ export default function Navbar() {
           </div>
           <ul
             tabIndex={0}
-            className="z-1 menu dropdown-content rounded-box bg-base-100 p-2 shadow"
+            className="z-1 menu dropdown-content rounded-box bg-base-200 p-2 shadow"
           >
             <Sitemap />
           </ul>
