@@ -3,6 +3,7 @@ import useDrawer from "../hooks/useDrawer";
 import { Link, useLocation } from "wouter";
 import DrawerBurger from "../components/DrawerBurger";
 import { IoMdArrowDropdown } from "react-icons/io";
+import twMerge from "../utils/twMerge";
 
 function routeToText(route: string) {
   return route.substring(1).replace("-", " ");
@@ -46,7 +47,13 @@ export default function Navbar() {
 }
 
 function Sitemap() {
-  const routes = ["/assets", "/portfolio", "/projections", "/competitions"];
+  const routes = [
+    "/home",
+    "/assets",
+    "/portfolio",
+    "/projections",
+    "/competitions",
+  ];
 
   return (
     <>
@@ -54,7 +61,12 @@ function Sitemap() {
         <li key={route}>
           <Link
             to={route}
-            className="btn btn-ghost cursor-pointer font-normal capitalize"
+            className={(active) =>
+              twMerge(
+                "btn btn-ghost cursor-pointer font-normal capitalize",
+                active && "bg-base-300",
+              )
+            }
           >
             {routeToText(route)}
           </Link>
