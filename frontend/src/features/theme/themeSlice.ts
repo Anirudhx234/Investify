@@ -2,14 +2,14 @@ import type ThemeState from "./ThemeState";
 
 import { createSlice } from "@reduxjs/toolkit";
 
-const initialState: ThemeState = { mode: "corporate" };
+const initialState: ThemeState = { mode: "light" };
 
 const themeSlice = createSlice({
   name: "theme",
   initialState,
   reducers: {
     toggleTheme: (state) => {
-      state.mode = state.mode === "corporate" ? "dark" : "corporate";
+      state.mode = state.mode === "light" ? "dark" : "light";
     },
   },
 });

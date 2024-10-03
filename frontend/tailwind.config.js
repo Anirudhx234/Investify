@@ -13,6 +13,9 @@ export default {
         header: ["Montserrat", "sans-serif"],
         body: ["Roboto", "sans-serif"],
       },
+      zIndex: {
+        1: 1,
+      },
     },
     screens,
     fontSize,
@@ -23,6 +26,6 @@ export default {
   },
   plugins: [fluid, daisyui],
   daisyui: {
-    themes: ["corporate", "dark"],
+    themes: ["light", "dark"],
   },
 };
