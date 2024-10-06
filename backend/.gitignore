@@ -34,3 +34,6 @@ build/
 
 ### API Keys ###
 application-APIs.properties
+
+### Dev keys ###
+application-dev.properties
