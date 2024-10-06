@@ -35,9 +35,10 @@ export default function CreateAccountForm() {
           labelText="Username"
           registerInputProps={usernameRegisterInputProps}
           errors={form.formState.errors}
+          autoComplete="username"
         />
 
-        <FormPasswordInput form={form} />
+        <FormPasswordInput form={form} autoComplete="new-password" />
         <FormConfirmPassword form={form} />
 
         <button className="btn btn-primary mt-4">Submit</button>

@@ -24,6 +24,7 @@ export default function FormEmailInput<T extends { email: string }>({
       registerInputProps={registerInputProps}
       type="text"
       errors={form.formState.errors}
+      autoComplete="email"
     />
   );
 }
