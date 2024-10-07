@@ -44,7 +44,6 @@ public class TwelveDataService {
         return webClient.get()
                 .uri(uriBuilder -> uriBuilder
                         .path("/stocks")
-                        .queryParam("apiKey", twelveDataApiKey)
                         .build())
                 .retrieve()
                 .bodyToMono(String.class);
@@ -54,7 +53,6 @@ public class TwelveDataService {
         return webClient.get()
                 .uri(uriBuilder -> uriBuilder
                         .path("/etfs")
-                        .queryParam("apiKey", twelveDataApiKey)
                         .build())
                 .retrieve()
                 .bodyToMono(String.class);
@@ -64,7 +62,6 @@ public class TwelveDataService {
         return webClient.get()
                 .uri(uriBuilder -> uriBuilder
                         .path("/cryptocurrencies")
-                        .queryParam("apiKey", twelveDataApiKey)
                         .build())
                 .retrieve()
                 .bodyToMono(String.class);
@@ -74,7 +71,6 @@ public class TwelveDataService {
         return webClient.get()
                 .uri(uriBuilder -> uriBuilder
                         .path("/funds")
-                        .queryParam("apiKey", twelveDataApiKey)
                         .build())
                 .retrieve()
                 .bodyToMono(String.class);
@@ -84,7 +80,6 @@ public class TwelveDataService {
         return webClient.get()
                 .uri(uriBuilder -> uriBuilder
                         .path("/bonds")
-                        .queryParam("apiKey", twelveDataApiKey)
                         .build())
                 .retrieve()
                 .bodyToMono(String.class);
