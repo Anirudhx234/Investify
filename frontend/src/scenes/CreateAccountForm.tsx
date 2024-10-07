@@ -6,16 +6,32 @@ import FormConfirmPassword from "../components/FormConfirmPasswordInput";
 import FormEmailInput from "../components/FormEmailInput";
 import FormPasswordInput from "../components/FormPasswordInput";
 import FormTextInput from "../components/FormTextInput";
+import { useSignupMutation } from "../api/auth";
+import { useRef } from "react";
+import Modal from "../components/Modal";
 
 /* account creation form */
 export default function CreateAccountForm() {
+  const modalRef = useRef<HTMLDialogElement>(null);
   const form = useForm<SignUpRequest>();
+  const [signup, { isLoading, isSuccess, error }] = useSignupMutation();
+
+  const errorMssg = error?.message ?? "An error occurred";
 
   const usernameRegisterInputProps = form.register("username", {
     required: "Username is required",
   });
 
-  const onSubmit: SubmitHandler<SignUpRequest> = () => {};
+  const onSubmit: SubmitHandler<SignUpRequest> = async (data) => {
+    try {
+      await signup(data).unwrap();
+      form.reset();
+    } catch {
+      /* empty */
+    }
+
+    modalRef.current?.showModal();
+  };
 
   return (
     <div className="flex w-full flex-col gap-4 ~text-sm/base">
@@ -27,8 +43,9 @@ export default function CreateAccountForm() {
         className="flex flex-col"
         onSubmit={form.handleSubmit(onSubmit)}
         aria-label="form"
+        aria-disabled={isLoading}
       >
-        <FormEmailInput form={form} required />
+        <FormEmailInput form={form} disabled={isLoading} required />
 
         <FormTextInput
           name="username"
@@ -36,13 +53,30 @@ export default function CreateAccountForm() {
           registerInputProps={usernameRegisterInputProps}
           errors={form.formState.errors}
           autoComplete="username"
+          disabled={isLoading}
         />
 
-        <FormPasswordInput form={form} autoComplete="new-password" />
-        <FormConfirmPassword form={form} />
+        <FormPasswordInput
+          form={form}
+          autoComplete="new-password"
+          disabled={isLoading}
+        />
+        <FormConfirmPassword form={form} disabled={isLoading} />
 
-        <button className="btn btn-primary mt-4">Submit</button>
+        <button className="btn btn-primary mt-4" disabled={isLoading}>
+          {isLoading && <span className="loading loading-spinner"></span>}
+          Submit
+        </button>
       </form>
+      <Modal
+        ref={modalRef}
+        title={isSuccess ? "Success!" : "Error"}
+        onExit={() => {}}
+      >
+        <p className="py-4">
+          {isSuccess ? "Account created!" : `${errorMssg}`}
+        </p>
+      </Modal>
     </div>
   );
 }

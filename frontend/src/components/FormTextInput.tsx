@@ -11,6 +11,7 @@ export interface FormTextInputProps {
   type?: "text" | "email" | "password" | undefined;
   errors?: FieldErrors | undefined;
   autoComplete?: HTMLInputAutoCompleteAttribute;
+  disabled?: boolean;
 }
 
 export default function FormTextInput({
@@ -19,7 +20,8 @@ export default function FormTextInput({
   registerInputProps,
   type,
   errors,
-  autoComplete
+  autoComplete,
+  disabled,
 }: FormTextInputProps) {
   return (
     <label className="form-control">
@@ -31,6 +33,7 @@ export default function FormTextInput({
         type={type ?? "text"}
         {...registerInputProps}
         autoComplete={autoComplete}
+        disabled={disabled}
       />
       <div className="label">
         <span className="label-text-alt">

@@ -5,7 +5,7 @@ declare namespace CustomBaseQuery {
     url: string;
     method: string;
     body?: unknown;
-    query?: Record<string, unknown>;
+    queryParams?: Record<string, unknown>;
   }
 
   type Result = object;
