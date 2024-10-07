@@ -1,4 +1,4 @@
-import type ThemeState from "./ThemeState";
+import type ThemeState from "../../types/ThemeState";
 
 import { createSlice } from "@reduxjs/toolkit";
 

@@ -1,4 +1,4 @@
-import type CreateAccountAttributes from "../types/CreateAccountAttributes";
+import type { SignUpRequest } from "../types/Auth";
 import type { SubmitHandler } from "react-hook-form";
 
 import { useForm } from "react-hook-form";
@@ -9,13 +9,13 @@ import FormTextInput from "../components/FormTextInput";
 
 /* account creation form */
 export default function CreateAccountForm() {
-  const form = useForm<CreateAccountAttributes>();
+  const form = useForm<SignUpRequest>();
 
   const usernameRegisterInputProps = form.register("username", {
     required: "Username is required",
   });
 
-  const onSubmit: SubmitHandler<CreateAccountAttributes> = () => {};
+  const onSubmit: SubmitHandler<SignUpRequest> = () => {};
 
   return (
     <div className="flex w-full flex-col gap-4 ~text-sm/base">
