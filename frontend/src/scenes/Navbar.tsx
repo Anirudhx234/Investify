@@ -1,14 +1,11 @@
 import Logo from "../components/Logo";
 import useDrawer from "../hooks/useDrawer";
-import { Link, useLocation } from "wouter";
+import { useLocation } from "wouter";
 import DrawerBurger from "../components/DrawerBurger";
 import { IoMdArrowDropdown } from "react-icons/io";
-import twMerge from "../utils/twMerge";
 import ThemeSwitcher from "../components/ThemeSwitcher";
-
-function routeToText(route: string) {
-  return route.substring(1).replace("-", " ");
-}
+import routeToText from "../utils/routeToText";
+import NavLink from "../components/NavLink";
 
 export default function Navbar() {
   const drawer = useDrawer();
@@ -35,7 +32,7 @@ export default function Navbar() {
           </div>
           <ul
             tabIndex={0}
-            className="z-1 menu dropdown-content rounded-box bg-base-200 p-2 shadow"
+            className="menu dropdown-content z-1 rounded-box bg-base-200 p-2 shadow"
           >
             <Sitemap />
           </ul>
@@ -61,17 +58,7 @@ function Sitemap() {
     <>
       {routes.map((route) => (
         <li key={route}>
-          <Link
-            to={route}
-            className={(active) =>
-              twMerge(
-                "btn btn-ghost cursor-pointer font-normal capitalize",
-                active && "bg-base-300",
-              )
-            }
-          >
-            {routeToText(route)}
-          </Link>
+          <NavLink route={route} />
         </li>
       ))}
     </>

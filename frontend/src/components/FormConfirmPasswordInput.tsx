@@ -26,6 +26,7 @@ export default function FormConfirmPasswordInput<
       registerInputProps={registerInputProps}
       type="password"
       errors={form.formState.errors}
+      autoComplete="new-password"
     />
   );
 }
