@@ -1,0 +1,13 @@
+spring:
+  application:
+    name: backend
+  datasource:
+    username: postgres
+    password: postgres
+    url: jdbc:postgresql://0.0.0.0:5432/investify_db
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    show-sql: false
+    hibernate:
+      ddl-auto: create

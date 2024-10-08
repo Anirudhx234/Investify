@@ -32,6 +32,9 @@ build/
 ### VS Code ###
 .vscode/
 
+### ENV ###
+src/main/resources/application-dev.properties
+
 ### API Keys ###
 application-APIs.properties
 
