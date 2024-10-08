@@ -9,18 +9,26 @@ import FormTextInput from "../components/FormTextInput";
 import { useSignupMutation } from "../api/auth";
 import { useRef } from "react";
 import Modal from "../components/Modal";
+import useAppSelector from "../hooks/useAppSelector";
+import { selectProfileData, setProfileData } from "../features/profileSlice";
+import { Redirect } from "wouter";
+import useAppDispatch from "../hooks/useAppDispatch";
 
 /* account creation form */
 export default function CreateAccountForm() {
-  const modalRef = useRef<HTMLDialogElement>(null);
+  const profileData = useAppSelector(selectProfileData);
+  const dispatch = useAppDispatch();
   const form = useForm<SignUpRequest>();
   const [signup, { isLoading, isSuccess, error }] = useSignupMutation();
+  const modalRef = useRef<HTMLDialogElement>(null);
 
-  const errorMssg = error?.message ?? "An error occurred";
+  if (profileData) return <Redirect to="/" />;
 
   const usernameRegisterInputProps = form.register("username", {
     required: "Username is required",
   });
+
+  const errorMssg = error?.message ?? "An error occurred";
 
   const onSubmit: SubmitHandler<SignUpRequest> = async (data) => {
     try {
@@ -32,6 +40,8 @@ export default function CreateAccountForm() {
 
     modalRef.current?.showModal();
   };
+
+  const onModalExit = () => {};
 
   return (
     <div className="flex w-full flex-col gap-4 ~text-sm/base">
@@ -71,11 +81,9 @@ export default function CreateAccountForm() {
       <Modal
         ref={modalRef}
         title={isSuccess ? "Success!" : "Error"}
-        onExit={() => {}}
+        onExit={onModalExit}
       >
-        <p className="py-4">
-          {isSuccess ? "Account created!" : `${errorMssg}`}
-        </p>
+        <p className="py-4">{isSuccess ? "Account created!" : errorMssg}</p>
       </Modal>
     </div>
   );
