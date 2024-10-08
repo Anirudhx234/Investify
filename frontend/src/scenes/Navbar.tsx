@@ -6,6 +6,7 @@ import { IoMdArrowDropdown } from "react-icons/io";
 import ThemeSwitcher from "../components/ThemeSwitcher";
 import routeToText from "../utils/routeToText";
 import NavLink from "../components/NavLink";
+import NavProfileLink from "../components/NavProfileLink";
 
 export default function Navbar() {
   const drawer = useDrawer();
@@ -40,6 +41,7 @@ export default function Navbar() {
         <ul className="hidden lg:flex">
           <Sitemap />
         </ul>
+        <NavProfileLink />
       </div>
     </nav>
   );

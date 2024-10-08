@@ -6,11 +6,12 @@ export interface FormConfirmPasswordInputProps<
   T extends { password: string; confirmPassword: string },
 > {
   form: UseFormReturn<T>;
+  disabled?: boolean;
 }
 
 export default function FormConfirmPasswordInput<
   T extends { password: string; confirmPassword: string },
->({ form }: FormConfirmPasswordInputProps<T>) {
+>({ form, disabled }: FormConfirmPasswordInputProps<T>) {
   const registerInputProps = form.register("confirmPassword" as Path<T>, {
     required: "Password Confirmation is required",
     validate: (value) => {
@@ -27,6 +28,7 @@ export default function FormConfirmPasswordInput<
       type="password"
       errors={form.formState.errors}
       autoComplete="new-password"
+      disabled={disabled}
     />
   );
 }

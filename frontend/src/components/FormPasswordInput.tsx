@@ -7,11 +7,13 @@ import { HTMLInputAutoCompleteAttribute } from "react";
 export interface FormPasswordInputProps<T extends { password: string }> {
   form: UseFormReturn<T>;
   autoComplete?: HTMLInputAutoCompleteAttribute;
+  disabled?: boolean;
 }
 
 export default function FormPasswordInput<T extends { password: string }>({
   form,
-  autoComplete
+  autoComplete,
+  disabled
 }: FormPasswordInputProps<T>) {
   const registerInputProps = form.register("password" as Path<T>, {
     required: "Password is required",
@@ -28,6 +30,7 @@ export default function FormPasswordInput<T extends { password: string }>({
       type="password"
       errors={form.formState.errors}
       autoComplete={autoComplete}
+      disabled={disabled}
     />
   );
 }

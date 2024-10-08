@@ -8,6 +8,7 @@ import CreateAccountRoute from "./routes/CreateAccountRoute";
 import NotFoundRoute from "./routes/NotFoundRoute";
 import HomeRoute from "./routes/HomeRoute";
 import AssetsRoute from "./routes/AssetsRoute";
+import LoginRoute from "./routes/LoginRoute";
 
 export default function App() {
   useTheme();
@@ -28,6 +29,7 @@ export default function App() {
         <main className="flex max-w-[100vw] flex-col items-start justify-start px-6 py-8 text-base-content">
           <Switch>
             <Route path="/create-account" component={CreateAccountRoute} />
+            <Route path="/login" component={LoginRoute} />
             <Route path="/home" component={HomeRoute} />
             <Route path="/assets" component={AssetsRoute} nest />
             <Route path="/" component={() => <Redirect to="/home" replace />} />

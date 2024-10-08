@@ -1,6 +1,6 @@
-import { twMerge } from "tailwind-merge";
 import { Link, useLocation } from "wouter";
 import routeToText from "../utils/routeToText";
+import twMerge from "../utils/twMerge";
 
 export default function NavLink({ route }: { route: string }) {
   const [location] = useLocation();
