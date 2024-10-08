@@ -6,11 +6,13 @@ import FormTextInput from "./FormTextInput";
 export interface FormEmailInputProps<T extends { email: string }> {
   required?: boolean | undefined;
   form: UseFormReturn<T>;
+  disabled?: boolean;
 }
 
 export default function FormEmailInput<T extends { email: string }>({
   required,
   form,
+  disabled,
 }: FormEmailInputProps<T>) {
   const registerInputProps = form.register("email" as Path<T>, {
     required: required ? "Email is required" : false,
@@ -24,6 +26,8 @@ export default function FormEmailInput<T extends { email: string }>({
       registerInputProps={registerInputProps}
       type="text"
       errors={form.formState.errors}
+      autoComplete="email"
+      disabled={disabled}
     />
   );
 }

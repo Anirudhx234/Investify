@@ -2,6 +2,7 @@ import type { FieldErrors, UseFormRegisterReturn } from "react-hook-form";
 
 import { ErrorMessage } from "@hookform/error-message";
 import { MdErrorOutline } from "react-icons/md";
+import { HTMLInputAutoCompleteAttribute } from "react";
 
 export interface FormTextInputProps {
   name: string;
@@ -9,6 +10,8 @@ export interface FormTextInputProps {
   registerInputProps: UseFormRegisterReturn;
   type?: "text" | "email" | "password" | undefined;
   errors?: FieldErrors | undefined;
+  autoComplete?: HTMLInputAutoCompleteAttribute;
+  disabled?: boolean;
 }
 
 export default function FormTextInput({
@@ -17,6 +20,8 @@ export default function FormTextInput({
   registerInputProps,
   type,
   errors,
+  autoComplete,
+  disabled,
 }: FormTextInputProps) {
   return (
     <label className="form-control">
@@ -27,6 +32,8 @@ export default function FormTextInput({
         className="input input-bordered"
         type={type ?? "text"}
         {...registerInputProps}
+        autoComplete={autoComplete}
+        disabled={disabled}
       />
       <div className="label">
         <span className="label-text-alt">

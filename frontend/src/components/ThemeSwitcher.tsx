@@ -1,5 +1,5 @@
 import { FaMoon, FaSun } from "react-icons/fa";
-import { toggleTheme } from "../features/theme/themeSlice";
+import { toggleTheme } from "../features/themeSlice";
 import useAppDispatch from "../hooks/useAppDispatch";
 import useAppSelector from "../hooks/useAppSelector";
 

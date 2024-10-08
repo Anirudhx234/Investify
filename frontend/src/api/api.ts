@@ -1,7 +1,9 @@
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query";
+import { createApi } from "@reduxjs/toolkit/query/react";
+import baseQuery from "./baseQuery";
 
 /* API service */
 export const api = createApi({
-  baseQuery: fetchBaseQuery({ baseUrl: "/api" }),
+  baseQuery,
+  tagTypes: [],
   endpoints: () => ({}),
 });
