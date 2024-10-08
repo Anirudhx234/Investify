@@ -11,7 +11,7 @@ import { useRef } from "react";
 import Modal from "../components/Modal";
 import useAppSelector from "../hooks/useAppSelector";
 import { selectProfileData, setProfileData } from "../features/profileSlice";
-import { Redirect } from "wouter";
+import { Link, Redirect } from "wouter";
 import useAppDispatch from "../hooks/useAppDispatch";
 
 /* account creation form */
@@ -19,7 +19,7 @@ export default function CreateAccountForm() {
   const profileData = useAppSelector(selectProfileData);
   const dispatch = useAppDispatch();
   const form = useForm<SignUpRequest>();
-  const [signup, { isLoading, isSuccess, error }] = useSignupMutation();
+  const [signup, { isLoading, isSuccess, error, data }] = useSignupMutation();
   const modalRef = useRef<HTMLDialogElement>(null);
 
   if (profileData) return <Redirect to="/" />;
@@ -41,7 +41,11 @@ export default function CreateAccountForm() {
     modalRef.current?.showModal();
   };
 
-  const onModalExit = () => {};
+  const onModalExit = () => {
+    if (isSuccess) {
+      dispatch(setProfileData({ ...data }));
+    }
+  };
 
   return (
     <div className="flex w-full flex-col gap-4 ~text-sm/base">
@@ -49,6 +53,9 @@ export default function CreateAccountForm() {
         Create your account
       </h1>
       <p className="text-center">Welcome to Investify!</p>
+      <Link href="/login" className="link link-secondary text-center">
+        Login instead?
+      </Link>
       <form
         className="flex flex-col"
         onSubmit={form.handleSubmit(onSubmit)}
@@ -78,6 +85,7 @@ export default function CreateAccountForm() {
           Submit
         </button>
       </form>
+
       <Modal
         ref={modalRef}
         title={isSuccess ? "Success!" : "Error"}
