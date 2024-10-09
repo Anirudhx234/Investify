@@ -39,7 +39,7 @@ public class TwelveDataService {
     }
 
     // Top 50 mutual funds (by total asset value)
-    public Mono<String> getPopularMutualFunds() {
+    public Mono<String> getPopularFunds() {
         return webClient.get()
                 .uri(uriBuilder -> uriBuilder
                         .path("/mutual_funds/lists")
@@ -79,7 +79,7 @@ public class TwelveDataService {
                 .bodyToMono(String.class);
     }
 
-    public Mono<String> getMutualFundsList() {
+    public Mono<String> getFundsList() {
         return webClient.get()
                 .uri(uriBuilder -> uriBuilder
                         .path("/funds")
