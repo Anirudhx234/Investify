@@ -38,7 +38,19 @@ public class TwelveDataService {
                 .bodyToMono(String.class);
     }
 
-    // The following methods will return lists containing information of the requested asset type
+    // Top 50 mutual funds (by total asset value)
+    public Mono<String> getPopularMutualFunds() {
+        return webClient.get()
+                .uri(uriBuilder -> uriBuilder
+                        .path("/mutual_funds/lists")
+                        .queryParam("outputsize", 50) // Number of data points to get back
+                        .queryParam("apiKey", twelveDataApiKey)
+                        .build())
+                .retrieve()
+                .bodyToMono(String.class);
+    }
+
+    // The following methods will return lists containing all symbols of the requested asset type
 
     public Mono<String> getStocksList() {
         return webClient.get()
