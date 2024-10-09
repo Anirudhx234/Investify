@@ -32,7 +32,7 @@ public class TwelveDataService {
                         .queryParam("symbol", ticker)
                         .queryParam("interval", interval)
                         .queryParam("outputsize", 5000) // Number of data points to get (5k is max)
-                        .queryParam("apiKey", twelveDataApiKey)
+                        .queryParam("apikey", twelveDataApiKey)
                         .build())
                 .retrieve()
                 .bodyToMono(String.class);
@@ -42,9 +42,9 @@ public class TwelveDataService {
     public Mono<String> getPopularFunds() {
         return webClient.get()
                 .uri(uriBuilder -> uriBuilder
-                        .path("/mutual_funds/lists")
+                        .path("/mutual_funds/list")
                         .queryParam("outputsize", 50) // Number of data points to get back
-                        .queryParam("apiKey", twelveDataApiKey)
+                        .queryParam("apikey", twelveDataApiKey)
                         .build())
                 .retrieve()
                 .bodyToMono(String.class);
