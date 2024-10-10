@@ -5,7 +5,7 @@ export type ProfileData =
       image?: string | ArrayBuffer | null;
       password?:string;
       age?: number;
-      fingoals?: string;
+      fingoals?: string| null;
     }
   | null
   | undefined;

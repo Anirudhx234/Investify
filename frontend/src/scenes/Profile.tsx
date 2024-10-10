@@ -4,6 +4,7 @@ import { RootState } from '../store/store';
 import { selectProfileData, setProfileData, resetProfileData } from "../features/profileSlice";
 import HeadShot from '../../public/assets/headshot2.jpg';
 import Modal from "../components/Modal";
+import { MdEdit } from "react-icons/md";
 
 export default function Profile() {
   const dispatch = useDispatch();
@@ -203,7 +204,7 @@ export default function Profile() {
                 <label className="block text-sm font-medium text-gray-700">{item.label}</label>
                 <p className="mt-1 text-gray-500">{item.value}</p>
               </div>
-              <button onClick={item.onEdit} className="text-primary pl-4 hover:underline">Edit</button>
+              <button onClick={item.onEdit} className="text-primary pl-4 hover:underline"><MdEdit /></button>
             </div>
           ))}
         </div>
