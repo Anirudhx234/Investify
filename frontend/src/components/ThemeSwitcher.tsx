@@ -9,7 +9,7 @@ export default function ThemeSwitcher() {
 
   return (
     <button
-      className="btn btn-square btn-ghost ~text-lg/xl"
+      className="btn btn-square btn-ghost btn-xs ~text-lg/xl md:btn-md"
       onClick={() => dispatch(toggleTheme())}
     >
       {themeMode === "light" ? <FaMoon /> : <FaSun />}

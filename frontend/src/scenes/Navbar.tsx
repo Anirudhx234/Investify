@@ -26,7 +26,7 @@ export default function Navbar() {
           <div
             tabIndex={0}
             role="button"
-            className="btn m-1 flex items-center gap-1 capitalize"
+            className="btn m-1 flex items-center gap-1 capitalize flex-nowrap"
           >
             {routeToText(location)}
             <IoMdArrowDropdown />
