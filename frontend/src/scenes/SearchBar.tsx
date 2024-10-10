@@ -1,49 +1,13 @@
-import { Fragment, useState } from "react";
+import { useState } from "react";
 import { FaSearch } from "react-icons/fa";
+import AssetsListBox from "../components/AssetsListBox";
 import { useAssetsListQuery } from "../api/assets";
-import { Link, useLocation } from "wouter";
-import buildUrl from "../utils/buildUrl";
-
-function SearchListBox({ searchValue }: { searchValue: string }) {
-  const [location] = useLocation();
-  const { data } = useAssetsListQuery();
-
-  return (
-    <ul className="menu dropdown-content z-[1] max-h-[30rem] w-full overflow-y-auto rounded-box bg-base-100 p-4 shadow">
-      {data &&
-        Object.entries(data)
-          .filter(([key]) => key.includes(location))
-          .map(([assetType, assets]) => (
-            <Fragment key={assetType}>
-              <li className="my-2 capitalize">{assetType}</li>
-              {assets
-                .filter(
-                  (asset) =>
-                    asset.symbol.includes(searchValue) ||
-                    asset.name.includes(searchValue),
-                )
-                .map((asset) => {
-                  const label = `${asset.symbol} (${asset.name})`;
-                  return (
-                    <li key={label}>
-                      <Link
-                        href={buildUrl(
-                          "/asset-page",
-                          asset as unknown as Record<string, unknown>,
-                        )}
-                      >
-                        {label}
-                      </Link>
-                    </li>
-                  );
-                })}
-            </Fragment>
-          ))}
-    </ul>
-  );
-}
+import { useLocation } from "wouter";
+import routeToAssetType from "../utils/routeToAssetType";
 
 export default function SearchBar() {
+  const [location] = useLocation();
+  const { data } = useAssetsListQuery();
   const [searchValue, setSearchValue] = useState("");
   const isExpanded = searchValue !== "";
 
@@ -77,7 +41,14 @@ export default function SearchBar() {
               onChange={(e) => setSearchValue(e.target.value)}
             />
           </form>
-          <SearchListBox searchValue={searchValue} />
+          {data && (
+            <AssetsListBox
+              data={data}
+              assetType={routeToAssetType(location)}
+              searchValue={searchValue}
+              className="menu dropdown-content z-[1] max-h-[30rem] w-full overflow-y-auto rounded-box bg-base-100 p-4 shadow"
+            />
+          )}
         </div>
       </label>
     </div>

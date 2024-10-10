@@ -1,6 +1,8 @@
 declare namespace Assets {
+  type AssetType = "stocks" | "mutual-funds" | "bonds" | "crypto";
+
   interface Asset {
-    type: "stocks" | "mutual-funds" | "bonds" | "crypto";
+    type: AssetType;
     symbol: string;
     name: string;
   }
@@ -26,7 +28,7 @@ declare namespace Assets {
   type Bonds = Asset;
   type Crypto = Asset;
 
-  type Set = Record<"stocks" | "mutual-funds" | "bonds" | "crypto", Asset[]>;
+  type Set = Record<AssetType, Asset[]>;
 }
 
 export default Assets;
