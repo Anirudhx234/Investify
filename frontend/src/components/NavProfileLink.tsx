@@ -7,9 +7,14 @@ export default function NavProfileLink() {
 
   if (!profileData) {
     return (
+      // <div className="flex items-center mx-1">
+      //   <Link href="/login" className="btn btn-secondary btn-sm">
+      //     Login
+      //   </Link>
+      // </div>
       <div className="flex items-center mx-1">
-        <Link href="/login" className="btn btn-secondary btn-sm">
-          Login
+        <Link href="/profile" className="btn btn-secondary btn-sm">
+          Profile
         </Link>
       </div>
     );

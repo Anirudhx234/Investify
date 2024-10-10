@@ -9,6 +9,7 @@ import NotFoundRoute from "./routes/NotFoundRoute";
 import HomeRoute from "./routes/HomeRoute";
 import AssetsRoute from "./routes/AssetsRoute";
 import LoginRoute from "./routes/LoginRoute";
+import ProfileRoute from "./routes/ProfileRoute";
 
 export default function App() {
   useTheme();
@@ -32,6 +33,7 @@ export default function App() {
             <Route path="/login" component={LoginRoute} />
             <Route path="/home" component={HomeRoute} />
             <Route path="/assets" component={AssetsRoute} nest />
+            <Route path="/profile" component={ProfileRoute} />
             <Route path="/" component={() => <Redirect to="/home" replace />} />
             <Route component={NotFoundRoute} />
           </Switch>

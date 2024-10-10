@@ -53,7 +53,7 @@ function Sitemap() {
     "/assets",
     "/portfolio",
     "/projections",
-    "/competitions",
+    "/competitions"
   ];
 
   return (

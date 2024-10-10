@@ -2,6 +2,10 @@ export type ProfileData =
   | {
       email: string;
       username: string;
+      image?: string | ArrayBuffer | null;
+      password?:string;
+      age?: number;
+      fingoals?: string;
     }
   | null
   | undefined;
