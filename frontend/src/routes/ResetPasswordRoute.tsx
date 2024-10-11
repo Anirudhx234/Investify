@@ -52,6 +52,11 @@ export default function ResetPasswordRoute() {
             autoComplete="new-password"
           />
           <FormConfirmPasswordInput form={form} disabled={isLoading} />
+
+          <button className="btn btn-primary mt-4" disabled={isLoading}>
+            {isLoading && <span className="loading loading-spinner"></span>}
+            Submit
+          </button>
         </form>
         <Modal
           ref={modalRef}

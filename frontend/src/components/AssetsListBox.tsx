@@ -1,12 +1,13 @@
 import { Link } from "wouter";
 import { Fragment } from "react/jsx-runtime";
 import buildUrl from "../utils/buildUrl";
-import Assets from "../types/Asset";
+import Asset from "../types/Asset";
+import assetTypeToLogo from "../utils/assetTypeToLogo";
 
 export interface AssetsListBoxProps {
-  data: Assets.Set;
+  data: Asset.Set;
   searchValue?: string;
-  assetType?: Assets.AssetType;
+  assetType?: Asset.Type;
   className?: string;
 }
 
@@ -32,7 +33,8 @@ export default function AssetsListBox({
               .map((dataAsset) => {
                 const label = `${dataAsset.symbol} (${dataAsset.name})`;
                 return (
-                  <li key={label}>
+                  <li key={label} className="flex items-center gap-1">
+                    {assetTypeToLogo(dataAssetType as Asset.Type)}
                     <Link
                       href={buildUrl(
                         "/asset-page",

@@ -1,13 +1,13 @@
 import { useState } from "react";
 import { FaSearch } from "react-icons/fa";
 import AssetsListBox from "../components/AssetsListBox";
-import { useAssetsListQuery } from "../api/assets";
+import { useAssetSetQuery } from "../api/assets";
 import { useLocation } from "wouter";
 import routeToAssetType from "../utils/routeToAssetType";
 
 export default function SearchBar() {
   const [location] = useLocation();
-  const { data } = useAssetsListQuery();
+  const { data } = useAssetSetQuery();
   const [searchValue, setSearchValue] = useState("");
   const isExpanded = searchValue !== "";
 

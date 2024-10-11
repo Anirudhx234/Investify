@@ -18,7 +18,7 @@ export default function AssetsTabList() {
       icon: <AiOutlineStock />,
     },
     {
-      route: "/bonds",
+      route: "/etfs",
       icon: <GrCertificate />,
     },
     {

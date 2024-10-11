@@ -5,10 +5,11 @@ export const assetsApi = api.injectEndpoints({
   endpoints: (build) => ({
     assetSet: build.query<Asset.Set, void>({
       query: () => ({
-        url: "/asset/set",
+        url: "/assets/set",
         method: "GET",
       }),
     }),
+    
   }),
 });
 

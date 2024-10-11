@@ -41,7 +41,7 @@ export default function App() {
             <Route path="/verify-new-email" component={VerifyNewEmailRoute} />
             <Route path="/forgot-password" component={ForgotPasswordRoute} />
             <Route path="/reset-password" component={ResetPasswordRoute} />
-            {/* <Route path="/assets" component={AssetsRoute} nest /> */}
+            <Route path="/assets" component={AssetsRoute} nest />
             <Route path="/" component={() => <Redirect to="/home" replace />} />
             <Route component={NotFoundRoute} />
           </Switch>

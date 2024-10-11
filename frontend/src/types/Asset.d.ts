@@ -24,8 +24,19 @@ declare namespace Asset {
     mic_code: string;
   }
 
-  type ETF = Asset;
-  type Crypto = Asset;
+  interface ETF extends Asset {
+    country: string;
+    mic_code: string;
+    fund_family: string;
+    fund_type: string;
+  }
+
+  interface Crypto extends Asset {
+    price: number;
+    volume_24h: number;
+    percent_change_24h: number;
+    market_cap: number;
+  }
 
   type Set = Record<Type, Asset[]>;
 }

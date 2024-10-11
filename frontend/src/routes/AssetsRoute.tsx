@@ -1,12 +1,12 @@
 import { Route, Switch } from "wouter";
-import { useAssetsListQuery } from "../api/assets";
+import { useAssetSetQuery } from "../api/assets";
 import AssetsTabList from "../scenes/AssetsTabList";
 import SearchBar from "../scenes/SearchBar";
 import AssetPageRoute from "./AssetPageRoute";
 import { MdErrorOutline } from "react-icons/md";
 
 function BrowseAssets() {
-  const { isFetching, isError, error, isSuccess } = useAssetsListQuery();
+  const { isFetching, isError, error, isSuccess } = useAssetSetQuery();
   const errorMssg = error?.message ?? "An error occurred";
 
   return (

@@ -63,7 +63,7 @@ export default function LoginForm() {
           disabled={isLoading}
         />
 
-        <Link href="/forgot-password" className="link link-accent text-center">
+        <Link href="/forgot-password" className="link link-primary text-center">
           Forgot Password?
         </Link>
 
