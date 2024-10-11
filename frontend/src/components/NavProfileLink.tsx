@@ -1,24 +1,27 @@
 import { Link } from "wouter";
-import { selectProfileData } from "../features/profileSlice";
 import useAppSelector from "../hooks/useAppSelector";
+import { useProfileDataQuery } from "../api/profile";
+import ProfilePicture from "./ProfilePicture";
 
 export default function NavProfileLink() {
-  const profileData = useAppSelector(selectProfileData);
+  const isAuthenticated = useAppSelector((state) => state.auth.isAuthenticated);
+  const { isSuccess, data } = useProfileDataQuery();
 
-  if (!profileData) {
+  if (!isAuthenticated) {
     return (
-      // <div className="flex items-center mx-1">
-      //   <Link href="/login" className="btn btn-secondary btn-sm">
-      //     Login
-      //   </Link>
-      // </div>
-      <div className="flex items-center mx-1">
-        <Link href="/profile" className="btn btn-secondary btn-sm">
-          Profile
+      <div className="mx-1 flex items-center">
+        <Link href="/login" className="btn btn-secondary btn-sm">
+          Login
         </Link>
       </div>
     );
   }
 
-  return <>Profile Picture</>;
+  return (
+    <div className="mx-1 flex items-center">
+      <Link href="/profile">
+        <ProfilePicture src={isSuccess ? data.profilePicture : undefined} />
+      </Link>
+    </div>
+  );
 }

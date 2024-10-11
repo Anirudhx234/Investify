@@ -17,15 +17,16 @@ export const authApi = api.injectEndpoints({
         body: args,
       }),
     }),
-    signout: build.mutation<void, void>({
+    logout: build.mutation<void, void>({
       query: () => ({
-        url: "/auth/signout",
+        url: "/auth/logout",
         method: "POST",
       }),
+      invalidatesTags: ["Profile"],
     }),
     verify: build.query<void, VerifyArgs>({
       query: ({ searchParams }) => ({
-        url: "/auth/verify?" + searchParams,
+        url: "/auth/verify-email?" + searchParams,
         method: "GET",
       }),
     }),
@@ -35,6 +36,6 @@ export const authApi = api.injectEndpoints({
 export const {
   useSignupMutation,
   useLoginMutation,
-  useSignoutMutation,
+  useLogoutMutation,
   useVerifyQuery,
 } = authApi;

@@ -1,9 +1,15 @@
-interface Profile {
+export interface ProfileResponse {
   email: string;
   username: string;
-  profilePic?: string | null | undefined;
-  age?: number | null | undefined;
-  finGoals?: string[] | null | undefined;
+  profilePicture?: string | undefined;
+  age?: number | undefined;
+  financialGoals?: string | undefined;
 }
 
-export default Profile;
+export interface ProfileForm {
+  email: string;
+  username: string;
+  profilePicture: FileList;
+  age: number;
+  financialGoals: string;
+}

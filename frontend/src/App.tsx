@@ -11,6 +11,7 @@ import AssetsRoute from "./routes/AssetsRoute";
 import LoginRoute from "./routes/LoginRoute";
 import ProfileRoute from "./routes/ProfileRoute";
 import VerifyAccountRoute from "./routes/VerifyAccountRoute";
+import VerifyNewEmailRoute from "./routes/VerifyNewEmailRoute";
 
 export default function App() {
   useTheme();
@@ -31,11 +32,12 @@ export default function App() {
         <main className="flex max-w-[100vw] flex-col items-start justify-start px-6 py-8 text-base-content">
           <Switch>
             <Route path="/create-account" component={CreateAccountRoute} />
-            <Route path="/verify" component={VerifyAccountRoute} />
+            <Route path="/verify-email" component={VerifyAccountRoute} />
             <Route path="/login" component={LoginRoute} />
             <Route path="/home" component={HomeRoute} />
-            {/* <Route path="/assets" component={AssetsRoute} nest />
-            <Route path="/profile" component={ProfileRoute} /> */}
+            <Route path="/profile" component={ProfileRoute} />
+            <Route path="/verify-new-email" component={VerifyNewEmailRoute} />
+            {/* <Route path="/assets" component={AssetsRoute} nest /> */}
             <Route path="/" component={() => <Redirect to="/home" replace />} />
             <Route component={NotFoundRoute} />
           </Switch>
