@@ -9,6 +9,7 @@ export const authApi = api.injectEndpoints({
         method: "POST",
         body: args,
       }),
+      extraOptions: { base: false },
     }),
     login: build.mutation<void, LoginRequest>({
       query: ({ ...args }) => ({
@@ -16,6 +17,7 @@ export const authApi = api.injectEndpoints({
         method: "POST",
         body: args,
       }),
+      extraOptions: { base: false },
     }),
     logout: build.mutation<void, void>({
       query: () => ({
@@ -23,12 +25,14 @@ export const authApi = api.injectEndpoints({
         method: "POST",
       }),
       invalidatesTags: ["Profile"],
+      extraOptions: { base: false },
     }),
     verify: build.query<void, VerifyArgs>({
       query: ({ searchParams }) => ({
         url: "/auth/verify-email?" + searchParams,
         method: "GET",
       }),
+      extraOptions: { base: false },
     }),
     forgotPassword: build.mutation<void, { email: string }>({
       query: ({ ...args }) => ({
@@ -36,6 +40,7 @@ export const authApi = api.injectEndpoints({
         method: "POST",
         body: args,
       }),
+      extraOptions: { base: false },
     }),
   }),
 });

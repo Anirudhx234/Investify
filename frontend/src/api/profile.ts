@@ -10,6 +10,7 @@ export const profileApi = api.injectEndpoints({
         method: "GET",
       }),
       providesTags: ["Profile"],
+      extraOptions: { base: false },
     }),
     modifyEmail: build.mutation<void, { newEmail: string }>({
       query: ({ ...args }) => ({
@@ -18,6 +19,7 @@ export const profileApi = api.injectEndpoints({
         body: args,
       }),
       invalidatesTags: ["Profile"],
+      extraOptions: { base: false },
     }),
     verifyNewEmail: build.mutation<void, VerifyArgs>({
       query: ({ ...args }) => ({
@@ -25,6 +27,7 @@ export const profileApi = api.injectEndpoints({
         method: "PATCH",
       }),
       invalidatesTags: ["Profile"],
+      extraOptions: { base: false },
     }),
     modifyProfile: build.mutation<void, FormData>({
       query: (formData) => ({
@@ -33,6 +36,7 @@ export const profileApi = api.injectEndpoints({
         body: formData,
       }),
       invalidatesTags: ["Profile"],
+      extraOptions: { base: false },
     }),
     deleteAccount: build.mutation<void, void>({
       query: () => ({
@@ -40,6 +44,7 @@ export const profileApi = api.injectEndpoints({
         method: "DELETE",
       }),
       invalidatesTags: ["Profile"],
+      extraOptions: { base: false },
     }),
     resetPassword: build.mutation<void, VerifyArgs & ResetPasswordRequest>({
       query: ({ searchParams, ...args }) => ({
@@ -49,6 +54,7 @@ export const profileApi = api.injectEndpoints({
           newPassword: args.password,
         },
       }),
+      extraOptions: { base: false },
     }),
   }),
 });
