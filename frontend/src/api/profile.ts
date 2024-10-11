@@ -11,9 +11,9 @@ export const profileApi = api.injectEndpoints({
       }),
       providesTags: ["Profile"],
     }),
-    modifyEmail: build.mutation<void, { email: string }>({
+    modifyEmail: build.mutation<void, { newEmail: string }>({
       query: ({ ...args }) => ({
-        url: "/clients/modify-email",
+        url: "/clients/email",
         method: "PATCH",
         body: args,
       }),
@@ -28,9 +28,16 @@ export const profileApi = api.injectEndpoints({
     }),
     modifyProfile: build.mutation<void, FormData>({
       query: (formData) => ({
-        url: "/clients/modify-profile",
+        url: "/clients/profile",
         method: "PATCH",
         body: formData,
+      }),
+      invalidatesTags: ["Profile"],
+    }),
+    deleteAccount: build.mutation<void, void>({
+      query: () => ({
+        url: "/clients",
+        method: "DELETE",
       }),
       invalidatesTags: ["Profile"],
     }),
@@ -42,4 +49,5 @@ export const {
   useModifyEmailMutation,
   useVerifyNewEmailMutation,
   useModifyProfileMutation,
+  useDeleteAccountMutation
 } = profileApi;

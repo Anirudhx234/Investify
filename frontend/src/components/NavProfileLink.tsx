@@ -3,9 +3,20 @@ import useAppSelector from "../hooks/useAppSelector";
 import { useProfileDataQuery } from "../api/profile";
 import ProfilePicture from "./ProfilePicture";
 
+function NavProfilePictureLink() {
+  const { isSuccess, data } = useProfileDataQuery();
+
+  return (
+    <div className="mx-1 flex items-center">
+      <Link href="/profile">
+        <ProfilePicture src={isSuccess ? data.profilePicture : undefined} />
+      </Link>
+    </div>
+  );
+}
+
 export default function NavProfileLink() {
   const isAuthenticated = useAppSelector((state) => state.auth.isAuthenticated);
-  const { isSuccess, data } = useProfileDataQuery();
 
   if (!isAuthenticated) {
     return (
@@ -17,11 +28,5 @@ export default function NavProfileLink() {
     );
   }
 
-  return (
-    <div className="mx-1 flex items-center">
-      <Link href="/profile">
-        <ProfilePicture src={isSuccess ? data.profilePicture : undefined} />
-      </Link>
-    </div>
-  );
+  return <NavProfilePictureLink />;
 }

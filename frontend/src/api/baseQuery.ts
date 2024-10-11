@@ -7,7 +7,10 @@ import type CustomBaseQuery from "../types/CustomBaseQuery";
 import buildUrl from "../utils/buildUrl";
 import { setAuth } from "../features/authSlice";
 
-const rawBaseQuery = fetchBaseQuery({ baseUrl: "http://localhost:8080/api" });
+const rawBaseQuery = fetchBaseQuery({
+  baseUrl: "http://localhost:8080/api",
+  credentials: "include",
+});
 
 const baseQuery: BaseQueryFn<
   CustomBaseQuery.Args,

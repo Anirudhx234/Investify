@@ -19,7 +19,7 @@ export default function ProfileEmailForm() {
 
   const onSubmit: SubmitHandler<ModifyEmailForm> = async (data) => {
     try {
-      await updateEmail(data).unwrap();
+      await updateEmail({ newEmail: data.email }).unwrap();
     } catch {
       /* empty */
     }
@@ -32,24 +32,25 @@ export default function ProfileEmailForm() {
   }, [data, form]);
 
   return (
-    <form
-      className="flex flex-col"
-      onSubmit={form.handleSubmit(onSubmit)}
-      aria-label="form"
-      aria-disabled={isBuffering}
-    >
-      <FormEmailInput form={form} disabled={isBuffering} required />
+    <>
+      <form
+        className="flex flex-col"
+        onSubmit={form.handleSubmit(onSubmit)}
+        aria-label="form"
+        aria-disabled={isBuffering}
+      >
+        <FormEmailInput form={form} disabled={isBuffering} required />
 
-      <div className="flex justify-center">
-        <button
-          className="btn btn-primary btn-wide mt-4"
-          disabled={isBuffering}
-        >
-          {isBuffering && <span className="loading loading-spinner"></span>}
-          Request Email Change
-        </button>
-      </div>
-
+        <div className="flex justify-center">
+          <button
+            className="btn btn-primary btn-wide mt-4"
+            disabled={isBuffering}
+          >
+            {isBuffering && <span className="loading loading-spinner"></span>}
+            Request Email Change
+          </button>
+        </div>
+      </form>
       <Modal ref={modalRef} title={isSuccess ? "Success!" : "Error"}>
         <p className="py-4">
           {isSuccess
@@ -57,6 +58,6 @@ export default function ProfileEmailForm() {
             : errorMssg}
         </p>
       </Modal>
-    </form>
+    </>
   );
 }
