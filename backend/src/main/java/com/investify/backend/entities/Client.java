@@ -34,6 +34,15 @@ public class Client {
     @Column(name = "verified", nullable = false)
     private boolean verified;
 
+    @Column(name = "profile_picture")
+    private String profilePicture;
+
+    @Column(name = "age")
+    private int age;
+
+    @Column(name = "financial_goals")
+    private String financialGoals;
+
     @Column(name = "verification_token")
     private String verificationToken;  // Add this field to store the verification token
 }

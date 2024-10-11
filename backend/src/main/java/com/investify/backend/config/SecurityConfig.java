@@ -30,7 +30,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests((requests) -> requests
                         // Allow access to signup, login, and verification without authentication
                         .requestMatchers(HttpMethod.POST, "/api/auth/login", "/api/auth/signup").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/auth/verify").permitAll() // Allow GET request to /verify
+                        .requestMatchers(HttpMethod.GET, "/api/auth/verify-email").permitAll() // Allow GET request to /verify
                         .anyRequest().authenticated())
         ;
         return http.build();

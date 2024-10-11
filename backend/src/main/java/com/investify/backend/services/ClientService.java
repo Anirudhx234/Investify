@@ -1,8 +1,6 @@
 package com.investify.backend.services;
 
-import com.investify.backend.dtos.CredentialsDto;
-import com.investify.backend.dtos.SignUpDto;
-import com.investify.backend.dtos.ClientDto;
+import com.investify.backend.dtos.*;
 import com.investify.backend.entities.Client;
 import com.investify.backend.exceptions.RestException;
 import com.investify.backend.mappers.ClientMapper;
@@ -26,7 +24,7 @@ public class ClientService {
 
     private final ClientMapper clientMapper;
 
-    public ClientDto login(CredentialsDto credentialsDto) {
+    public ClientProfileDto login(CredentialsDto credentialsDto) {
         Client client = clientRepository.findByEmail(credentialsDto.getEmail())
                 .orElseThrow(() -> new RestException("Unknown client", HttpStatus.NOT_FOUND));
 
@@ -34,7 +32,7 @@ public class ClientService {
             if (!client.isVerified()) {
                 throw new RestException("Email not verified. Please check your email for verification.", HttpStatus.FORBIDDEN);
             }
-            return clientMapper.toClientDto(client);
+            return clientMapper.toClientProfileDto(client);
         }
 
         throw new RestException("Invalid password", HttpStatus.BAD_REQUEST);
@@ -80,10 +78,80 @@ public class ClientService {
     }
 
 
-    public ClientDto findByEmail(String email) {
+    public ClientProfileDto modifyProfile(String email, ModifyProfileDto modifyProfileDto) {
         Client client = clientRepository.findByEmail(email)
+                .orElseThrow(() -> new RestException("Client not found", HttpStatus.NOT_FOUND));
+
+        if (modifyProfileDto.getUsername() != null) {
+            client.setUsername(modifyProfileDto.getUsername());
+        }
+
+        if (modifyProfileDto.getPassword() != null) {
+            String encodedPassword = passwordEncoder.encode(modifyProfileDto.getPassword());
+            client.setPassword(encodedPassword);
+        }
+
+        if (modifyProfileDto.getProfilePicture() != null) {
+            // Save or process the profile picture, then update the client entity
+            client.setProfilePicture(modifyProfileDto.getProfilePicture());
+        }
+
+        if (modifyProfileDto.getAge() > 0) {
+            client.setAge(modifyProfileDto.getAge());
+        }
+
+        if (modifyProfileDto.getFinancialGoals() != null) {
+            client.setFinancialGoals(modifyProfileDto.getFinancialGoals());
+        }
+
+        Client updatedClient = clientRepository.save(client);
+        return clientMapper.toClientProfileDto(updatedClient);
+    }
+
+    public ClientProfileDto modifyPassword(String token, String newPassword) {
+        Client client = clientRepository.findByVerificationToken(token)
+                .orElseThrow(() -> new RestException("Client not found", HttpStatus.NOT_FOUND));
+
+        client.setVerificationToken(null);
+
+        client.setPassword(passwordEncoder.encode(newPassword));
+        clientRepository.save(client);
+
+        return clientMapper.toClientProfileDto(client);
+    }
+
+    public ClientProfileDto modifyEmail(String oldEmail, String newEmail) {
+        Client client = clientRepository.findByEmail(oldEmail)
+                .orElseThrow(() -> new RestException("Client not found", HttpStatus.NOT_FOUND));
+
+        client.setEmail(newEmail);
+        clientRepository.save(client);
+
+        return clientMapper.toClientProfileDto(client);
+    }
+
+    public ClientDto findBasicById(Long id) {
+        Client client = clientRepository.findById(id)
                 .orElseThrow(() -> new RestException("Unknown client", HttpStatus.NOT_FOUND));
         return clientMapper.toClientDto(client);
+    }
+
+    public ClientProfileDto findById(Long id) {
+        Client client = clientRepository.findById(id)
+                .orElseThrow(() -> new RestException("Unknown client", HttpStatus.NOT_FOUND));
+        return clientMapper.toClientProfileDto(client);
+    }
+
+    public ClientProfileDto findByEmail(String email) {
+        Client client = clientRepository.findByEmail(email)
+                .orElseThrow(() -> new RestException("Unknown client", HttpStatus.NOT_FOUND));
+        return clientMapper.toClientProfileDto(client);
+    }
+
+    public ClientProfileDto findByVerificationToken(String token) {
+        Client client = clientRepository.findByVerificationToken(token)
+                .orElseThrow(() -> new RestException("Unknown client", HttpStatus.NOT_FOUND));
+        return clientMapper.toClientProfileDto(client);
     }
 
 }
