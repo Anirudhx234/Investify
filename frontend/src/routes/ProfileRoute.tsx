@@ -22,7 +22,6 @@ export default function ProfileRoute() {
         )}
         {isError && (
           <div className="flex w-full items-center justify-center gap-1 text-base text-error">
-            <MdErrorOutline />
             <p>{errorMssg}</p>
           </div>
         )}

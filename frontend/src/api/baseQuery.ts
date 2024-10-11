@@ -41,11 +41,11 @@ const baseQuery: BaseQueryFn<
   }
 
   if (result.error) {
-    if (result.error.status === 401) {
-      alert("You have been logged out");
-      api.dispatch(setAuth(false));
-      retry.fail(result.error);
-    }
+    // if (result.error.status === 401) {
+    //   alert("You have been logged out");
+    //   api.dispatch(setAuth(false));
+    //   retry.fail(result.error);
+    // }
 
     const data = result.error.data as undefined | { message?: string };
     const status = result.error.status;

@@ -10,13 +10,13 @@ import ETFSRoute from "./ETFSRoute";
 import CryptoRoute from "./CryptoRoute";
 
 function BrowseAssets() {
-  const { isFetching, isError, error, isSuccess } = useAssetSetQuery();
-  const errorMssg = error?.message ?? "An error occurred";
+  //const { isFetching, isError, error, isSuccess } = useAssetSetQuery();
+  //const errorMssg = error?.message ?? "An error occurred";
 
   return (
     <div className="flex w-full flex-col items-center">
       <AssetsTabList />
-      {isFetching && (
+      {/* {isFetching && (
         <div className="flex items-center gap-2">
           <span className="loading loading-spinner loading-lg"></span>
           <p>Loading assets...</p>
@@ -28,7 +28,8 @@ function BrowseAssets() {
           <p>{errorMssg}</p>
         </div>
       )}
-      {isSuccess && <SearchBar />}
+      {isSuccess && <SearchBar />} */}
+      <SearchBar />
       <div className="divider"></div>
       <Switch>
         <Route path="/stocks" component={StocksRoute} />

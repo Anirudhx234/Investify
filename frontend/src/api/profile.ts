@@ -48,7 +48,7 @@ export const profileApi = api.injectEndpoints({
     }),
     resetPassword: build.mutation<void, VerifyArgs & ResetPasswordRequest>({
       query: ({ searchParams, ...args }) => ({
-        url: "/clients/reset-password?" + searchParams,
+        url: "/clients/password?" + searchParams,
         method: "PATCH",
         body: {
           newPassword: args.password,

@@ -47,10 +47,16 @@ public class ClientService {
 
 
     public ClientDto register(SignUpDto clientDto) {
+        Optional<Client> optionalClient1 = clientRepository.findByUsername(clientDto.getUsername());
+
+        if (optionalClient1.isPresent()) {
+            throw new RestException("Username already exists", HttpStatus.BAD_REQUEST);
+        }
+
         Optional<Client> optionalClient = clientRepository.findByEmail(clientDto.getEmail());
 
         if (optionalClient.isPresent()) {
-            throw new RestException("Login already exists", HttpStatus.BAD_REQUEST);
+            throw new RestException("Email already exists", HttpStatus.BAD_REQUEST);
         }
 
         Client client = clientMapper.signUpToClient(clientDto);
@@ -90,6 +96,10 @@ public class ClientService {
                 .orElseThrow(() -> new RestException("Client not found", HttpStatus.NOT_FOUND));
 
         if (modifyProfileDto.getUsername() != null) {
+            Optional<Client> optionalClient1 = clientRepository.findByUsername(modifyProfileDto.getUsername());
+            if (optionalClient1.isPresent()) {
+                throw new RestException("Username already exists", HttpStatus.BAD_REQUEST);
+            }
             client.setUsername(modifyProfileDto.getUsername());
         }
 
