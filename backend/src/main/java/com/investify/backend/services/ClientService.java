@@ -130,6 +130,15 @@ public class ClientService {
         return clientMapper.toClientProfileDto(client);
     }
 
+    public ClientProfileDto deleteClient(String email) {
+        Client client = clientRepository.findByEmail(email)
+                .orElseThrow(() -> new RestException("Client not found", HttpStatus.NOT_FOUND));
+
+        clientRepository.delete(client);
+
+        return clientMapper.toClientProfileDto(client);
+    }
+
     public ClientDto findBasicById(Long id) {
         Client client = clientRepository.findById(id)
                 .orElseThrow(() -> new RestException("Unknown client", HttpStatus.NOT_FOUND));

@@ -1,5 +1,6 @@
 package com.investify.backend.config;
 
+import com.investify.backend.utils.Utils;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
@@ -39,7 +40,9 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                             clientAuthenticationProvider.validateToken(token));
                 } catch (RuntimeException e) {
                     SecurityContextHolder.clearContext();
-                    throw e;
+                    // throw e;
+                    jwtCookie = Utils.removeJWTCookie("jwt");
+                    httpServletResponse.addCookie(jwtCookie);
                 }
             }
         }

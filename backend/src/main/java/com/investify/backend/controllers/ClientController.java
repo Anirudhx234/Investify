@@ -2,7 +2,6 @@ package com.investify.backend.controllers;
 
 import com.investify.backend.config.ClientAuthenticationProvider;
 import com.investify.backend.dtos.*;
-import com.investify.backend.entities.Client;
 import com.investify.backend.mappers.ClientMapper;
 import com.investify.backend.services.ClientService;
 import com.investify.backend.services.EmailService;
@@ -14,7 +13,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -89,6 +87,19 @@ public class ClientController {
         emailService.sendVerificationEmailForNewEmail(modifyEmailDto.getNewEmail(), verificationLink);
 
         return ResponseEntity.ok(new MessageDto("Verification for new email sent."));
+    }
+
+    @DeleteMapping("")
+    public ResponseEntity<MessageDto> modifyEmail(HttpServletResponse response) {
+
+        ClientProfileDto clientProfileDto = (ClientProfileDto) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        clientService.deleteClient(clientProfileDto.getEmail());
+
+        Cookie jwtCookie = Utils.removeJWTCookie("jwt");
+        response.addCookie(jwtCookie);
+
+        return ResponseEntity.ok(new MessageDto("Client successfully deleted."));
     }
 }
 

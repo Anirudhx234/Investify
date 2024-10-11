@@ -93,13 +93,11 @@ public class AuthController {
         return ResponseEntity.ok(new MessageDto("Reset password email sent."));
     }
 
-    public static Cookie generateJWTCookie(String cookieName, String token) {
-        Cookie jwtCookie = new Cookie(cookieName, token);
-        jwtCookie.setHttpOnly(true);
-        jwtCookie.setSecure(false);
-        jwtCookie.setPath("/");
-        jwtCookie.setMaxAge(3600 * 24 * 7); // Cookie expires in 7 days
+    @PostMapping("/logout")
+    public ResponseEntity<MessageDto> logout(HttpServletResponse response) {
+        Cookie jwtCookie = Utils.removeJWTCookie("jwt");
+        response.addCookie(jwtCookie);
 
-        return jwtCookie;
+        return ResponseEntity.ok(new MessageDto("Logged out successfully."));
     }
 }

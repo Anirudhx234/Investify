@@ -18,7 +18,7 @@ import java.util.Arrays;
 public class WebConfig {
 
     @Value("${spring.frontend.url}")
-    private static String frontendURL;
+    private String frontendURL;  // Remove static
 
     private static final Long MAX_AGE = 3600L;
     private static final int CORS_FILTER_ORDER = -102;
@@ -33,7 +33,7 @@ public class WebConfig {
         return bean;
     }
 
-    private static CorsConfiguration getCorsConfiguration() {
+    private CorsConfiguration getCorsConfiguration() {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
         config.addAllowedOrigin(frontendURL);
@@ -45,6 +45,7 @@ public class WebConfig {
                 HttpMethod.GET.name(),
                 HttpMethod.POST.name(),
                 HttpMethod.PUT.name(),
+                HttpMethod.PATCH.name(),
                 HttpMethod.DELETE.name()));
         config.setMaxAge(MAX_AGE);
         return config;
