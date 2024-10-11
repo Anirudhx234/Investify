@@ -36,10 +36,11 @@ export default function AssetsListBox({
                   <li key={label} className="flex items-center gap-1">
                     {assetTypeToLogo(dataAssetType as Asset.Type)}
                     <Link
-                      href={buildUrl(
-                        "/asset-page",
-                        dataAsset as unknown as Record<string, unknown>,
-                      )}
+                      href={buildUrl("/asset-page", {
+                        type: dataAssetType,
+                        name: dataAsset.name,
+                        symbol: dataAsset.symbol,
+                      } as unknown as Record<string, unknown>)}
                     >
                       {label}
                     </Link>

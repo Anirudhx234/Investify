@@ -4,6 +4,10 @@ import AssetsTabList from "../scenes/AssetsTabList";
 import SearchBar from "../scenes/SearchBar";
 import AssetPageRoute from "./AssetPageRoute";
 import { MdErrorOutline } from "react-icons/md";
+import StocksRoute from "./StocksRoute";
+import MutualFundsRoute from "./MutualFundsRoute";
+import ETFSRoute from "./ETFSRoute";
+import CryptoRoute from "./CryptoRoute";
 
 function BrowseAssets() {
   const { isFetching, isError, error, isSuccess } = useAssetSetQuery();
@@ -25,6 +29,13 @@ function BrowseAssets() {
         </div>
       )}
       {isSuccess && <SearchBar />}
+      <div className="divider"></div>
+      <Switch>
+        <Route path="/stocks" component={StocksRoute} />
+        <Route path="/mutual-funds" component={MutualFundsRoute} />
+        <Route path="/etfs" component={ETFSRoute} />
+        <Route path="/crypto" component={CryptoRoute} />
+      </Switch>
     </div>
   );
 }

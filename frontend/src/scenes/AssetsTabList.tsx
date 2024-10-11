@@ -10,10 +10,6 @@ import { IoGridSharp } from "react-icons/io5";
 export default function AssetsTabList() {
   const tabs = [
     {
-      route: "/",
-      icon: <IoGridSharp />,
-    },
-    {
       route: "/stocks",
       icon: <AiOutlineStock />,
     },

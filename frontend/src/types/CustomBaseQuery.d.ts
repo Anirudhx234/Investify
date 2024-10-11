@@ -20,7 +20,7 @@ declare namespace CustomBaseQuery {
     message: string;
   }
 
-  type DefinitionExtraOptions = object;
+  type DefinitionExtraOptions = { base?: boolean | undefined };
   type Meta = FetchBaseQueryMeta;
 }
 

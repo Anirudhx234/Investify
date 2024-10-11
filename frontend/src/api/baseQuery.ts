@@ -7,6 +7,8 @@ import type CustomBaseQuery from "../types/CustomBaseQuery";
 import buildUrl from "../utils/buildUrl";
 import { setAuth } from "../features/authSlice";
 
+const rawBaseBaseQuery = fetchBaseQuery();
+
 const rawBaseQuery = fetchBaseQuery({
   baseUrl: "http://localhost:8080/api",
   credentials: "include",
@@ -22,11 +24,21 @@ const baseQuery: BaseQueryFn<
   const { url, queryParams, ...remainingArgs } = args;
   const fullUrl = buildUrl(url, queryParams);
 
-  const result = await rawBaseQuery(
-    { url: fullUrl, ...remainingArgs },
-    api,
-    extraOptions,
-  );
+  let result;
+
+  if (extraOptions.base) {
+    result = await rawBaseBaseQuery(
+      { url: fullUrl, ...remainingArgs },
+      api,
+      extraOptions,
+    );
+  } else {
+    result = await rawBaseQuery(
+      { url: fullUrl, ...remainingArgs },
+      api,
+      extraOptions,
+    );
+  }
 
   if (result.error) {
     if (result.error.status === 401) {
