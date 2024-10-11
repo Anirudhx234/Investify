@@ -40,6 +40,9 @@ public class Client {
     @Column(name = "age")
     private int age;
 
+    @Column(name = "income")
+    private Double income;
+
     @Column(name = "financial_goals")
     private String financialGoals;
 

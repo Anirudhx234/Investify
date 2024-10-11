@@ -6,6 +6,12 @@ spring:
       enabled: true
       max-file-size: 10MB
       max-request-size: 10MB
+  aws:
+    access-key: AKIA6JQ44NFNSDFLEEVR
+    secret-key: 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
+    s3:
+      bucket-name: investify-dev
+      region: us-east-2
   datasource:
     username: postgres
     password: postgres

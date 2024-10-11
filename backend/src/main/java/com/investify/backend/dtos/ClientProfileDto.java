@@ -14,5 +14,6 @@ public class ClientProfileDto {
     private String username;
     private String profilePicture;
     private int age;
+    private Double income;
     private String financialGoals;
 }
