@@ -20,16 +20,17 @@ public class TwelveDataController {
         return twelveDataService.getAssetData(symbol, interval);
     }
 
-    // Get all lists by calling the other APIs and returning a formatted JSON object
-    @GetMapping("/asset/lists")
-    public Mono<String> getEtfsLists() {
-        return twelveDataService.getETFsList();
-    }
-
     @GetMapping("/popular/funds")
     public Mono<String> getPopularFunds() {
         return twelveDataService.getPopularFunds();
     }
+
+    @GetMapping("/popular/etfs")
+    public Mono<String> getPopularEtfs() {
+        return twelveDataService.getPopularETFs();
+    }
+
+    // Get all lists by calling the other APIs and returning a formatted JSON object
 
     @GetMapping("/stocks/list")
     public Mono<String> getStocksList() {
