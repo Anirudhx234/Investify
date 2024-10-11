@@ -11,5 +11,5 @@ export interface LoginRequest {
 }
 
 export interface VerifyArgs {
-  token: string;
+  searchParams: string;
 }

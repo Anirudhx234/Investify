@@ -1,23 +1,24 @@
 import { SubmitHandler, useForm } from "react-hook-form";
-import { selectProfileData, setProfileData } from "../features/profileSlice";
-import useAppDispatch from "../hooks/useAppDispatch";
 import useAppSelector from "../hooks/useAppSelector";
 import { LoginRequest } from "../types/Auth";
 import { useLoginMutation } from "../api/auth";
 import { useRef } from "react";
-import { Link, Redirect } from "wouter";
+import { Link, Redirect, useLocation } from "wouter";
 import FormEmailInput from "../components/FormEmailInput";
 import FormPasswordInput from "../components/FormPasswordInput";
 import Modal from "../components/Modal";
+import useAppDispatch from "../hooks/useAppDispatch";
+import { setAuth } from "../features/authSlice";
 
 export default function LoginForm() {
-  const profileData = useAppSelector(selectProfileData);
+  const isAuthenticated = useAppSelector((state) => state.auth.isAuthenticated);
+  const [, setLocation] = useLocation();
   const dispatch = useAppDispatch();
   const form = useForm<LoginRequest>();
-  const [login, { isLoading, isSuccess, error, data }] = useLoginMutation();
+  const [login, { isLoading, isSuccess, error }] = useLoginMutation();
   const modalRef = useRef<HTMLDialogElement>(null);
 
-  if (profileData) return <Redirect to="/" />;
+  if (isAuthenticated) return <Redirect to="/" />;
 
   const errorMssg = error?.message ?? "An error occurred";
 
@@ -34,7 +35,8 @@ export default function LoginForm() {
 
   const onModalExit = () => {
     if (isSuccess) {
-      dispatch(setProfileData({ ...data }));
+      dispatch(setAuth(true));
+      setLocation("/");
     }
   };
 

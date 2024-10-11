@@ -41,7 +41,7 @@ export default function Navbar() {
         <ul className="hidden lg:flex">
           <Sitemap />
         </ul>
-        <NavProfileLink />
+        {/* <NavProfileLink /> */}
       </div>
     </nav>
   );

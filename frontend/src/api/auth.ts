@@ -1,32 +1,31 @@
 import type { LoginRequest, SignUpRequest, VerifyArgs } from "../types/Auth";
-import buildUrl from "../utils/buildUrl";
 import { api } from "./api";
 
 export const authApi = api.injectEndpoints({
   endpoints: (build) => ({
     signup: build.mutation<void, SignUpRequest>({
       query: ({ ...args }) => ({
-        url: "/signup",
+        url: "/auth/signup",
         method: "POST",
         body: args,
       }),
     }),
     login: build.mutation<void, LoginRequest>({
       query: ({ ...args }) => ({
-        url: "/login",
+        url: "/auth/login",
         method: "POST",
         body: args,
       }),
     }),
     signout: build.mutation<void, void>({
       query: () => ({
-        url: "/signout",
+        url: "/auth/signout",
         method: "POST",
       }),
     }),
     verify: build.query<void, VerifyArgs>({
-      query: ({ ...args }) => ({
-        url: buildUrl("/verify", args),
+      query: ({ searchParams }) => ({
+        url: "/auth/verify?" + searchParams,
         method: "GET",
       }),
     }),
