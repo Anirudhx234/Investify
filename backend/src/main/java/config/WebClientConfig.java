@@ -16,4 +16,9 @@ public class WebClientConfig {
     public WebClient.Builder alphaVantageWebClientBuilder() {
         return WebClient.builder();
     }
+
+    @Bean
+    public WebClient.Builder twelveDataWebClientBuilder() {
+        return WebClient.builder();
+    }
 }
