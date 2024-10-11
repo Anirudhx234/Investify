@@ -1,6 +1,5 @@
 import type { SignUpRequest } from "../types/Auth";
 import type { SubmitHandler } from "react-hook-form";
-
 import { useForm } from "react-hook-form";
 import FormConfirmPassword from "../components/FormConfirmPasswordInput";
 import FormEmailInput from "../components/FormEmailInput";
@@ -10,19 +9,17 @@ import { useSignupMutation } from "../api/auth";
 import { useRef } from "react";
 import Modal from "../components/Modal";
 import useAppSelector from "../hooks/useAppSelector";
-import { selectProfileData, setProfileData } from "../features/profileSlice";
-import { Link, Redirect } from "wouter";
-import useAppDispatch from "../hooks/useAppDispatch";
+import { Link, Redirect, useLocation } from "wouter";
 
 /* account creation form */
 export default function CreateAccountForm() {
-  const profileData = useAppSelector(selectProfileData);
-  const dispatch = useAppDispatch();
+  const isAuthenticated = useAppSelector((state) => state.auth.isAuthenticated);
+  const [, setLocation] = useLocation();
   const form = useForm<SignUpRequest>();
-  const [signup, { isLoading, isSuccess, error, data }] = useSignupMutation();
+  const [signup, { isLoading, isSuccess, error }] = useSignupMutation();
   const modalRef = useRef<HTMLDialogElement>(null);
 
-  if (profileData) return <Redirect to="/" />;
+  if (isAuthenticated) return <Redirect to="/" />;
 
   const usernameRegisterInputProps = form.register("username", {
     required: "Username is required",
@@ -42,9 +39,7 @@ export default function CreateAccountForm() {
   };
 
   const onModalExit = () => {
-    if (isSuccess) {
-      dispatch(setProfileData({ ...data }));
-    }
+    if (isSuccess) setLocation("/");
   };
 
   return (
@@ -91,7 +86,11 @@ export default function CreateAccountForm() {
         title={isSuccess ? "Success!" : "Error"}
         onExit={onModalExit}
       >
-        <p className="py-4">{isSuccess ? "Account created!" : errorMssg}</p>
+        <p className="py-4">
+          {isSuccess
+            ? "We've sent you an email. Click the verification link to activate your account!"
+            : errorMssg}
+        </p>
       </Modal>
     </div>
   );

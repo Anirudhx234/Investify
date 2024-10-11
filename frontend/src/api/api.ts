@@ -4,6 +4,5 @@ import baseQuery from "./baseQuery";
 /* API service */
 export const api = createApi({
   baseQuery,
-  tagTypes: [],
   endpoints: () => ({}),
 });

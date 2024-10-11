@@ -1,15 +1,15 @@
-import Assets from "../types/Asset";
+import Asset from "../types/Asset";
 import { api } from "./api";
 
 export const assetsApi = api.injectEndpoints({
   endpoints: (build) => ({
-    assetsList: build.query<Assets.Set, void>({
+    assetSet: build.query<Asset.Set, void>({
       query: () => ({
-        url: "/assets/list",
+        url: "/asset/set",
         method: "GET",
       }),
     }),
   }),
 });
 
-export const { useAssetsListQuery } = assetsApi;
+export const { useAssetSetQuery } = assetsApi;

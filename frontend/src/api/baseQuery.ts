@@ -5,7 +5,7 @@ import {
 } from "@reduxjs/toolkit/query";
 import type CustomBaseQuery from "../types/CustomBaseQuery";
 import buildUrl from "../utils/buildUrl";
-import { resetProfileData } from "../features/profileSlice";
+import { setAuth } from "../features/authSlice";
 
 const rawBaseQuery = fetchBaseQuery({ baseUrl: "http://localhost:8080/api" });
 
@@ -28,7 +28,7 @@ const baseQuery: BaseQueryFn<
   if (result.error) {
     if (result.error.status === 401) {
       alert("You have been logged out");
-      api.dispatch(resetProfileData());
+      api.dispatch(setAuth(false));
       retry.fail(result.error);
     }
 

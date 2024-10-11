@@ -1,3 +1,3 @@
 export default function AssetPageRoute() {
-  return <>Page</>;
+  return <>Asset Page</>;
 }

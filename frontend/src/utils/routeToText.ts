@@ -1,5 +1,5 @@
 export default function routeToText(route: string) {
-  const sections = route.split("/");
-  if (sections[0]) return sections[0].replace("-", " ");
-  return sections[1].replace("-", " ");
+  const routeSegments = route.split("/");
+  if (routeSegments[0]) return routeSegments[0].replace("-", " ");
+  return routeSegments[1].replace("-", " ");
 }

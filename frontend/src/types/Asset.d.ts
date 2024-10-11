@@ -1,15 +1,14 @@
-declare namespace Assets {
-  type AssetType = "stocks" | "mutual-funds" | "bonds" | "crypto";
+declare namespace Asset {
+  type Type = "stocks" | "mutual-funds" | "etfs" | "crypto";
 
   interface Asset {
-    type: AssetType;
+    type: Type;
     symbol: string;
     name: string;
   }
 
   interface Stock extends Asset {
     ticker: string;
-    price: number;
     change_amount: number;
     change_percentage: number;
     volume: number;
@@ -25,10 +24,10 @@ declare namespace Assets {
     mic_code: string;
   }
 
-  type Bonds = Asset;
+  type ETF = Asset;
   type Crypto = Asset;
 
-  type Set = Record<AssetType, Asset[]>;
+  type Set = Record<Type, Asset[]>;
 }
 
-export default Assets;
+export default Asset;

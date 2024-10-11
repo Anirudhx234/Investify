@@ -10,6 +10,7 @@ export default function useDrawer(): DrawerState {
   if (location.startsWith("/assets/asset-page"))
     return { mode: "open-enabled" };
   if (location.startsWith("/assets")) return { mode: "disabled" };
+  if (location.startsWith("/not-found")) return { mode: "disabled" };
 
   return { mode: "enabled" };
 }

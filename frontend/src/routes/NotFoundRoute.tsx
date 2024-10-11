@@ -1,3 +1,3 @@
 export default function NotFoundRoute() {
-  return <>Not Found 404</>;
+  return <h1 className="text-xl font-bold">Not Found 404</h1>;
 }
