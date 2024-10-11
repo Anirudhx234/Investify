@@ -34,7 +34,7 @@ public class Client {
     @Column(name = "verified", nullable = false)
     private boolean verified;
 
-    @Column(name = "profile_picture")
+    @Column(name = "profile_picture", columnDefinition = "TEXT")
     private String profilePicture;
 
     @Column(name = "age")

@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.web.multipart.MultipartFile;
 
 @Data
 @AllArgsConstructor
@@ -12,7 +13,7 @@ import lombok.NoArgsConstructor;
 public class ModifyProfileDto {
     private String username;
     private String password;
-    private String profilePicture;
+    private MultipartFile profilePicture;
     private int age;
     private String financialGoals;
 }
