@@ -5,10 +5,12 @@ import com.investify.backend.dtos.*;
 import com.investify.backend.mappers.ClientMapper;
 import com.investify.backend.services.ClientService;
 import com.investify.backend.services.EmailService;
+import com.investify.backend.utils.Utils;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -25,49 +27,46 @@ import java.util.UUID;
 @RequestMapping("/api/auth")
 public class AuthController {
 
+    @Value("${spring.frontend.url}")
+    private String frontendURL;
+
     private final ClientService clientService;
     private final ClientAuthenticationProvider clientAuthenticationProvider;
     private final ClientMapper clientMapper;
     private final EmailService emailService; // Inject EmailService for sending emails
 
     @PostMapping("/login")
-    public ResponseEntity<ClientResponseDto> login(
+    public ResponseEntity<ClientProfileDto> login(
             @RequestBody @Valid CredentialsDto credentialsDto,
             HttpServletResponse response) {
 
-        ClientDto clientDto = clientService.login(credentialsDto);
-        String token = clientAuthenticationProvider.createToken(clientDto.getEmail());
+        ClientProfileDto clientProfileDto = clientService.login(credentialsDto);
+        String token = clientAuthenticationProvider.createToken(clientProfileDto.getEmail());
 
-        Cookie jwtCookie = generateJWTCookie("jwt", token);
+        Cookie jwtCookie = Utils.generateJWTCookie("jwt", token);
         response.addCookie(jwtCookie);
 
-        ClientResponseDto clientResponseDto = clientMapper.toClientResponseDto(clientDto);
-        return ResponseEntity.ok(clientResponseDto);
+        return ResponseEntity.ok(clientProfileDto);
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<ClientResponseDto> register(
+    public ResponseEntity<ClientProfileDto> register(
             @RequestBody @Valid SignUpDto client,
             HttpServletResponse response) {
 
         ClientDto createdClient = clientService.register(client);
 
-        // Generate a verification token
         String verificationToken = UUID.randomUUID().toString();
-
-        // Send the verification email
-        String verificationLink = "http://localhost:3000/verify?token=" + verificationToken;
+        String verificationLink = frontendURL + "/verify-email?token=" + verificationToken;
         emailService.sendVerificationEmail(createdClient.getEmail(), verificationLink);
 
-        // Save the verification token in the database (you will need to implement this)
         clientService.saveVerificationToken(createdClient.getEmail(), verificationToken);
 
-        ClientResponseDto clientResponseDto = clientMapper.toClientResponseDto(createdClient);
-        return ResponseEntity.created(URI.create("/clients/" + clientResponseDto.getId()))
-                .body(clientResponseDto);
+        ClientProfileDto clientProfileDto = clientMapper.toClientProfileDto(createdClient);
+        return ResponseEntity.ok(clientProfileDto);
     }
 
-    @GetMapping("/verify")
+    @GetMapping("/verify-email")
     public ResponseEntity<MessageDto> verifyEmail(@RequestParam("token") String token) {
         boolean isVerified = clientService.verifyUser(token);
 
@@ -76,6 +75,22 @@ public class AuthController {
         } else {
             return ResponseEntity.badRequest().body(new MessageDto("Invalid or expired verification token."));
         }
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<MessageDto> resetPassword(
+            @RequestBody @Valid ResetPasswordDto resetPasswordDto,
+            HttpServletResponse response) {
+
+        ClientProfileDto clientProfileDto = clientService.findByEmail(resetPasswordDto.getEmail());
+
+        String verificationToken = UUID.randomUUID().toString();
+        String resetPasswordLink = frontendURL + "/reset-password?token=" + verificationToken;
+        emailService.sendResetPasswordEmail(clientProfileDto.getEmail(), resetPasswordLink);
+
+        clientService.saveVerificationToken(clientProfileDto.getEmail(), verificationToken);
+
+        return ResponseEntity.ok(new MessageDto("Reset password email sent."));
     }
 
     public static Cookie generateJWTCookie(String cookieName, String token) {

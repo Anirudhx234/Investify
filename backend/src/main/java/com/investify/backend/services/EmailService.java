@@ -27,4 +27,34 @@ public class EmailService {
             throw new IllegalStateException("Failed to send verification email", e);
         }
     }
+
+    public void sendResetPasswordEmail(String to, String resetPasswordLink) {
+        try {
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true);
+            helper.setTo(to);
+            helper.setSubject("Reset Password");
+            helper.setText("<p>Please click the following link to reset your password:</p>" +
+                    "<a href=\"" + resetPasswordLink + "\">Reset Password</a>", true);
+
+            mailSender.send(message);
+        } catch (MessagingException e) {
+            throw new IllegalStateException("Failed to send reset password email", e);
+        }
+    }
+
+    public void sendVerificationEmailForNewEmail(String to, String verificationLink) {
+        try {
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true);
+            helper.setTo(to);
+            helper.setSubject("Email Verification");
+            helper.setText("<p>Please click the following link to modify your profile's email address:</p>" +
+                    "<a href=\"" + verificationLink + "\">Verify Email</a>", true);
+
+            mailSender.send(message);
+        } catch (MessagingException e) {
+            throw new IllegalStateException("Failed to send verification email", e);
+        }
+    }
 }
