@@ -63,6 +63,10 @@ export default function LoginForm() {
           disabled={isLoading}
         />
 
+        <Link href="/forgot-password" className="link link-accent text-center">
+          Forgot Password?
+        </Link>
+
         <button className="btn btn-secondary mt-4" disabled={isLoading}>
           {isLoading && <span className="loading loading-spinner"></span>}
           Submit

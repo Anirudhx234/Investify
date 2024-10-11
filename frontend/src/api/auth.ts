@@ -1,4 +1,4 @@
-import type { LoginRequest, SignUpRequest, VerifyArgs } from "../types/Auth";
+import { type LoginRequest, type SignUpRequest, type VerifyArgs } from "../types/Auth";
 import { api } from "./api";
 
 export const authApi = api.injectEndpoints({
@@ -30,6 +30,13 @@ export const authApi = api.injectEndpoints({
         method: "GET",
       }),
     }),
+    forgotPassword: build.mutation<void, { email: string }>({
+      query: ({ ...args }) => ({
+        url: "/auth/reset-password",
+        method: "POST",
+        body: args,
+      }),
+    }),
   }),
 });
 
@@ -38,4 +45,5 @@ export const {
   useLoginMutation,
   useLogoutMutation,
   useVerifyQuery,
+  useForgotPasswordMutation
 } = authApi;

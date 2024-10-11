@@ -13,3 +13,8 @@ export interface LoginRequest {
 export interface VerifyArgs {
   searchParams: string;
 }
+
+export interface ResetPasswordRequest {
+  password: string;
+  confirmPassword: string;
+}

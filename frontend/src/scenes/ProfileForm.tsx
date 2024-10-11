@@ -73,6 +73,7 @@ export default function Profile() {
   });
 
   const ageRegisterInputProps = form.register("age");
+  const incomeInputProps = form.register("income");
   const financialGoalsRegisterInputProps = form.register("financialGoals");
 
   const onSubmit: SubmitHandler<ModifyProfileForm> = async (data) => {
@@ -80,6 +81,7 @@ export default function Profile() {
 
     if (data.username) formData.set("username", data.username);
     if (data.age) formData.set("age", `${data.age}`);
+    if (data.income) formData.set("income", `${data.income}`);
     if (data.financialGoals)
       formData.set("financialGoals", data.financialGoals);
 
@@ -103,7 +105,7 @@ export default function Profile() {
       /* empty */
     }
 
-    dispatch(setAuth(false));
+    logoutDeleteModalRef.current?.showModal()
   };
 
   const handleDeleteAccount: MouseEventHandler = async (e) => {
@@ -114,7 +116,7 @@ export default function Profile() {
       /* empty */
     }
 
-    dispatch(setAuth(false));
+    logoutDeleteModalRef.current?.showModal()
   };
 
   useEffect(() => {
@@ -171,6 +173,14 @@ export default function Profile() {
             disabled={isBuffering}
           />
 
+          <FormNumInput
+            name="income"
+            labelText="Income"
+            registerInputProps={incomeInputProps}
+            errors={form.formState.errors}
+            disabled={isBuffering}
+          />
+
           <FormTextInput
             name="financialGoals"
             labelText="Financial Goals"
@@ -213,6 +223,7 @@ export default function Profile() {
       <Modal
         ref={logoutDeleteModalRef}
         title={logoutIsSuccess || deleteAccountIsSuccess ? "Success!" : "Error"}
+        onExit={() => dispatch(setAuth(false))}
       >
         <p className="py-4">
           {logoutIsSuccess || deleteAccountIsSuccess

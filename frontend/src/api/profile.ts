@@ -1,4 +1,4 @@
-import { VerifyArgs } from "../types/Auth";
+import { ResetPasswordRequest, VerifyArgs } from "../types/Auth";
 import { ProfileResponse } from "../types/Profile";
 import { api } from "./api";
 
@@ -41,6 +41,15 @@ export const profileApi = api.injectEndpoints({
       }),
       invalidatesTags: ["Profile"],
     }),
+    resetPassword: build.mutation<void, VerifyArgs & ResetPasswordRequest>({
+      query: ({ searchParams, ...args }) => ({
+        url: "/clients/reset-password?" + searchParams,
+        method: "PATCH",
+        body: {
+          newPassword: args.password,
+        },
+      }),
+    }),
   }),
 });
 
@@ -49,5 +58,6 @@ export const {
   useModifyEmailMutation,
   useVerifyNewEmailMutation,
   useModifyProfileMutation,
-  useDeleteAccountMutation
+  useDeleteAccountMutation,
+  useResetPasswordMutation,
 } = profileApi;

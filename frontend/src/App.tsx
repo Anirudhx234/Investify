@@ -12,6 +12,8 @@ import LoginRoute from "./routes/LoginRoute";
 import ProfileRoute from "./routes/ProfileRoute";
 import VerifyAccountRoute from "./routes/VerifyAccountRoute";
 import VerifyNewEmailRoute from "./routes/VerifyNewEmailRoute";
+import ForgotPasswordRoute from "./routes/ForgotPasswordRoute";
+import ResetPasswordRoute from "./routes/ResetPasswordRoute";
 
 export default function App() {
   useTheme();
@@ -37,6 +39,8 @@ export default function App() {
             <Route path="/home" component={HomeRoute} />
             <Route path="/profile" component={ProfileRoute} />
             <Route path="/verify-new-email" component={VerifyNewEmailRoute} />
+            <Route path="/forgot-password" component={ForgotPasswordRoute} />
+            <Route path="/reset-password" component={ResetPasswordRoute} />
             {/* <Route path="/assets" component={AssetsRoute} nest /> */}
             <Route path="/" component={() => <Redirect to="/home" replace />} />
             <Route component={NotFoundRoute} />
