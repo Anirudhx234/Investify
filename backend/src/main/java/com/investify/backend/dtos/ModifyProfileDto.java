@@ -15,5 +15,6 @@ public class ModifyProfileDto {
     private String password;
     private MultipartFile profilePicture;
     private int age;
+    private Double income;
     private String financialGoals;
 }

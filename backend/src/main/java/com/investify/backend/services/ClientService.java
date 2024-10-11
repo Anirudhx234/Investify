@@ -6,6 +6,7 @@ import com.investify.backend.exceptions.RestException;
 import com.investify.backend.mappers.ClientMapper;
 import com.investify.backend.repositories.ClientRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -26,6 +27,9 @@ public class ClientService {
     private final PasswordEncoder passwordEncoder;
 
     private final ClientMapper clientMapper;
+
+    @Autowired
+    S3Service s3Service;
 
     public ClientProfileDto login(CredentialsDto credentialsDto) {
         Client client = clientRepository.findByEmail(credentialsDto.getEmail())
@@ -95,18 +99,20 @@ public class ClientService {
         }
 
         if (modifyProfileDto.getProfilePicture() != null) {
-            MultipartFile profilePicture = modifyProfileDto.getProfilePicture();
             try {
-                byte[] pictureBytes = profilePicture.getBytes();
-                String base64ProfilePicture = Base64.getEncoder().encodeToString(pictureBytes);
-                client.setProfilePicture(base64ProfilePicture);
+                String s3FilePath = s3Service.uploadFile(modifyProfileDto.getProfilePicture());
+                client.setProfilePicture(s3FilePath);
             } catch (IOException e) {
-                throw new RestException("Failed to process profile picture", HttpStatus.INTERNAL_SERVER_ERROR);
+                throw new RuntimeException(e);
             }
         }
 
         if (modifyProfileDto.getAge() > 0) {
             client.setAge(modifyProfileDto.getAge());
+        }
+
+        if (modifyProfileDto.getIncome() != null && modifyProfileDto.getIncome() > 0.0) {
+            client.setIncome(modifyProfileDto.getIncome());
         }
 
         if (modifyProfileDto.getFinancialGoals() != null) {
