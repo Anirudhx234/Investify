@@ -37,13 +37,13 @@ public class AlphaVantageController {
                 .map(this::transformLosersResponse);
     }
 
-    private String transformPopularResponse(String jsonResponse) {
+    public String transformPopularResponse(String jsonResponse) {
         try {
             ObjectMapper objectMapper = new ObjectMapper();
 
             // Parse the JSON response
             JsonNode root = objectMapper.readTree(jsonResponse);
-            JsonNode list = root.path("result").path("most_actively_traded");
+            JsonNode list = root.path("most_actively_traded");
 
             // Create the new structure
             ArrayNode assetsList = objectMapper.createArrayNode();
@@ -70,13 +70,13 @@ public class AlphaVantageController {
         }
     }
 
-    private String transformLosersResponse(String jsonResponse) {
+    public String transformLosersResponse(String jsonResponse) {
         try {
             ObjectMapper objectMapper = new ObjectMapper();
 
             // Parse the JSON response
             JsonNode root = objectMapper.readTree(jsonResponse);
-            JsonNode list = root.path("result").path("top_losers");
+            JsonNode list = root.path("top_losers");
 
             // Create the new structure
             ArrayNode assetsList = objectMapper.createArrayNode();
@@ -103,13 +103,13 @@ public class AlphaVantageController {
         }
     }
 
-    private String transformGainersResponse(String jsonResponse) {
+    public String transformGainersResponse(String jsonResponse) {
         try {
             ObjectMapper objectMapper = new ObjectMapper();
 
             // Parse the JSON response
             JsonNode root = objectMapper.readTree(jsonResponse);
-            JsonNode list = root.path("result").path("top_gainers");
+            JsonNode list = root.path("top_gainers");
 
             // Create the new structure
             ArrayNode assetsList = objectMapper.createArrayNode();
