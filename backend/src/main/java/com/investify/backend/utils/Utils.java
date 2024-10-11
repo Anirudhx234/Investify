@@ -13,4 +13,14 @@ public class Utils {
 
         return jwtCookie;
     }
+
+    public static Cookie removeJWTCookie(String cookieName) {
+        Cookie jwtCookie = new Cookie(cookieName, null);
+        jwtCookie.setHttpOnly(true);
+        jwtCookie.setSecure(false);
+        jwtCookie.setPath("/");
+        jwtCookie.setMaxAge(0);
+
+        return jwtCookie;
+    }
 }
