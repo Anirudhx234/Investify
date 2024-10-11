@@ -31,10 +31,15 @@ public class ClientService {
                 .orElseThrow(() -> new RestException("Unknown client", HttpStatus.NOT_FOUND));
 
         if (passwordEncoder.matches(CharBuffer.wrap(credentialsDto.getPassword()), client.getPassword())) {
+            if (!client.isVerified()) {
+                throw new RestException("Email not verified. Please check your email for verification.", HttpStatus.FORBIDDEN);
+            }
             return clientMapper.toClientDto(client);
         }
+
         throw new RestException("Invalid password", HttpStatus.BAD_REQUEST);
     }
+
 
     public ClientDto register(SignUpDto clientDto) {
         Optional<Client> optionalClient = clientRepository.findByEmail(clientDto.getEmail());
@@ -50,6 +55,30 @@ public class ClientService {
 
         return clientMapper.toClientDto(savedClient);
     }
+
+    public void saveVerificationToken(String email, String token) {
+        Optional<Client> clientOpt = clientRepository.findByEmail(email);
+        if (clientOpt.isPresent()) {
+            Client client = clientOpt.get();
+            client.setVerificationToken(token);  // Save the token in the client's entity
+            clientRepository.save(client);
+        }
+    }
+
+    public boolean verifyUser(String token) {
+        Optional<Client> clientOpt = clientRepository.findByVerificationToken(token);
+
+        if (clientOpt.isPresent()) {
+            Client client = clientOpt.get();
+            client.setVerified(true);  // Set the 'verified' flag to true
+            client.setVerificationToken(null);  // Clear the verification token after success
+            clientRepository.save(client);
+            return true;
+        }
+
+        return false;  // Token is invalid or user not found
+    }
+
 
     public ClientDto findByEmail(String email) {
         Client client = clientRepository.findByEmail(email)

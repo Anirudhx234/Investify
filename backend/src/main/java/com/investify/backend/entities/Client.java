@@ -30,4 +30,10 @@ public class Client {
     @Column(name = "password", nullable = false)
     @Size(max = 100)
     private String password;
+
+    @Column(name = "verified", nullable = false)
+    private boolean verified;
+
+    @Column(name = "verification_token")
+    private String verificationToken;  // Add this field to store the verification token
 }

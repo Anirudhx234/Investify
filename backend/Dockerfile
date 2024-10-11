@@ -6,6 +6,7 @@ WORKDIR /app
 
 # Copy the pom.xml and the source code
 COPY pom.xml .
+COPY src/main/resources/application.yml application.yml
 COPY src ./src
 
 # Package the application
