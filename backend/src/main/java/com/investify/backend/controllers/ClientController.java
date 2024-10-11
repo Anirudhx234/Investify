@@ -40,7 +40,7 @@ public class ClientController {
         return ResponseEntity.ok(clientProfileDto);
     }
 
-    @PostMapping("/modify-profile")
+    @PatchMapping("/profile")
     public ResponseEntity<MessageDto> modifyProfile(
             @ModelAttribute ModifyProfileDto modifyProfileDto, HttpServletResponse response) {
 
@@ -55,7 +55,7 @@ public class ClientController {
         return ResponseEntity.ok(new MessageDto("Profile successfully modified."));
     }
 
-    @PostMapping("/modify-password")
+    @PatchMapping("/password")
     public ResponseEntity<ClientProfileDto> modifyPassword(
             @RequestBody @Valid ModifyPasswordDto changePasswordDto,
             @RequestParam("token") String token) {
@@ -66,7 +66,7 @@ public class ClientController {
     }
 
     @PatchMapping("/verify-email")
-    public ResponseEntity<ClientProfileDto> modifyEmail(
+    public ResponseEntity<ClientProfileDto> verifyEmail(
             @RequestParam("newEmail") String newEmail, HttpServletResponse response) {
 
         ClientProfileDto clientProfileDto = (ClientProfileDto) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -80,8 +80,8 @@ public class ClientController {
         return ResponseEntity.ok(modifiedClientProfileDto);
     }
 
-    @PostMapping("/modify-email")
-    public ResponseEntity<MessageDto> resetPassword(
+    @PatchMapping("/email")
+    public ResponseEntity<MessageDto> modifyEmail(
             @RequestBody @Valid ModifyEmailDto modifyEmailDto,
             HttpServletResponse response) {
 
