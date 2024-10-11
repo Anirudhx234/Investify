@@ -10,8 +10,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.nio.CharBuffer;
+import java.util.Base64;
 import java.util.Optional;
 
 @RequiredArgsConstructor
@@ -92,8 +95,14 @@ public class ClientService {
         }
 
         if (modifyProfileDto.getProfilePicture() != null) {
-            // Save or process the profile picture, then update the client entity
-            client.setProfilePicture(modifyProfileDto.getProfilePicture());
+            MultipartFile profilePicture = modifyProfileDto.getProfilePicture();
+            try {
+                byte[] pictureBytes = profilePicture.getBytes();
+                String base64ProfilePicture = Base64.getEncoder().encodeToString(pictureBytes);
+                client.setProfilePicture(base64ProfilePicture);
+            } catch (IOException e) {
+                throw new RestException("Failed to process profile picture", HttpStatus.INTERNAL_SERVER_ERROR);
+            }
         }
 
         if (modifyProfileDto.getAge() > 0) {
