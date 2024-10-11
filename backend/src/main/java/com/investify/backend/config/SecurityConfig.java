@@ -28,7 +28,9 @@ public class SecurityConfig {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeHttpRequests((requests) -> requests
-                        .requestMatchers(HttpMethod.POST, "/api/login", "/api/signup").permitAll()
+                        // Allow access to signup, login, and verification without authentication
+                        .requestMatchers(HttpMethod.POST, "/api/auth/login", "/api/auth/signup").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/auth/verify").permitAll() // Allow GET request to /verify
                         .anyRequest().authenticated())
         ;
         return http.build();

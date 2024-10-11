@@ -14,10 +14,6 @@ services:
   backend:
     build: .
     container_name: investify-backend
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/investify_db
-      SPRING_DATASOURCE_USERNAME: postgres
-      SPRING_DATASOURCE_PASSWORD: postgres
     depends_on:
       - db
     ports:
