@@ -1,11 +1,27 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
+import "./styles/index.css";
 
-import App from "./App";
+import { Provider } from "react-redux";
+import { PersistGate } from "redux-persist/integration/react";
+import { persistor, store } from "./app/store";
+import LoadingPage from "./pages/LoadingPage";
+import { IconContext } from "react-icons";
+import { Router } from "wouter";
+
+import App from "./app/App";
 
 /* render providers, app component */
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <App />
+    <Provider store={store}>
+      <PersistGate loading={<LoadingPage />} persistor={persistor}>
+        <IconContext.Provider value={{}}>
+          <Router>
+            <App />
+          </Router>
+        </IconContext.Provider>
+      </PersistGate>
+    </Provider>
   </StrictMode>,
 );

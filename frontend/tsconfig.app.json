@@ -4,7 +4,7 @@
     "useDefineForClassFields": true,
     "lib": ["ES2020", "DOM", "DOM.Iterable"],
     "module": "ESNext",
-    "types": ["vitest/globals"],
+    "types": ["vitest/globals", "./node_modules/redux-persist/types"],
 
     /* Bundler mode */
     "moduleResolution": "bundler",
