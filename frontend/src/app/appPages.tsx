@@ -1,9 +1,10 @@
-import type { AppRouteArgs } from "../types/AppRoute";
+import type { AppPage } from "../types/AppRouter";
 import CreateAccountForm from "../forms/CreateAccountForm";
 import LoginForm from "../forms/LoginForm";
+import NotFoundPage from "../pages/NotFoundPage";
 
 /* list of top-level routes for the app */
-const appRoutes: AppRouteArgs[] = [
+export const appPages: AppPage[] = [
   {
     path: "/sign-up",
     component: <CreateAccountForm />,
@@ -16,6 +17,11 @@ const appRoutes: AppRouteArgs[] = [
     routeArgs: { type: "form" },
     label: "Sign Up",
   },
+  {
+    path: "*",
+    component: <NotFoundPage />,
+    routeArgs: { type: "page" },
+  },
 ];
 
-export default appRoutes;
+export default appPages;

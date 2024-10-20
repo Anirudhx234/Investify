@@ -3,20 +3,20 @@ import { persistStore, persistCombineReducers, PERSIST } from "redux-persist";
 import { configureStore } from "@reduxjs/toolkit";
 
 import themeReducer from "../features/themeSlice";
-import drawerReducer from "../features/drawerSlice";
+import appRouteReducer from "../features/appRouteSlice";
 import api from "../api/api";
 
 /* local storage based persist config */
 const persistConfig = {
   key: "root",
   storage,
-  blacklist: ["drawer"],
+  blacklist: ["appRoute"],
 };
 
 /* local storage persisted reducer */
 const persistedReducer = persistCombineReducers(persistConfig, {
   theme: themeReducer,
-  drawer: drawerReducer,
+  appRoute: appRouteReducer,
   [api.reducerPath]: api.reducer,
 });
 

@@ -1,42 +1,55 @@
-import type { AppRouteArgs } from "../types/AppRoute";
+import type { AppPage } from "../types/AppRouter";
+
 import { Redirect, Route, Switch } from "wouter";
-import appRoutes from "./appRoutes";
-import useDrawer from "../hooks/useDrawer";
+import appPages from "./appPages";
 import VerificationPage from "../pages/VerificationPage";
+import { useEffect } from "react";
+import useAppDispatch from "../hooks/useAppDispatch";
+import { setAppRouteArgs } from "../features/appRouteSlice";
 
 /* component for rendering top-level routes in the app */
 export default function AppRouter() {
   return (
     <Switch>
       <>
-        {appRoutes.map((appRoute) => (
-          <AppRoute key={appRoute.path} {...appRoute} />
+        {appPages.map((appPage) => (
+          <AppPage key={appPage.path} {...appPage} />
         ))}
       </>
     </Switch>
   );
 }
 
-function AppRoute({ ...appRoute }: AppRouteArgs) {
+function AppPage({ ...appPage }: AppPage) {
   return (
     <Route
-      path={appRoute.path}
-      nest={appRoute.nest}
-      component={() => <AppRouteComponent {...appRoute} />}
+      path={appPage.path}
+      nest={appPage.nest}
+      component={() => <AppPageComponent {...appPage} />}
     />
   );
 }
 
-function AppRouteComponent({ ...appRoute }: AppRouteArgs) {
-  useDrawer(appRoute.drawerMode ?? "disabled");
+function AppPageComponent({ ...appPage }: AppPage) {
+  const dispatch = useAppDispatch();
 
-  if (appRoute.routeArgs.type === "redirection") {
-    return <Redirect to={appRoute.routeArgs.path} />;
+  useEffect(() => {
+    const appRoute = { ...appPage, component: undefined };
+
+    dispatch(setAppRouteArgs(appRoute));
+
+    return () => {
+      dispatch(setAppRouteArgs(null));
+    };
+  }, [dispatch, appPage]);
+
+  if (appPage.routeArgs.type === "redirection") {
+    return <Redirect to={appPage.routeArgs.path} />;
   }
 
-  if (appRoute.routeArgs.type === "verification") {
-    return <VerificationPage {...appRoute.routeArgs} />;
+  if (appPage.routeArgs.type === "verification") {
+    return <VerificationPage {...appPage.routeArgs} />;
   }
 
-  return appRoute.component;
+  return appPage.component;
 }
