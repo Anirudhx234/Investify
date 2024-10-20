@@ -5,7 +5,7 @@ interface ChartComponentProps {
 import { createChart } from 'lightweight-charts';
 import { useEffect, useRef } from 'react';
 
-export const ChartComponent = ({ data }: ChartComponentProps) => {
+export const LineChartComponent = ({ data }: ChartComponentProps) => {
     const chartContainerRef = useRef<HTMLDivElement>(null);
     const chartRef = useRef<ReturnType<typeof createChart> | null>(null);  // Update type to remove 'any'
 
@@ -88,6 +88,6 @@ const initialData = [
 
 export function LineChart() {
     return <div className={"w-full h-full"}>
-        <ChartComponent data={initialData} />
+        <LineChartComponent data={initialData} />
     </div>;
 }
