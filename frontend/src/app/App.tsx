@@ -1,3 +1,11 @@
+import useAppSelector from "../hooks/useAppSelector";
+import { useEffect } from "react";
+
 export default function App() {
-  return <>Hello, World!</>;
+  const themeMode = useAppSelector((state) => state.theme.mode);
+  useEffect(() => {
+    document.documentElement.dataset.theme = themeMode;
+  }, [themeMode]);
+
+  return <>Hello World!</>;
 }

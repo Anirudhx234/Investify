@@ -1,17 +1,22 @@
 import storage from "redux-persist/lib/storage";
-import { persistCombineReducers } from "redux-persist";
+import { persistStore, persistCombineReducers, PERSIST } from "redux-persist";
 import { configureStore } from "@reduxjs/toolkit";
+
+import themeReducer from "../features/themeSlice";
+import drawerReducer from "../features/drawerSlice";
 import api from "../api/api";
-import persistStore from "redux-persist/es/persistStore";
 
 /* local storage based persist config */
 const persistConfig = {
   key: "root",
   storage,
+  blacklist: ["drawer"],
 };
 
 /* local storage persisted reducer */
 const persistedReducer = persistCombineReducers(persistConfig, {
+  theme: themeReducer,
+  drawer: drawerReducer,
   [api.reducerPath]: api.reducer,
 });
 
@@ -19,7 +24,11 @@ const persistedReducer = persistCombineReducers(persistConfig, {
 export const store = configureStore({
   reducer: persistedReducer,
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat(api.middleware),
+    getDefaultMiddleware({
+      serializableCheck: {
+        ignoredActions: [PERSIST],
+      },
+    }).concat(api.middleware),
 });
 
 /* store persistor */
