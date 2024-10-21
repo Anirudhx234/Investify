@@ -33,6 +33,8 @@ function AppPageComponent({ ...appPage }: AppPage) {
   const dispatch = useAppDispatch();
   const auth = useAppSelector((state) => state.client.id !== null);
 
+  console.log(appPage);
+
   useEffect(() => {
     const appRoute = { ...appPage, component: undefined };
 
@@ -44,15 +46,15 @@ function AppPageComponent({ ...appPage }: AppPage) {
   }, [dispatch, appPage]);
 
   if (appPage.protection === "signed-in" && !auth) {
-    return <Redirect to="/" />;
+    return <Redirect to="/" replace />;
   }
 
   if (appPage.protection === "signed-out" && auth) {
-    return <Redirect to="/" />;
+    return <Redirect to="/" replace />;
   }
 
   if (appPage.routeArgs.type === "redirection") {
-    return <Redirect to={appPage.routeArgs.path} />;
+    return <Redirect to={appPage.routeArgs.path} replace />;
   }
 
   if (appPage.routeArgs.type === "verification") {

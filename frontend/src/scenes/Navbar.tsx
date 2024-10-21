@@ -43,6 +43,7 @@ function DrawerMenu() {
       htmlFor="drawer"
       className={twMerge(
         "btn btn-square btn-ghost drawer-button ~text-lg/xl",
+        !drawerMode && "hidden",
         drawerMode === "disabled" && "hidden",
         drawerMode === "open" && "lg:hidden",
       )}

@@ -3,7 +3,7 @@ declare namespace Verify {
   interface Args {
     url: string;
     method: "GET" | "PATCH";
-    searchParams?: string | object | undefined;
+    searchParams?: string | undefined;
   }
 
   interface Response {

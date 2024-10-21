@@ -13,11 +13,19 @@ export const appPages: AppPage[] = [
     protection: "signed-out",
   },
   {
+    path: "/verify-email",
+    routeArgs: { type: "verification", method: "PATCH", url: "/verify-email" },
+  },
+  {
     path: "/login",
     component: <LoginForm />,
     routeArgs: { type: "form" },
     label: "Login",
     protection: "signed-out",
+  },
+  {
+    path: "/",
+    routeArgs: { type: "redirection", path: "/home" },
   },
   {
     path: "*",

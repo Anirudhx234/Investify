@@ -30,6 +30,16 @@ const authApi = api.injectEndpoints({
         body: args,
       }),
     }),
+    resetPassword: build.mutation<
+      void,
+      { searchParams?: string | undefined; newPassword: string }
+    >({
+      query: ({ newPassword, searchParams }) => ({
+        url: "/auth/reset-password?" + (searchParams ?? ""),
+        method: "PATCH",
+        body: { newPassword },
+      }),
+    }),
   }),
 });
 
@@ -38,4 +48,5 @@ export const {
   useLoginMutation,
   useLogoutMutation,
   useForgotPasswordMutation,
+  useResetPasswordMutation,
 } = authApi;

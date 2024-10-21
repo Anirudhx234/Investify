@@ -6,7 +6,7 @@ export interface PageArgs {
 
 export interface VerificationArgs {
   type: "verification";
-  method: "GET" | "PATCH";
+  method: "PATCH";
   url: string;
 }
 
@@ -38,5 +38,5 @@ export interface AppRouteArgs {
 }
 
 export interface AppPage extends AppRouteArgs {
-  component: ReactNode;
+  component?: ReactNode | undefined;
 }
