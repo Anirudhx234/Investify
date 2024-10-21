@@ -10,6 +10,7 @@ import { IconContext } from "react-icons";
 import { Router } from "wouter";
 
 import App from "./app/App";
+import ThemeManager from "./app/ThemeManager";
 
 /* render providers, app component */
 createRoot(document.getElementById("root")!).render(
@@ -19,6 +20,7 @@ createRoot(document.getElementById("root")!).render(
         <IconContext.Provider value={{}}>
           <Router>
             <App />
+            <ThemeManager />
           </Router>
         </IconContext.Provider>
       </PersistGate>

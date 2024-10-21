@@ -33,8 +33,6 @@ function AppPageComponent({ ...appPage }: AppPage) {
   const dispatch = useAppDispatch();
   const auth = useAppSelector((state) => state.client.id !== null);
 
-  console.log(appPage);
-
   useEffect(() => {
     const appRoute = { ...appPage, component: undefined };
 

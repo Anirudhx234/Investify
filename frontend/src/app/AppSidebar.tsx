@@ -1,5 +1,11 @@
+import { Route, Switch } from "wouter";
 import Logo from "../components/Logo";
 import useAppSelector from "../hooks/useAppSelector";
+import ClientsSidebar from "../scenes/ClientsSidebar";
+
+const sidebarRoutes = {
+  "/clients/:id": { component: ClientsSidebar, nest: true },
+};
 
 export default function AppSidebar() {
   const drawerMode = useAppSelector((state) => state.appRoute.args?.drawerMode);
@@ -12,7 +18,11 @@ export default function AppSidebar() {
         </div>
       )}
       <div className="h-4"></div>
-      <ul className="menu px-4 py-0"></ul>
+      <Switch>
+        {Object.entries(sidebarRoutes).map(([key, value]) => (
+          <Route key={key} path={key} {...value} />
+        ))}
+      </Switch>
     </aside>
   );
 }

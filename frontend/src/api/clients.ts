@@ -9,6 +9,7 @@ const clientsApi = api.injectEndpoints({
         url: "/clients/" + id,
         method: "GET",
       }),
+      providesTags: (_res, _err, args) => [{ type: "clients", id: args.id }],
     }),
     modifyEmail: build.mutation<void, { id: string; newEmail: string }>({
       query: ({ id, newEmail }) => ({
@@ -16,6 +17,7 @@ const clientsApi = api.injectEndpoints({
         method: "PATCH",
         body: { newEmail },
       }),
+      invalidatesTags: (_res, _err, args) => [{ type: "clients", id: args.id }],
     }),
     modifyPassword: build.mutation<void, { id: string; newPassword: string }>({
       query: ({ id, newPassword }) => ({
@@ -30,12 +32,14 @@ const clientsApi = api.injectEndpoints({
         method: "PATCH",
         body: formData,
       }),
+      invalidatesTags: (_res, _err, args) => [{ type: "clients", id: args.id }],
     }),
     deleteProfile: build.mutation<void, { id: string }>({
       query: ({ id }) => ({
         url: "/clients/" + id,
         method: "DELETE",
       }),
+      invalidatesTags: (_res, _err, args) => [{ type: "clients", id: args.id }],
     }),
   }),
 });

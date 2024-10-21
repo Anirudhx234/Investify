@@ -1,16 +1,10 @@
 import useAppSelector from "../hooks/useAppSelector";
-import { useEffect } from "react";
 import twMerge from "../util/twMerge";
 import AppRouter from "./AppRouter";
 import Navbar from "../scenes/Navbar";
 import AppSidebar from "./AppSidebar";
 
 export default function App() {
-  const themeMode = useAppSelector((state) => state.theme.mode);
-  useEffect(() => {
-    document.documentElement.dataset.theme = themeMode;
-  }, [themeMode]);
-
   const drawerMode = useAppSelector((state) => state.appRoute.args?.drawerMode);
 
   return (
