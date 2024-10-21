@@ -4,6 +4,7 @@ import { configureStore } from "@reduxjs/toolkit";
 
 import themeReducer from "../features/themeSlice";
 import appRouteReducer from "../features/appRouteSlice";
+import authReducer from "../features/authSlice";
 import api from "../api/api";
 
 /* local storage based persist config */
@@ -17,6 +18,7 @@ const persistConfig = {
 const persistedReducer = persistCombineReducers(persistConfig, {
   theme: themeReducer,
   appRoute: appRouteReducer,
+  auth: authReducer,
   [api.reducerPath]: api.reducer,
 });
 

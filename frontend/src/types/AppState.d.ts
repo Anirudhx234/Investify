@@ -11,3 +11,8 @@ export interface ThemeState {
 export interface AppRouteState {
   args: AppRouteArgs | null;
 }
+
+/* user is logged in or not */
+export interface AuthState {
+  isAuth: boolean;
+}
