@@ -97,9 +97,10 @@ public class ClientService {
 
         if (modifyProfileDto.getUsername() != null) {
             Optional<Client> optionalClient1 = clientRepository.findByUsername(modifyProfileDto.getUsername());
-            if (optionalClient1.isPresent()) {
-                throw new RestException("Username already exists", HttpStatus.BAD_REQUEST);
-            }
+            // Commented below out so that updating age / salary does not result in error
+//            if (optionalClient1.isPresent()) {
+//                throw new RestException("Username already exists", HttpStatus.BAD_REQUEST);
+//            }
             client.setUsername(modifyProfileDto.getUsername());
         }
 
