@@ -1,6 +1,5 @@
 /* types for app state */
 
-import AppClient from "./AppClient";
 import { AppRouteArgs } from "./AppRouter";
 
 /* color theme, dark or light theme */
@@ -13,7 +12,7 @@ export interface AppRouteState {
   args: AppRouteArgs | null;
 }
 
-/* logged in client data */
+/* logged in client ID */
 export interface ClientState {
-  loggedInClient: AppClient | null;
+  id: string | null;
 }

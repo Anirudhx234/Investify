@@ -12,11 +12,9 @@ import useAppSelector from "../hooks/useAppSelector";
 export default function AppRouter() {
   return (
     <Switch>
-      <>
-        {appPages.map((appPage) => (
-          <AppPage key={appPage.path} {...appPage} />
-        ))}
-      </>
+      {appPages.map((appPage) => (
+        <AppPage key={appPage.path} {...appPage} />
+      ))}
     </Switch>
   );
 }
@@ -33,7 +31,7 @@ function AppPage({ ...appPage }: AppPage) {
 
 function AppPageComponent({ ...appPage }: AppPage) {
   const dispatch = useAppDispatch();
-  const auth = useAppSelector((state) => state.client.loggedInClient !== null);
+  const auth = useAppSelector((state) => state.client.id !== null);
 
   useEffect(() => {
     const appRoute = { ...appPage, component: undefined };
@@ -45,6 +43,14 @@ function AppPageComponent({ ...appPage }: AppPage) {
     };
   }, [dispatch, appPage]);
 
+  if (appPage.protection === "signed-in" && !auth) {
+    return <Redirect to="/" />;
+  }
+
+  if (appPage.protection === "signed-out" && auth) {
+    return <Redirect to="/" />;
+  }
+
   if (appPage.routeArgs.type === "redirection") {
     return <Redirect to={appPage.routeArgs.path} />;
   }
@@ -53,12 +59,12 @@ function AppPageComponent({ ...appPage }: AppPage) {
     return <VerificationPage {...appPage.routeArgs} />;
   }
 
-  if (appPage.protection === "signed-in" && !auth) {
-    return <Redirect to="/" />;
-  }
-
-  if (appPage.protection === "signed-out" && auth) {
-    return <Redirect to="/" />;
+  if (appPage.routeArgs.type === "form") {
+    return (
+      <div className="flex w-full justify-center">
+        <div className="w-full max-w-lg">{appPage.component}</div>
+      </div>
+    );
   }
 
   return appPage.component;

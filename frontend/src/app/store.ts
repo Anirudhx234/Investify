@@ -12,7 +12,7 @@ import api from "../api/api";
 const persistConfig = {
   key: "root",
   storage,
-  blacklist: ["appRoute"],
+  blacklist: ["appRoute", api.reducerPath],
 };
 
 /* local storage persisted reducer */

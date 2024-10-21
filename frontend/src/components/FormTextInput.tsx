@@ -1,29 +1,29 @@
-import type { UseFormReturn } from "react-hook-form";
+import type { FieldValues, Path, UseFormReturn } from "react-hook-form";
 import type { HTMLInputAutoCompleteAttribute } from "react";
 
 import FormInput from "./FormInput";
 import toTitleCase from "../util/toTitleCase";
 
-export interface FormTextInputProps {
+export interface FormTextInputProps<T extends FieldValues = FieldValues> {
   name: string;
   labelText?: string | undefined;
-  form: UseFormReturn;
+  form: UseFormReturn<T>;
   required?: boolean | undefined;
   autoComplete?: HTMLInputAutoCompleteAttribute;
   disabled?: boolean;
 }
 
-export default function FormTextInput({
+export default function FormTextInput<T extends FieldValues>({
   name,
   labelText,
   form,
   required,
   autoComplete,
   disabled,
-}: FormTextInputProps) {
+}: FormTextInputProps<T>) {
   const label = labelText ?? toTitleCase(name);
 
-  const registerInputProps = form.register(name, {
+  const registerInputProps = form.register(name as Path<T>, {
     required: required ? `${label} is required` : false,
   });
 
