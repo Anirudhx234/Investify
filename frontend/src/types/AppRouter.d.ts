@@ -30,6 +30,7 @@ export type DrawerMode = "disabled" | "enabled" | "open";
 export interface AppRouteArgs {
   path: string;
   routeArgs: PageArgs | VerificationArgs | RedirectionArgs | FormArgs;
+  protection?: "signed-in" | "signed-out" | "none" | undefined;
   label?: string | undefined; // human-readable route label
   nest?: boolean | undefined; // has sub-routes?
   drawerMode?: DrawerMode | undefined;

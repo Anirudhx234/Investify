@@ -25,7 +25,7 @@ declare namespace CustomBaseQuery {
   }
 
   /* no extra options required as of now */
-  type DefinitionExtraOptions = Record<string, never>;
+  type DefinitionExtraOptions = object;
 
   /* meta info about the request */
   type Meta = FetchBaseQueryMeta;

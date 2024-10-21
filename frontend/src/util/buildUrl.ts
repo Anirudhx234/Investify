@@ -1,6 +1,6 @@
 export default function buildUrl(
   url: string,
-  queryParams?: Record<string, unknown>,
+  queryParams?: object | undefined,
 ) {
   if (!queryParams) return url;
 

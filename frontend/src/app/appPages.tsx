@@ -1,5 +1,5 @@
 import type { AppPage } from "../types/AppRouter";
-import CreateAccountForm from "../forms/CreateAccountForm";
+import SignUpForm from "../forms/SignUpForm";
 import LoginForm from "../forms/LoginForm";
 import NotFoundPage from "../pages/NotFoundPage";
 
@@ -7,15 +7,17 @@ import NotFoundPage from "../pages/NotFoundPage";
 export const appPages: AppPage[] = [
   {
     path: "/sign-up",
-    component: <CreateAccountForm />,
+    component: <SignUpForm />,
     routeArgs: { type: "form" },
     label: "Sign Up",
+    protection: "signed-out",
   },
   {
     path: "/login",
     component: <LoginForm />,
     routeArgs: { type: "form" },
-    label: "Sign Up",
+    label: "Login",
+    protection: "signed-out",
   },
   {
     path: "*",

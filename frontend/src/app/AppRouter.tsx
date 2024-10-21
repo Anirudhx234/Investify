@@ -6,6 +6,7 @@ import VerificationPage from "../pages/VerificationPage";
 import { useEffect } from "react";
 import useAppDispatch from "../hooks/useAppDispatch";
 import { setAppRouteArgs } from "../features/appRouteSlice";
+import useAppSelector from "../hooks/useAppSelector";
 
 /* component for rendering top-level routes in the app */
 export default function AppRouter() {
@@ -32,6 +33,7 @@ function AppPage({ ...appPage }: AppPage) {
 
 function AppPageComponent({ ...appPage }: AppPage) {
   const dispatch = useAppDispatch();
+  const auth = useAppSelector((state) => state.client.loggedInClient !== null);
 
   useEffect(() => {
     const appRoute = { ...appPage, component: undefined };
@@ -49,6 +51,14 @@ function AppPageComponent({ ...appPage }: AppPage) {
 
   if (appPage.routeArgs.type === "verification") {
     return <VerificationPage {...appPage.routeArgs} />;
+  }
+
+  if (appPage.protection === "signed-in" && !auth) {
+    return <Redirect to="/" />;
+  }
+
+  if (appPage.protection === "signed-out" && auth) {
+    return <Redirect to="/" />;
   }
 
   return appPage.component;
