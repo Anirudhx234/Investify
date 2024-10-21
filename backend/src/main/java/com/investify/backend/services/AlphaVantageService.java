@@ -25,7 +25,6 @@ public class AlphaVantageService {
     // https://www.alphavantage.co/query?function=TOP_GAINERS_LOSERS&apikey=
 
     public Mono<String> getPopularStocks() {
-        System.out.println(alphaVantageApiKey);
         return webClient.get()
                 .uri(uriBuilder -> uriBuilder
                         .path("/query")
@@ -37,7 +36,6 @@ public class AlphaVantageService {
     }
 
     public Mono<String> getTopGainers() {
-        System.out.println(alphaVantageApiKey);
         return webClient.get()
                 .uri(uriBuilder -> uriBuilder
                         .path("/query")

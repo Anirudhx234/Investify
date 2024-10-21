@@ -38,6 +38,19 @@ public class TwelveDataService {
                 .bodyToMono(String.class);
     }
 
+    public Mono<String> getAssetQuote(String ticker, String interval) {
+        return webClient.get()
+                .uri(uriBuilder -> uriBuilder
+                        .path("/quote")
+                        .queryParam("symbol", ticker)
+                        .queryParam("interval", interval)
+                        .queryParam("outputsize", 5000) // Number of data points to get (5k is max)
+                        .queryParam("apikey", twelveDataApiKey)
+                        .build())
+                .retrieve()
+                .bodyToMono(String.class);
+    }
+
     // Top 50 mutual funds (by total asset value)
     public Mono<String> getPopularFunds() {
         return webClient.get()
@@ -108,4 +121,5 @@ public class TwelveDataService {
                 .retrieve()
                 .bodyToMono(String.class);
     }
+
 }
