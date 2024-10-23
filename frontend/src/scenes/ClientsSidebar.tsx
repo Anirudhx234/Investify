@@ -5,6 +5,8 @@ import { useLogoutMutation } from "../api/auth";
 import { useDeleteClientMutation } from "../api/clients";
 import Modal from "../components/Modal";
 import { useRef } from "react";
+import useAppDispatch from "../hooks/useAppDispatch";
+import { setClientId } from "../features/clientSlice";
 
 export default function ClientsSidebar() {
   const params = useParams() as { id: string };
@@ -12,6 +14,7 @@ export default function ClientsSidebar() {
   const [deleteAccount, deleteAccountState] = useDeleteClientMutation();
   const modalRef = useRef<HTMLDialogElement>(null);
 
+  const dispatch = useAppDispatch();
   const loggedInClientId = useAppSelector((state) => state.client.id);
   const isLoggedInUser = params.id === loggedInClientId;
 
@@ -46,6 +49,7 @@ export default function ClientsSidebar() {
 
   const onModalExit = () => {
     modalRef.current?.close();
+    if (!isError) dispatch(setClientId(null));
   };
 
   return (

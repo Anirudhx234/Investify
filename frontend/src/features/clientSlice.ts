@@ -9,7 +9,7 @@ const clientSlice = createSlice({
   name: "client",
   initialState,
   reducers: {
-    setClientId: (state, action: PayloadAction<string>) => {
+    setClientId: (state, action: PayloadAction<string | null>) => {
       state.id = action.payload;
     },
   },

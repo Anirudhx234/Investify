@@ -10,9 +10,11 @@ import { FaMoon, FaSun } from "react-icons/fa";
 import { IoMdArrowDropdown } from "react-icons/io";
 import appRoutes from "../app/appPages";
 import { Link } from "wouter";
+import ProfilePicture from "../components/ProfilePicture";
 
 export default function Navbar() {
   const drawerMode = useAppSelector((state) => state.appRoute.args?.drawerMode);
+  const loggedInClientId = useAppSelector((state) => state.client.id);
 
   return (
     <nav className="navbar w-full">
@@ -23,12 +25,19 @@ export default function Navbar() {
         </div>
       </div>
 
-      <div className="navbar-end flex items-center">
+      <div className="navbar-end flex items-center gap-2">
         <ThemeSwitcher />
         <MobileDropdown />
         <ul className="hidden lg:flex">
           <NavLinks />
         </ul>
+        {loggedInClientId !== null ? (
+          <ProfilePicture src={{ id: loggedInClientId }} />
+        ) : (
+          <Link href="/login" className="btn btn-secondary btn-sm">
+            Login
+          </Link>
+        )}
       </div>
     </nav>
   );

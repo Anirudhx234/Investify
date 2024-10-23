@@ -40,7 +40,7 @@ export default function LinksMenu({
       {Object.entries(menuItems.items).map(([key, item]) => (
         <li key={key}>
           <>
-            <div className="menu-title capitalize">
+            <div className="menu-title capitalize flex items-center gap-2">
               <span>{icons?.[key]}</span>
               {key}
             </div>

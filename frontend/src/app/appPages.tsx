@@ -4,6 +4,8 @@ import SignUpForm from "../forms/SignUpForm";
 import LoginForm from "../forms/LoginForm";
 import NotFoundPage from "../pages/NotFoundPage";
 import ClientsPage from "../pages/ClientsPage";
+import AssetsPage from "../pages/AssetsPage";
+import HomePage from "../pages/HomePage";
 
 /* list of top-level routes for the app */
 export const appPages: AppPage[] = [
@@ -32,6 +34,22 @@ export const appPages: AppPage[] = [
     label: "Clients",
     nest: true,
     drawerMode: "open",
+  },
+  {
+    path: "/home",
+    component: <HomePage />,
+    routeArgs: { type: "page" },
+    label: "Home",
+    navbar: true,
+  },
+  {
+    path: "/assets",
+    component: <AssetsPage />,
+    routeArgs: { type: "page" },
+    label: "Assets",
+    nest: true,
+    drawerMode: "open",
+    navbar: true,
   },
   {
     path: "/",
