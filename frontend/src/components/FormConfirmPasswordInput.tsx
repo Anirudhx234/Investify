@@ -1,6 +1,6 @@
 import type { Path, UseFormReturn } from "react-hook-form";
 
-import FormTextInput from "./FormTextInput";
+import FormInput from "./FormInput";
 
 export interface FormConfirmPasswordInputProps<
   T extends { password: string; confirmPassword: string },
@@ -21,7 +21,7 @@ export default function FormConfirmPasswordInput<
   });
 
   return (
-    <FormTextInput
+    <FormInput
       name="confirmPassword"
       labelText="Confirm Password"
       registerInputProps={registerInputProps}

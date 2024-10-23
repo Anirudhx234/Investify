@@ -1,18 +1,21 @@
 import { useState } from "react";
 import { FaSearch } from "react-icons/fa";
-import AssetsListBox from "../components/AssetsListBox";
-import { useAssetSetQuery } from "../api/assets";
-import { useLocation } from "wouter";
-import routeToAssetType from "../utils/routeToAssetType";
+import { useAssetsSetQuery } from "../api/assets";
+import { MdErrorOutline } from "react-icons/md";
+import LinksMenu from "../components/LinksMenu";
+import assetsIcons from "../components/assetsIcons";
 
 export default function SearchBar() {
-  const [location] = useLocation();
-  const { data } = useAssetSetQuery();
+  const { data, isLoading, isError, error, isSuccess } = useAssetsSetQuery();
   const [searchValue, setSearchValue] = useState("");
   const isExpanded = searchValue !== "";
 
+  const errorMssg = error?.message;
+
+  const filteredData = { stocks: { items: ["/ABC", "/DEF"] } };
+
   return (
-    <div className="flex ~w-60/[60rem]">
+    <div className="flex ~w-80/[50rem]">
       <label className="relative mx-3 w-full">
         <FaSearch className="pointer-events-none absolute z-10 my-4 ms-4 stroke-current text-base-content opacity-60" />
         <div
@@ -40,15 +43,30 @@ export default function SearchBar() {
               value={searchValue}
               onChange={(e) => setSearchValue(e.target.value)}
             />
+            {isExpanded && (
+              <div className="dropdown-content z-1 max-h-[30rem] w-full overflow-y-auto rounded-box bg-base-200 p-4 shadow">
+                {isError && (
+                  <div className="flex items-center gap-2 text-error">
+                    <MdErrorOutline />
+                    <p>{errorMssg}</p>
+                  </div>
+                )}
+                {isLoading && (
+                  <div className="flex items-center gap-2">
+                    <span className="loading loading-spinner"></span>
+                    <p>Loading...</p>
+                  </div>
+                )}
+                {isSuccess && (
+                  <LinksMenu
+                    menuItems={{ items: filteredData }}
+                    icons={assetsIcons}
+                    className="menu w-full"
+                  />
+                )}
+              </div>
+            )}
           </form>
-          {data && (
-            <AssetsListBox
-              data={data}
-              assetType={routeToAssetType(location)}
-              searchValue={searchValue}
-              className="menu dropdown-content z-[1] max-h-[30rem] w-full overflow-y-auto rounded-box bg-base-100 p-4 shadow"
-            />
-          )}
         </div>
       </label>
     </div>

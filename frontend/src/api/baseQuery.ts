@@ -1,52 +1,31 @@
-import {
-  fetchBaseQuery,
-  retry,
-  type BaseQueryFn,
-} from "@reduxjs/toolkit/query";
 import type CustomBaseQuery from "../types/CustomBaseQuery";
-import buildUrl from "../utils/buildUrl";
-import { setAuth } from "../features/authSlice";
 
-const rawBaseBaseQuery = fetchBaseQuery();
+import { fetchBaseQuery, retry } from "@reduxjs/toolkit/query";
+import buildUrl from "../util/buildUrl";
 
+/* basic fetch wrapper */
 const rawBaseQuery = fetchBaseQuery({
   baseUrl: "http://localhost:8080/api",
   credentials: "include",
+  timeout: 3000,
 });
 
-const baseQuery: BaseQueryFn<
-  CustomBaseQuery.Args,
-  CustomBaseQuery.Result,
-  CustomBaseQuery.Error,
-  CustomBaseQuery.DefinitionExtraOptions,
-  CustomBaseQuery.Meta
-> = async (args, api, extraOptions) => {
+/* custom base query for api */
+const baseQuery: CustomBaseQuery.CustomBaseQueryFn = async (
+  args,
+  api,
+  extraOptions,
+) => {
   const { url, queryParams, ...remainingArgs } = args;
   const fullUrl = buildUrl(url, queryParams);
 
-  let result;
-
-  if (extraOptions.base) {
-    result = await rawBaseBaseQuery(
-      { url: fullUrl, ...remainingArgs },
-      api,
-      extraOptions,
-    );
-  } else {
-    result = await rawBaseQuery(
-      { url: fullUrl, ...remainingArgs },
-      api,
-      extraOptions,
-    );
-  }
+  const result = await rawBaseQuery(
+    { url: fullUrl, ...remainingArgs },
+    api,
+    extraOptions,
+  );
 
   if (result.error) {
-    // if (result.error.status === 401) {
-    //   alert("You have been logged out");
-    //   api.dispatch(setAuth(false));
-    //   retry.fail(result.error);
-    // }
-
     const data = result.error.data as undefined | { message?: string };
     const status = result.error.status;
     let message: string;
