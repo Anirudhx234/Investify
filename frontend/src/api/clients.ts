@@ -34,7 +34,7 @@ const clientsApi = api.injectEndpoints({
       }),
       invalidatesTags: (_res, _err, args) => [{ type: "clients", id: args.id }],
     }),
-    deleteProfile: build.mutation<void, { id: string }>({
+    deleteClient: build.mutation<void, { id: string }>({
       query: ({ id }) => ({
         url: "/clients/" + id,
         method: "DELETE",
@@ -49,5 +49,5 @@ export const {
   useModifyEmailMutation,
   useModifyPasswordMutation,
   useModifyProfileMutation,
-  useDeleteProfileMutation,
+  useDeleteClientMutation,
 } = clientsApi;

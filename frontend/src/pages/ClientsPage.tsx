@@ -1,15 +1,19 @@
 import { Redirect, Route, Switch, useParams } from "wouter";
 import { useClientProfileQuery } from "../api/clients";
 import { MdErrorOutline } from "react-icons/md";
-import ProfileEmailForm from "../forms/ProfileEmailForm";
+import ProfileClientForm from "../forms/ProfileClientForm";
 import ProfileGeneralForm from "../forms/ProfileGeneralForm";
 import ProfilePersonalForm from "../forms/ProfilePersonalForm";
+import useAppSelector from "../hooks/useAppSelector";
 
 export default function ClientsPage() {
   const params = useParams() as { id: string };
   const { data, isError, error } = useClientProfileQuery({
     id: params.id,
   });
+
+  const loggedInUserId = useAppSelector((state) => state.client.id);
+  const isLoggedInUser = params.id === loggedInUserId;
 
   const errorMssg = error?.message ?? "An error occurred";
 
@@ -25,9 +29,11 @@ export default function ClientsPage() {
   if (data) {
     return (
       <Switch>
-        <Route path="/client" component={() => <ProfileEmailForm />} />
+        <Route path="/client" component={() => <ProfileClientForm />} />
         <Route path="/general" component={() => <ProfileGeneralForm />} />
-        <Route path="/personal" component={() => <ProfilePersonalForm />} />
+        {isLoggedInUser && (
+          <Route path="/personal" component={() => <ProfilePersonalForm />} />
+        )}
         <Route component={() => <Redirect to="/client" replace />} />
       </Switch>
     );
