@@ -1,6 +1,6 @@
 import {CandleChartComponent} from "../components/CandleChart.tsx";
 import {LineChartComponent} from "../components/LineChart.tsx";
-import twMerge from "../utils/twMerge";
+import twMerge from "../util/twMerge";
 import {useState} from "react";
 import {FiSettings} from "react-icons/fi"
 
