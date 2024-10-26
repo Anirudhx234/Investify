@@ -1,4 +1,3 @@
-import { useParams } from "wouter";
 import {
   useClientProfileQuery,
   useModifyProfileMutation,
@@ -10,8 +9,7 @@ import Modal from "../components/Modal";
 import FormNumberInput from "../components/FormNumberInput";
 
 export default function ProfilePersonalForm() {
-  const params = useParams() as { id: string };
-  const clientProfileState = useClientProfileQuery({ id: params.id });
+  const clientProfileState = useClientProfileQuery({});
   const [modifyProfile, modifyProfileState] = useModifyProfileMutation();
   const modalRef = useRef<HTMLDialogElement>(null);
   const personalForm = useForm<Clients.ModifyProfilePersonalForm>();
@@ -43,7 +41,7 @@ export default function ProfilePersonalForm() {
       formData.set("income", `${data.income}`);
 
     try {
-      await modifyProfile({ id: params.id, formData }).unwrap();
+      await modifyProfile({ formData }).unwrap();
     } catch {
       /* empty */
     }

@@ -1,3 +1,4 @@
+import { Link } from "wouter";
 import { useClientProfileQuery } from "../api/clients";
 import twMerge from "../util/twMerge";
 
@@ -6,12 +7,12 @@ export default function ProfilePicture({
   className,
   alt,
 }: {
-  src?: string | { id: string } | undefined;
+  src?: string | { id?: string | undefined } | undefined;
   className?: string | undefined;
   alt?: string | undefined;
 }) {
   if (typeof src === "object") {
-    return <ProfilePictureUserSrc src={src} alt={alt} className={className} />
+    return <ProfilePictureUserSrc src={src} alt={alt} className={className} />;
   }
 
   return <ProfilePictureStringSrc src={src} alt={alt} className={className} />;
@@ -42,19 +43,22 @@ function ProfilePictureUserSrc({
   className,
   alt,
 }: {
-  src: { id: string };
+  src: { id?: string | undefined };
   className?: string | undefined;
   alt?: string | undefined;
 }) {
   const { data } = useClientProfileQuery({ id: src.id });
 
   return (
-    <div className={twMerge("h-8 w-8", className)}>
+    <Link
+      href={`/clients/${src.id ?? "me"}`}
+      className={twMerge("h-8 w-8", className)}
+    >
       <img
         src={data?.profilePicture ?? "/default-profile-pic.svg"}
         alt={alt ?? `Profile Picture of Client ${data?.username ?? "Unknown"}`}
         className="h-full w-full rounded-full border border-base-300"
       />
-    </div>
+    </Link>
   );
 }

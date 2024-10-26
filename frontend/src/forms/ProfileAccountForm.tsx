@@ -9,9 +9,8 @@ import { SubmitHandler, useForm } from "react-hook-form";
 import FormEmailInput from "../components/FormEmailInput";
 import FormPasswordInput from "../components/FormPasswordInput";
 import Modal from "../components/Modal";
-import useAppSelector from "../hooks/useAppSelector";
 
-export default function ProfileClientForm() {
+export default function ProfileAccountForm() {
   const params = useParams() as { id: string };
   const clientProfileState = useClientProfileQuery({ id: params.id });
   const [modifyEmail, modifyEmailState] = useModifyEmailMutation();
@@ -27,8 +26,7 @@ export default function ProfileClientForm() {
     }
   }, [emailForm, passwordForm, clientProfileState.data]);
 
-  const loggedInUserId = useAppSelector((state) => state.client.id);
-  const isLoggedInUser = params.id === loggedInUserId;
+  const isLoggedInUser = params.id === "me";
 
   const isBuffering =
     clientProfileState.isFetching ||

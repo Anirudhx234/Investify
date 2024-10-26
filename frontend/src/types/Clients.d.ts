@@ -1,5 +1,9 @@
 /* request / response / form types for clients */
 declare namespace Clients {
+  interface IdRequest {
+    id?: string | undefined;
+  }
+
   interface ModifyProfileRequestBody {
     username?: string | undefined;
     profilePicture?: File | undefined;

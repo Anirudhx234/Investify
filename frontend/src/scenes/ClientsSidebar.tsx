@@ -24,7 +24,7 @@ export default function ClientsSidebar() {
     deleteAccountState.error?.message ||
     "An error occurred";
 
-  const items = ["/client", "/general"];
+  const items = ["/account", "/general"];
   if (isLoggedInUser) items.push("/personal");
 
   const onLogoutClick = async () => {

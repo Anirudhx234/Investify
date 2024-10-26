@@ -7,7 +7,6 @@ import {
 } from "../api/clients";
 import { ChangeEvent, useEffect, useRef, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
-import useAppSelector from "../hooks/useAppSelector";
 import Modal from "../components/Modal";
 import ProfilePicture from "../components/ProfilePicture";
 import FormTextInput from "../components/FormTextInput";
@@ -30,8 +29,7 @@ export default function ProfileGeneralForm() {
     }
   }, [generalForm, clientProfileState.data]);
 
-  const loggedInUserId = useAppSelector((state) => state.client.id);
-  const isLoggedInUser = params.id === loggedInUserId;
+  const isLoggedInUser = params.id === "me";
 
   const profilePictureRegister = generalForm.register("profilePicture", {
     onChange: (e: ChangeEvent<HTMLInputElement>) => {

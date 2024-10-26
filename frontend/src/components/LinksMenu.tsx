@@ -3,7 +3,9 @@ import twMerge from "../util/twMerge";
 import { Link } from "wouter";
 
 export interface MenuItems {
-  items: Record<string, MenuItems> | string[];
+  items:
+    | Record<string, MenuItems>
+    | (string | { link: string; label: string })[];
 }
 
 export interface LinksMenuProps {
@@ -20,17 +22,30 @@ export default function LinksMenu({
   if (Array.isArray(menuItems.items)) {
     return (
       <ul className={className}>
-        {menuItems.items.map((item) => (
-          <li key={item}>
-            <Link
-              href={item}
-              className={(active) => twMerge("capitalize", active && "active")}
-            >
-              <span>{icons?.[item]}</span>
-              {item.split("/").slice(-1)[0]}
-            </Link>
-          </li>
-        ))}
+        {menuItems.items.map((item) => {
+          let link: string, label: string;
+          if (typeof item === "string") {
+            link = item;
+            label = item.split("/").slice(-1)[0];
+          } else {
+            link = item.link;
+            label = item.label;
+          }
+
+          return (
+            <li key={link}>
+              <Link
+                href={link}
+                className={(active) =>
+                  twMerge("capitalize", active && "active")
+                }
+              >
+                <span>{icons?.[link]}</span>
+                {label}
+              </Link>
+            </li>
+          );
+        })}
       </ul>
     );
   }
@@ -40,7 +55,7 @@ export default function LinksMenu({
       {Object.entries(menuItems.items).map(([key, item]) => (
         <li key={key}>
           <>
-            <div className="menu-title capitalize flex items-center gap-2">
+            <div className="menu-title flex items-center gap-2 capitalize">
               <span>{icons?.[key]}</span>
               {key}
             </div>
