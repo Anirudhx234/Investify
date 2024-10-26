@@ -4,7 +4,7 @@ interface ChartComponentProps {
 
 import { createChart } from 'lightweight-charts';
 import { useEffect, useRef } from 'react';
-import convertToUnixTimestamp from "../utils/convertToUnixTimestamp.ts";
+import convertToUnixTimestamp from "../util/convertToUnixTimestamp.ts";
 
 export const LineChartComponent = ({ data }: ChartComponentProps) => {
     const chartContainerRef = useRef<HTMLDivElement>(null);

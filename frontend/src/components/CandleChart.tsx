@@ -6,7 +6,7 @@ interface ChartComponentProps {
 
 import {createChart, Time} from 'lightweight-charts';
 import { useEffect, useRef } from 'react';
-import convertToUnixTimestamp from "../utils/convertToUnixTimestamp.ts";
+import convertToUnixTimestamp from "../util/convertToUnixTimestamp.ts";
 
 
 export const CandleChartComponent = ({data, showMA = false, timePeriod = 20}: ChartComponentProps) => {
