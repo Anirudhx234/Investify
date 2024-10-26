@@ -1,24 +1,20 @@
 interface ChartComponentProps {
     data: { time: string, open: number, high: number, low: number, close: number, volume: number}[];
+    showMA?: boolean;
+    timePeriod?: number
 }
 
 import {createChart, Time} from 'lightweight-charts';
 import { useEffect, useRef } from 'react';
+import convertToUnixTimestamp from "../utils/convertToUnixTimestamp.ts";
 
-function convertToUnixTimestamp(time: string): Time {
-    return (Math.floor(new Date(time).getTime() / 1000)) as Time;
-}
 
-export const CandleChartComponent = (data: ChartComponentProps) => {
+export const CandleChartComponent = ({data, showMA = false, timePeriod = 20}: ChartComponentProps) => {
     const chartContainerRef = useRef<HTMLDivElement>(null);
     const chartRef = useRef<ReturnType<typeof createChart> | null>(null);  // Update type to remove 'any'
 
-    // Should be state values
-    const showMA = true;
-    const timePeriod = 20;
-
     // Parse the data and update the time format
-    const parsedData = data.data.map((d) => ({
+    const parsedData = data.map((d) => ({
         time: convertToUnixTimestamp(d.time),
         open: d.open,
         high: d.high,
@@ -89,7 +85,7 @@ export const CandleChartComponent = (data: ChartComponentProps) => {
             window.removeEventListener('resize', handleResize);
             chart.remove();
         };
-    }, [parsedData, showMA]);
+    }, [parsedData, showMA, timePeriod]);
 
     return <div ref={chartContainerRef} className={"w-full h-full"}/>;
 };
@@ -99,6 +95,6 @@ const initialData = [{time:"2024-10-18 15:59:00",open:234.97000,high:235.03000,l
 export function CandleChart() {
     const ascendingTime = [...initialData].reverse();
     return <div className={"w-full h-full"}>
-        <CandleChartComponent data={ascendingTime} />
+        <CandleChartComponent data={ascendingTime} showMA={true}/>
     </div>;
 }
