@@ -14,7 +14,7 @@ public class UpdateProfileDto {
     private String username;
     private String password;
     private MultipartFile profilePicture;
-    private int age;
+    private Integer age;
     private Double income;
     private String financialGoals;
 }

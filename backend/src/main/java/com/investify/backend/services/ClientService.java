@@ -72,7 +72,7 @@ public class ClientService {
         clientRepository.save(client);
     }
 
-    public boolean verifyClient(String token, String email) {
+    public ClientDto verifyClient(String token, String email) {
         Optional<Client> clientOpt = clientRepository.findByVerificationToken(token);
 
         if (clientOpt.isPresent()) {
@@ -81,10 +81,9 @@ public class ClientService {
             client.setVerificationToken(null);  // Clear the verification token after success
             client.setEmail(email);
             clientRepository.save(client);
-            return true;
+            return clientMapper.toClientDto(client);
         }
-
-        return false;  // Token is invalid or user not found
+        throw new RestException("Token is invalid or client not found", HttpStatus.BAD_REQUEST);
     }
 
 
@@ -92,10 +91,6 @@ public class ClientService {
         Client client = findById(clientId);
 
         if (updateProfileDto.getUsername() != null) {
-            Optional<Client> optionalClient1 = clientRepository.findByUsername(updateProfileDto.getUsername());
-            if (optionalClient1.isPresent()) {
-                throw new RestException("Username already exists", HttpStatus.BAD_REQUEST);
-            }
             client.setUsername(updateProfileDto.getUsername());
         }
 
