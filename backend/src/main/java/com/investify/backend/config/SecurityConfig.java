@@ -29,9 +29,9 @@ public class SecurityConfig {
                 .and()
                 .authorizeHttpRequests((requests) -> requests
                         // Allow access to signup, login, and verification without authentication
-                        .requestMatchers(HttpMethod.POST, "/api/auth/login", "/api/auth/signup", "/api/auth/reset-password").permitAll()
-                        .requestMatchers(HttpMethod.PATCH, "/api/clients/password").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/auth/verify-email").permitAll() // Allow GET request to /verify
+                        .requestMatchers(HttpMethod.POST, "/api/auth/login", "/api/auth/signup","/api/auth/forgot-password").permitAll()
+                        .requestMatchers(HttpMethod.PATCH, "/api/auth/reset-password").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/auth/verify-email", "/api/assets").permitAll()
                         .anyRequest().authenticated())
         ;
         return http.build();
