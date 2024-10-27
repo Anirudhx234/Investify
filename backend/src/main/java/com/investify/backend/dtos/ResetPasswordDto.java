@@ -10,5 +10,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 public class ResetPasswordDto {
-    private String email;
+    private String newPassword;
 }

@@ -1,25 +1,18 @@
 package com.investify.backend.controllers;
 
-import com.investify.backend.config.ClientAuthenticationProvider;
 import com.investify.backend.dtos.*;
 import com.investify.backend.mappers.ClientMapper;
+import com.investify.backend.services.AuthService;
 import com.investify.backend.services.ClientService;
 import com.investify.backend.services.EmailService;
-import com.investify.backend.utils.Utils;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import java.net.URI;
 import java.util.UUID;
 
 @RequiredArgsConstructor
@@ -30,45 +23,43 @@ public class AuthController {
     @Value("${spring.frontend.url}")
     private String frontendURL;
 
+    private final AuthService authService;
     private final ClientService clientService;
-    private final ClientAuthenticationProvider clientAuthenticationProvider;
     private final ClientMapper clientMapper;
-    private final EmailService emailService; // Inject EmailService for sending emails
+    private final EmailService emailService;
 
     @PostMapping("/login")
-    public ResponseEntity<ClientProfileDto> login(
+    public ResponseEntity<ClientDto> login(
             @RequestBody @Valid CredentialsDto credentialsDto,
             HttpServletResponse response) {
 
-        ClientProfileDto clientProfileDto = clientService.login(credentialsDto);
-        String token = clientAuthenticationProvider.createToken(clientProfileDto.getEmail());
+        ClientDto client = clientService.login(credentialsDto);
 
-        Cookie jwtCookie = Utils.generateJWTCookie("jwt", token);
+        Cookie jwtCookie = authService.generateJWTCookie(client, "jwt");
         response.addCookie(jwtCookie);
 
-        return ResponseEntity.ok(clientProfileDto);
+        return ResponseEntity.ok(client);
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<ClientProfileDto> register(
-            @RequestBody @Valid SignUpDto client,
+    public ResponseEntity<ClientDto> signup(
+            @RequestBody @Valid SignUpDto signUpDto,
             HttpServletResponse response) {
 
-        ClientDto createdClient = clientService.register(client);
+        ClientDto newClient = clientService.signup(signUpDto);
 
         String verificationToken = UUID.randomUUID().toString();
-        String verificationLink = frontendURL + "/verify-email?token=" + verificationToken;
-        emailService.sendVerificationEmail(createdClient.getEmail(), verificationLink);
+        String verificationLink = frontendURL + "/verify-email?token=" + verificationToken + "&email=" + newClient.getEmail();
+        emailService.sendVerificationEmail(newClient.getEmail(), verificationLink);
 
-        clientService.saveVerificationToken(createdClient.getEmail(), verificationToken);
+        clientService.saveVerificationToken(newClient.getEmail(), verificationToken);
 
-        ClientProfileDto clientProfileDto = clientMapper.toClientProfileDto(createdClient);
-        return ResponseEntity.ok(clientProfileDto);
+        return ResponseEntity.ok(newClient);
     }
 
     @GetMapping("/verify-email")
-    public ResponseEntity<MessageDto> verifyEmail(@RequestParam("token") String token) {
-        boolean isVerified = clientService.verifyUser(token);
+    public ResponseEntity<MessageDto> verifyEmail(@RequestParam("token") String token, @RequestParam("email") String email) {
+        boolean isVerified = clientService.verifyClient(token, email);
 
         if (isVerified) {
             return ResponseEntity.ok(new MessageDto("Email verified successfully."));
@@ -77,25 +68,33 @@ public class AuthController {
         }
     }
 
-    @PostMapping("/reset-password")
-    public ResponseEntity<MessageDto> resetPassword(
-            @RequestBody @Valid ResetPasswordDto resetPasswordDto,
+    @PostMapping("/forgot-password")
+    public ResponseEntity<MessageDto> forgotPassword(
+            @RequestBody @Valid ForgotPasswordDto forgotPasswordDto,
             HttpServletResponse response) {
 
-        ClientProfileDto clientProfileDto = clientService.findByEmail(resetPasswordDto.getEmail());
+        String clientEmail = forgotPasswordDto.getEmail();
 
         String verificationToken = UUID.randomUUID().toString();
-        String resetPasswordLink = frontendURL + "/reset-password?token=" + verificationToken;
-        emailService.sendResetPasswordEmail(clientProfileDto.getEmail(), resetPasswordLink);
+        clientService.saveVerificationToken(clientEmail, verificationToken);
 
-        clientService.saveVerificationToken(clientProfileDto.getEmail(), verificationToken);
+        String resetPasswordLink = frontendURL + "/reset-password?token=" + verificationToken;
+        emailService.sendResetPasswordEmail(clientEmail, resetPasswordLink);
 
         return ResponseEntity.ok(new MessageDto("Reset password email sent."));
     }
 
+    @PatchMapping("/reset-password")
+    public ResponseEntity<ClientDto> updatePassword(@RequestBody @Valid ResetPasswordDto resetPasswordDto, @RequestParam("token") String token) {
+
+        ClientDto client = clientService.updatePassword(token, resetPasswordDto.getNewPassword());
+
+        return ResponseEntity.ok(client);
+    }
+
     @PostMapping("/logout")
     public ResponseEntity<MessageDto> logout(HttpServletResponse response) {
-        Cookie jwtCookie = Utils.removeJWTCookie("jwt");
+        Cookie jwtCookie = AuthService.removeJWTCookie("jwt");
         response.addCookie(jwtCookie);
 
         return ResponseEntity.ok(new MessageDto("Logged out successfully."));

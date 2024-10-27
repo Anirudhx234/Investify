@@ -10,7 +10,7 @@ import org.springframework.web.multipart.MultipartFile;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class ModifyProfileDto {
+public class UpdateProfileDto {
     private String username;
     private String password;
     private MultipartFile profilePicture;

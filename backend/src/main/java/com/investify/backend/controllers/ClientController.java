@@ -1,18 +1,15 @@
 package com.investify.backend.controllers;
 
-import com.investify.backend.config.ClientAuthenticationProvider;
 import com.investify.backend.dtos.*;
-import com.investify.backend.mappers.ClientMapper;
+import com.investify.backend.services.AuthService;
 import com.investify.backend.services.ClientService;
 import com.investify.backend.services.EmailService;
-import com.investify.backend.utils.Utils;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -22,81 +19,50 @@ import java.util.UUID;
 @RequestMapping("/api/clients")
 public class ClientController {
 
+    private final AuthService authService;
+    private final ClientService clientService;
+    private final EmailService emailService;
     @Value("${spring.frontend.url}")
     private String frontendURL;
 
-    private final ClientService clientService;
-    private final ClientAuthenticationProvider clientAuthenticationProvider;
-    private final ClientMapper clientMapper;
-    private final EmailService emailService; // Inject EmailService for sending emails
+    @GetMapping("/{clientId}")
+    public ResponseEntity<ClientDto> getClient(@PathVariable String clientId) {
 
-    @GetMapping("/profile")
-    public ResponseEntity<ClientProfileDto> getProfile() {
+        ClientDto client = clientService.findDtoById(clientId);
 
-        ClientProfileDto clientProfileDto = (ClientProfileDto) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
-        return ResponseEntity.ok(clientProfileDto);
+        return ResponseEntity.ok(client);
     }
 
-    @PatchMapping("/profile")
-    public ResponseEntity<MessageDto> modifyProfile(
-            @ModelAttribute ModifyProfileDto modifyProfileDto, HttpServletResponse response) {
+    @PatchMapping("/{clientId}")
+    public ResponseEntity<ClientDto> updateClient(@ModelAttribute UpdateProfileDto updateProfileDto, HttpServletResponse response, @PathVariable String clientId) {
 
-        ClientProfileDto clientProfileDto = (ClientProfileDto) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        ClientDto updatedClient = clientService.updateProfile(clientId, updateProfileDto);
 
-        ClientProfileDto modifiedClientProfileDto = clientService.modifyProfile(clientProfileDto.getEmail(), modifyProfileDto);
-
-        String token = clientAuthenticationProvider.createToken(modifiedClientProfileDto.getEmail());
-        Cookie jwtCookie = Utils.generateJWTCookie("jwt", token);
+        Cookie jwtCookie = authService.generateJWTCookie(updatedClient, "jwt");
         response.addCookie(jwtCookie);
 
-        return ResponseEntity.ok(new MessageDto("Profile successfully modified."));
+        return ResponseEntity.ok(updatedClient);
     }
 
-    @PatchMapping("/password")
-    public ResponseEntity<ClientProfileDto> modifyPassword(
-            @RequestBody @Valid ModifyPasswordDto changePasswordDto,
-            @RequestParam("token") String token) {
+    @PatchMapping("/{clientId}/email")
+    public ResponseEntity<ClientDto> updateEmail(@RequestBody @Valid UpdateEmailDto updateEmailDto, @PathVariable String clientId, HttpServletResponse response) {
 
-        ClientProfileDto clientProfileDto = clientService.modifyPassword(token, changePasswordDto.getNewPassword());
+        ClientDto client = clientService.findDtoById(clientId);
 
-        return ResponseEntity.ok(clientProfileDto);
+        String verificationToken = UUID.randomUUID().toString();
+        String verificationLink = frontendURL + "/verify-email?token=" + verificationToken + "&email=" + updateEmailDto.getNewEmail();
+        emailService.sendVerificationEmail(updateEmailDto.getNewEmail(), verificationLink);
+
+        clientService.saveVerificationToken(client.getEmail(), verificationToken);
+
+        return ResponseEntity.ok(client);
     }
 
-    @PatchMapping("/verify-email")
-    public ResponseEntity<ClientProfileDto> verifyEmail(
-            @RequestParam("newEmail") String newEmail, HttpServletResponse response) {
+    @DeleteMapping("/{clientId}")
+    public ResponseEntity<MessageDto> deleteClient(HttpServletResponse response, @PathVariable String clientId) {
+        clientService.deleteClient(clientId);
 
-        ClientProfileDto clientProfileDto = (ClientProfileDto) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
-        ClientProfileDto modifiedClientProfileDto = clientService.modifyEmail(clientProfileDto.getEmail(), newEmail);
-
-        String token = clientAuthenticationProvider.createToken(modifiedClientProfileDto.getEmail());
-        Cookie jwtCookie = Utils.generateJWTCookie("jwt", token);
-        response.addCookie(jwtCookie);
-
-        return ResponseEntity.ok(modifiedClientProfileDto);
-    }
-
-    @PatchMapping("/email")
-    public ResponseEntity<MessageDto> modifyEmail(
-            @RequestBody @Valid ModifyEmailDto modifyEmailDto,
-            HttpServletResponse response) {
-
-        String verificationLink = frontendURL + "/verify-new-email?newEmail=" + modifyEmailDto.getNewEmail();
-        emailService.sendVerificationEmailForNewEmail(modifyEmailDto.getNewEmail(), verificationLink);
-
-        return ResponseEntity.ok(new MessageDto("Verification for new email sent."));
-    }
-
-    @DeleteMapping("")
-    public ResponseEntity<MessageDto> modifyEmail(HttpServletResponse response) {
-
-        ClientProfileDto clientProfileDto = (ClientProfileDto) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
-        clientService.deleteClient(clientProfileDto.getEmail());
-
-        Cookie jwtCookie = Utils.removeJWTCookie("jwt");
+        Cookie jwtCookie = AuthService.removeJWTCookie("jwt");
         response.addCookie(jwtCookie);
 
         return ResponseEntity.ok(new MessageDto("Client successfully deleted."));

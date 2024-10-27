@@ -20,6 +20,11 @@ public class TwelveDataController {
         return twelveDataService.getAssetData(symbol, interval);
     }
 
+    @GetMapping("/quote/{symbol}/{interval}")
+    public Mono<String> getQuote(@PathVariable String symbol, @PathVariable String interval) {
+        return twelveDataService.getAssetQuote(symbol, interval);
+    }
+
     @GetMapping("/popular/funds")
     public Mono<String> getPopularFunds() {
         return twelveDataService.getPopularFunds();
