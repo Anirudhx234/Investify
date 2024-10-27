@@ -1,5 +1,10 @@
 /* asset types */
 declare namespace Assets {
+  type SearchMenuItems = Record<
+    string,
+    { items: { link: string; label: string }[] }
+  >;
+
   type Type = "stocks" | "mutual-funds" | "etfs" | "crypto";
 
   interface Asset {
@@ -39,7 +44,7 @@ declare namespace Assets {
     market_cap: number;
   }
 
-  type Set = Record<Type, Asset[]>;
+  type Set = Record<Type, Omit<Asset, "type">[]>;
 }
 
 export default Assets;

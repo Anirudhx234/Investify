@@ -2,9 +2,11 @@ import { Route, Switch } from "wouter";
 import Logo from "../components/Logo";
 import useAppSelector from "../hooks/useAppSelector";
 import ClientsSidebar from "../scenes/ClientsSidebar";
+import AssetsSidebar from "../scenes/AssetsSidebar";
 
 const sidebarRoutes = {
   "/clients/:id": { component: ClientsSidebar, nest: true },
+  "/assets": { component: AssetsSidebar, nest: true },
 };
 
 export default function AppSidebar() {
@@ -18,11 +20,13 @@ export default function AppSidebar() {
         </div>
       )}
       <div className="h-4"></div>
-      <Switch>
-        {Object.entries(sidebarRoutes).map(([key, value]) => (
-          <Route key={key} path={key} {...value} />
-        ))}
-      </Switch>
+      <div className="flex flex-col items-center px-2">
+        <Switch>
+          {Object.entries(sidebarRoutes).map(([key, value]) => (
+            <Route key={key} path={key} {...value} />
+          ))}
+        </Switch>
+      </div>
     </aside>
   );
 }

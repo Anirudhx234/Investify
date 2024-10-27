@@ -16,7 +16,7 @@ export default function ClientsPage() {
 
   if (isError) {
     return (
-      <div className="flex h-20 items-center justify-center gap-2 text-error">
+      <div className="flex h-20 items-center justify-center gap-1 text-error">
         <MdErrorOutline />
         <p>{errorMssg}</p>
       </div>

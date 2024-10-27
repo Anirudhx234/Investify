@@ -1,18 +1,54 @@
-import { useState } from "react";
+import { ChangeEvent, KeyboardEvent, useState } from "react";
 import { FaSearch } from "react-icons/fa";
-import { useAssetsSetQuery } from "../api/assets";
+import { useLazyAssetsSetQuery } from "../api/assets";
 import { MdErrorOutline } from "react-icons/md";
 import LinksMenu from "../components/LinksMenu";
 import assetsIcons from "../components/assetsIcons";
+import useAppSelector from "../hooks/useAppSelector";
+import { useDispatch } from "react-redux";
+import { setSearch } from "../features/searchSlice";
+import { useLocation } from "wouter";
 
 export default function SearchBar() {
-  const { data, isLoading, isError, error, isSuccess } = useAssetsSetQuery();
-  const [searchValue, setSearchValue] = useState("");
-  const isExpanded = searchValue !== "";
+  const storeSearchValue = useAppSelector((state) => state.search.searchValue);
+  const dispatch = useDispatch();
+  const [, navigate] = useLocation();
+  const [searchValue, setSearchValue] = useState(storeSearchValue);
+  const [trigger, { data, isError, error, isFetching }] =
+    useLazyAssetsSetQuery();
+  const isExpanded = searchValue.length >= 3;
 
   const errorMssg = error?.message;
 
-  const filteredData = { stocks: { items: ["/ABC", "/DEF"] } };
+  const handleSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const newValue = e.target.value;
+    if (newValue.length >= 3) {
+      trigger({ symbol: newValue });
+    }
+
+    setSearchValue(newValue);
+  };
+
+  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      if (searchValue.length >= 3 && data) {
+        dispatch(setSearch(searchValue));
+
+        let firstLink: string | null = null;
+        Object.entries(data).forEach(([, item]) => {
+          if (firstLink) return;
+          if (item.items.length > 0) {
+            firstLink = item.items[0].link;
+          }
+        });
+
+        if (firstLink) navigate(firstLink);
+      }
+    } else {
+      dispatch(setSearch(""));
+    }
+  };
 
   return (
     <div className="flex ~w-80/[50rem]">
@@ -41,7 +77,8 @@ export default function SearchBar() {
               aria-labelledby="search-label"
               className="input input-bordered w-full ps-10"
               value={searchValue}
-              onChange={(e) => setSearchValue(e.target.value)}
+              onChange={handleSearchChange}
+              onKeyDown={handleKeyDown}
             />
             {isExpanded && (
               <div className="dropdown-content z-1 max-h-[30rem] w-full overflow-y-auto rounded-box bg-base-200 p-4 shadow">
@@ -51,15 +88,15 @@ export default function SearchBar() {
                     <p>{errorMssg}</p>
                   </div>
                 )}
-                {isLoading && (
+                {isFetching && (
                   <div className="flex items-center gap-2">
                     <span className="loading loading-spinner"></span>
                     <p>Loading...</p>
                   </div>
                 )}
-                {isSuccess && (
+                {data && (
                   <LinksMenu
-                    menuItems={{ items: filteredData }}
+                    menuItems={{ items: data }}
                     icons={assetsIcons}
                     className="menu w-full"
                   />

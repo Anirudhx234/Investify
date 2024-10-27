@@ -16,3 +16,8 @@ export interface AppRouteState {
 export interface ClientState {
   id: string | null;
 }
+
+/* search text on assets page */
+export interface SearchState {
+  searchValue: string;
+}

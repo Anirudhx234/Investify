@@ -4,14 +4,12 @@ import { AiOutlineStock } from "react-icons/ai";
 import { FaChartPie } from "react-icons/fa";
 import { RiExchange2Fill } from "react-icons/ri";
 import { TbCoinFilled } from "react-icons/tb";
-import { IoGridSharp } from "react-icons/io5";
 
-const assetsIcons: Record<Assets.Type | "", ReactNode> = {
-  "": <IoGridSharp className="text-primary text-lg" />,
-  stocks: <AiOutlineStock className="text-success text-lg" />,
-  "mutual-funds": <FaChartPie className="text-warning text-lg" />,
-  etfs: <RiExchange2Fill className="text-info text-lg" />,
-  crypto: <TbCoinFilled className="text-error text-lg" />,
+const assetsIcons: Record<Assets.Type, ReactNode> = {
+  stocks: <AiOutlineStock className="text-lg text-success" />,
+  "mutual-funds": <FaChartPie className="text-lg text-warning" />,
+  etfs: <RiExchange2Fill className="text-lg text-info" />,
+  crypto: <TbCoinFilled className="text-lg text-error" />,
 };
 
 export default assetsIcons;

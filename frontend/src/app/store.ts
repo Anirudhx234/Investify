@@ -5,6 +5,7 @@ import { configureStore } from "@reduxjs/toolkit";
 import themeReducer from "../features/themeSlice";
 import appRouteReducer from "../features/appRouteSlice";
 import clientReducer from "../features/clientSlice";
+import searchReducer from "../features/searchSlice";
 
 import api from "../api/api";
 
@@ -12,7 +13,7 @@ import api from "../api/api";
 const persistConfig = {
   key: "root",
   storage,
-  blacklist: ["appRoute", api.reducerPath],
+  whitelist: ["theme", "client"],
 };
 
 /* local storage persisted reducer */
@@ -20,6 +21,7 @@ const persistedReducer = persistCombineReducers(persistConfig, {
   theme: themeReducer,
   appRoute: appRouteReducer,
   client: clientReducer,
+  search: searchReducer,
   [api.reducerPath]: api.reducer,
 });
 
