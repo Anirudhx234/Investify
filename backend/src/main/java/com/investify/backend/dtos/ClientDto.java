@@ -5,13 +5,18 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.UUID;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
 public class ClientDto {
-    private Long id;
-    private String username;
+    private String id;
     private String email;
-    private String token;
+    private String username;
+    private String profilePicture;
+    private int age;
+    private Double income;
+    private String financialGoals;
 }

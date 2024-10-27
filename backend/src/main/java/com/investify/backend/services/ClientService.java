@@ -10,18 +10,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestClientException;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.nio.CharBuffer;
-import java.util.Base64;
 import java.util.Optional;
+import java.util.UUID;
 
 @RequiredArgsConstructor
 @Service
 public class ClientService {
 
+    private final AuthService authService;
     private final ClientRepository clientRepository;
 
     private final PasswordEncoder passwordEncoder;
@@ -31,22 +30,21 @@ public class ClientService {
     @Autowired
     S3Service s3Service;
 
-    public ClientProfileDto login(CredentialsDto credentialsDto) {
-        Client client = clientRepository.findByEmail(credentialsDto.getEmail())
-                .orElseThrow(() -> new RestException("Unknown client", HttpStatus.NOT_FOUND));
+    public ClientDto login(CredentialsDto credentialsDto) {
+        Client client = findByEmail(credentialsDto.getEmail());
 
         if (passwordEncoder.matches(CharBuffer.wrap(credentialsDto.getPassword()), client.getPassword())) {
             if (!client.isVerified()) {
                 throw new RestException("Email not verified. Please check your email for verification.", HttpStatus.FORBIDDEN);
             }
-            return clientMapper.toClientProfileDto(client);
+            return clientMapper.toClientDto(client);
         }
 
         throw new RestException("Invalid password", HttpStatus.BAD_REQUEST);
     }
 
 
-    public ClientDto register(SignUpDto clientDto) {
+    public ClientDto signup(SignUpDto clientDto) {
         Optional<Client> optionalClient1 = clientRepository.findByUsername(clientDto.getUsername());
 
         if (optionalClient1.isPresent()) {
@@ -68,21 +66,20 @@ public class ClientService {
     }
 
     public void saveVerificationToken(String email, String token) {
-        Optional<Client> clientOpt = clientRepository.findByEmail(email);
-        if (clientOpt.isPresent()) {
-            Client client = clientOpt.get();
-            client.setVerificationToken(token);  // Save the token in the client's entity
-            clientRepository.save(client);
-        }
+        Client client = findByEmail(email);
+
+        client.setVerificationToken(token);
+        clientRepository.save(client);
     }
 
-    public boolean verifyUser(String token) {
+    public boolean verifyClient(String token, String email) {
         Optional<Client> clientOpt = clientRepository.findByVerificationToken(token);
 
         if (clientOpt.isPresent()) {
             Client client = clientOpt.get();
             client.setVerified(true);  // Set the 'verified' flag to true
             client.setVerificationToken(null);  // Clear the verification token after success
+            client.setEmail(email);
             clientRepository.save(client);
             return true;
         }
@@ -91,101 +88,99 @@ public class ClientService {
     }
 
 
-    public ClientProfileDto modifyProfile(String email, ModifyProfileDto modifyProfileDto) {
-        Client client = clientRepository.findByEmail(email)
-                .orElseThrow(() -> new RestException("Client not found", HttpStatus.NOT_FOUND));
+    public ClientDto updateProfile(String clientId, UpdateProfileDto updateProfileDto) {
+        Client client = findById(clientId);
 
-        if (modifyProfileDto.getUsername() != null) {
-            Optional<Client> optionalClient1 = clientRepository.findByUsername(modifyProfileDto.getUsername());
+        if (updateProfileDto.getUsername() != null) {
+            Optional<Client> optionalClient1 = clientRepository.findByUsername(updateProfileDto.getUsername());
             if (optionalClient1.isPresent()) {
                 throw new RestException("Username already exists", HttpStatus.BAD_REQUEST);
             }
-            client.setUsername(modifyProfileDto.getUsername());
+            client.setUsername(updateProfileDto.getUsername());
         }
 
-        if (modifyProfileDto.getPassword() != null) {
-            String encodedPassword = passwordEncoder.encode(modifyProfileDto.getPassword());
+        if (updateProfileDto.getPassword() != null) {
+            String encodedPassword = passwordEncoder.encode(updateProfileDto.getPassword());
             client.setPassword(encodedPassword);
         }
 
-        if (modifyProfileDto.getProfilePicture() != null) {
+        if (updateProfileDto.getProfilePicture() != null) {
             try {
-                String s3FilePath = s3Service.uploadFile(modifyProfileDto.getProfilePicture());
+                String s3FilePath = s3Service.uploadFile(updateProfileDto.getProfilePicture());
                 client.setProfilePicture(s3FilePath);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
         }
 
-        if (modifyProfileDto.getAge() > 0) {
-            client.setAge(modifyProfileDto.getAge());
+        if (updateProfileDto.getAge() > 0) {
+            client.setAge(updateProfileDto.getAge());
         }
 
-        if (modifyProfileDto.getIncome() != null && modifyProfileDto.getIncome() > 0.0) {
-            client.setIncome(modifyProfileDto.getIncome());
+        if (updateProfileDto.getIncome() != null && updateProfileDto.getIncome() > 0.0) {
+            client.setIncome(updateProfileDto.getIncome());
         }
 
-        if (modifyProfileDto.getFinancialGoals() != null) {
-            client.setFinancialGoals(modifyProfileDto.getFinancialGoals());
+        if (updateProfileDto.getFinancialGoals() != null) {
+            client.setFinancialGoals(updateProfileDto.getFinancialGoals());
         }
 
         Client updatedClient = clientRepository.save(client);
-        return clientMapper.toClientProfileDto(updatedClient);
+        return clientMapper.toClientDto(updatedClient);
     }
 
-    public ClientProfileDto modifyPassword(String token, String newPassword) {
-        Client client = clientRepository.findByVerificationToken(token)
-                .orElseThrow(() -> new RestException("Client not found", HttpStatus.NOT_FOUND));
+    public ClientDto updatePassword(String token, String newPassword) {
+        Client client = findByVerificationToken(token);
 
         client.setVerificationToken(null);
 
         client.setPassword(passwordEncoder.encode(newPassword));
         clientRepository.save(client);
 
-        return clientMapper.toClientProfileDto(client);
+        return clientMapper.toClientDto(client);
     }
 
-    public ClientProfileDto modifyEmail(String oldEmail, String newEmail) {
-        Client client = clientRepository.findByEmail(oldEmail)
-                .orElseThrow(() -> new RestException("Client not found", HttpStatus.NOT_FOUND));
+    public ClientDto updateEmail(String clientId, String newEmail) {
+        Client client = findById(clientId);
 
         client.setEmail(newEmail);
         clientRepository.save(client);
 
-        return clientMapper.toClientProfileDto(client);
-    }
-
-    public ClientProfileDto deleteClient(String email) {
-        Client client = clientRepository.findByEmail(email)
-                .orElseThrow(() -> new RestException("Client not found", HttpStatus.NOT_FOUND));
-
-        clientRepository.delete(client);
-
-        return clientMapper.toClientProfileDto(client);
-    }
-
-    public ClientDto findBasicById(Long id) {
-        Client client = clientRepository.findById(id)
-                .orElseThrow(() -> new RestException("Unknown client", HttpStatus.NOT_FOUND));
         return clientMapper.toClientDto(client);
     }
 
-    public ClientProfileDto findById(Long id) {
-        Client client = clientRepository.findById(id)
-                .orElseThrow(() -> new RestException("Unknown client", HttpStatus.NOT_FOUND));
-        return clientMapper.toClientProfileDto(client);
+    public ClientDto deleteClient(String clientId) {
+        Client client = findById(clientId);
+
+        clientRepository.delete(client);
+
+        return clientMapper.toClientDto(client);
     }
 
-    public ClientProfileDto findByEmail(String email) {
-        Client client = clientRepository.findByEmail(email)
-                .orElseThrow(() -> new RestException("Unknown client", HttpStatus.NOT_FOUND));
-        return clientMapper.toClientProfileDto(client);
+    public BasicClientDto findBasicDtoById(String clientId) {
+        return clientMapper.toBasicClientDto(findById(clientId));
     }
 
-    public ClientProfileDto findByVerificationToken(String token) {
-        Client client = clientRepository.findByVerificationToken(token)
+    public ClientDto findDtoById(String clientId) {
+        return clientMapper.toClientDto(findById(clientId));
+    }
+
+    private Client findById(String clientId) {
+        if ("me".equals(clientId)) {
+            return authService.getLoggedInClient();
+        }
+        return clientRepository.findById(UUID.fromString(clientId))
                 .orElseThrow(() -> new RestException("Unknown client", HttpStatus.NOT_FOUND));
-        return clientMapper.toClientProfileDto(client);
+    }
+
+    private Client findByEmail(String email) {
+        return clientRepository.findByEmail(email)
+                .orElseThrow(() -> new RestException("Unknown client", HttpStatus.NOT_FOUND));
+    }
+
+    private Client findByVerificationToken(String token) {
+        return clientRepository.findByVerificationToken(token)
+                .orElseThrow(() -> new RestException("Unknown client", HttpStatus.NOT_FOUND));
     }
 
 }

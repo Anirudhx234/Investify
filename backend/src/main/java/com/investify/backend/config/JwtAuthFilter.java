@@ -1,5 +1,6 @@
 package com.investify.backend.config;
 
+import com.investify.backend.services.AuthService;
 import com.investify.backend.utils.Utils;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -28,7 +29,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         Cookie[] cookies = httpServletRequest.getCookies();
         if (cookies != null) {
             Cookie jwtCookie = Arrays.stream(cookies)
-                    .filter(cookie -> "jwt".equals(cookie.getName())) // Replace 'jwt' with the actual cookie name
+                    .filter(cookie -> "jwt".equals(cookie.getName()))
                     .findFirst()
                     .orElse(null);
 
@@ -40,8 +41,8 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                             clientAuthenticationProvider.validateToken(token));
                 } catch (RuntimeException e) {
                     SecurityContextHolder.clearContext();
-                    // throw e;
-                    jwtCookie = Utils.removeJWTCookie("jwt");
+                    System.out.println(e);
+                    jwtCookie = AuthService.removeJWTCookie("jwt");
                     httpServletResponse.addCookie(jwtCookie);
                 }
             }

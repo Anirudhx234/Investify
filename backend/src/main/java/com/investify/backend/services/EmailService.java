@@ -49,7 +49,7 @@ public class EmailService {
             MimeMessageHelper helper = new MimeMessageHelper(message, true);
             helper.setTo(to);
             helper.setSubject("Email Verification");
-            helper.setText("<p>Please click the following link to modify your profile's email address:</p>" +
+            helper.setText("<p>Please click the following link to update your account's email address:</p>" +
                     "<a href=\"" + verificationLink + "\">Verify Email</a>", true);
 
             mailSender.send(message);

@@ -9,11 +9,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class ClientProfileDto {
+public class ForgotPasswordDto {
     private String email;
-    private String username;
-    private String profilePicture;
-    private int age;
-    private Double income;
-    private String financialGoals;
 }
