@@ -18,7 +18,7 @@ export const appPages: AppPage[] = [
   },
   {
     path: "/verify-email",
-    routeArgs: { type: "verification", method: "PATCH", url: "/verify-email" },
+    routeArgs: { type: "verification", method: "GET", url: "/auth/verify-email" },
   },
   {
     path: "/login",
@@ -34,6 +34,7 @@ export const appPages: AppPage[] = [
     label: "Clients",
     nest: true,
     drawerMode: "open",
+    protection: "signed-in",
   },
   {
     path: "/home",

@@ -11,11 +11,11 @@ export default function ProfilePicture({
   className?: string | undefined;
   alt?: string | undefined;
 }) {
-  if (typeof src === "object") {
-    return <ProfilePictureUserSrc src={src} alt={alt} className={className} />;
+  if (typeof src === "string") {
+    return <ProfilePictureStringSrc src={src} alt={alt} className={className} />;
   }
 
-  return <ProfilePictureStringSrc src={src} alt={alt} className={className} />;
+  return <ProfilePictureUserSrc src={src} alt={alt} className={className} />;
 }
 
 function ProfilePictureStringSrc({
@@ -43,15 +43,15 @@ function ProfilePictureUserSrc({
   className,
   alt,
 }: {
-  src: { id?: string | undefined };
+  src?: { id?: string | undefined } | undefined;
   className?: string | undefined;
   alt?: string | undefined;
 }) {
-  const { data } = useClientProfileQuery({ id: src.id });
+  const { data } = useClientProfileQuery({ id: src?.id });
 
   return (
     <Link
-      href={`/clients/${src.id ?? "me"}`}
+      href={`/clients/${src?.id ?? "me"}`}
       className={twMerge("h-8 w-8", className)}
     >
       <img

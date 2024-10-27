@@ -17,11 +17,11 @@ export default function ProfilePersonalForm() {
   useEffect(() => {
     if (clientProfileState.data) {
       personalForm.reset({
-        age: clientProfileState.data.age,
-        income: clientProfileState.data.income,
+        age: clientProfileState.data.age ?? 0,
+        income: clientProfileState.data.income ?? 0,
       });
     }
-  }, [personalForm, clientProfileState.data]);
+  }, [personalForm, clientProfileState]);
 
   const isBuffering =
     clientProfileState.isFetching || modifyProfileState.isLoading;
@@ -61,7 +61,7 @@ export default function ProfilePersonalForm() {
       <div className="divider"></div>
 
       <form
-        className="flex w-full flex-col"
+        className="flex w-full flex-col gap-4"
         onSubmit={personalForm.handleSubmit(onModifyProfile)}
         aria-label="form"
         aria-disabled={isBuffering}

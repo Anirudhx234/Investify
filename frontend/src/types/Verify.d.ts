@@ -1,3 +1,5 @@
+import type AppClient from "./AppClient";
+
 /* request / response types for verify routes */
 declare namespace Verify {
   interface Args {
@@ -6,8 +8,8 @@ declare namespace Verify {
     searchParams?: string | undefined;
   }
 
-  interface Response {
-    message: string;
+  interface Response extends AppClient {
+    message?: string | undefined;
   }
 }
 

@@ -2,7 +2,7 @@ import { useParams } from "wouter";
 import {
   useClientProfileQuery,
   useModifyEmailMutation,
-  useModifyPasswordMutation,
+  useModifyProfileMutation,
 } from "../api/clients";
 import { useEffect, useRef } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
@@ -14,7 +14,7 @@ export default function ProfileAccountForm() {
   const params = useParams() as { id: string };
   const clientProfileState = useClientProfileQuery({ id: params.id });
   const [modifyEmail, modifyEmailState] = useModifyEmailMutation();
-  const [modifyPassword, modifyPasswordState] = useModifyPasswordMutation();
+  const [modifyProfile, modifyProfileState] = useModifyProfileMutation();
   const modalRef = useRef<HTMLDialogElement>(null);
   const emailForm = useForm<{ email: string }>();
   const passwordForm = useForm<{ password: string }>();
@@ -22,46 +22,53 @@ export default function ProfileAccountForm() {
   useEffect(() => {
     if (clientProfileState.data) {
       emailForm.reset({ email: clientProfileState.data.email });
-      passwordForm.reset({ password: "password" });
+      passwordForm.reset({ password: "" });
     }
-  }, [emailForm, passwordForm, clientProfileState.data]);
+  }, [emailForm, passwordForm, clientProfileState]);
 
   const isLoggedInUser = params.id === "me";
 
   const isBuffering =
     clientProfileState.isFetching ||
     modifyEmailState.isLoading ||
-    modifyPasswordState.isLoading;
+    modifyProfileState.isLoading;
 
-  const isError = modifyEmailState.isError || modifyPasswordState.isError;
+  const isError = modifyEmailState.isError || modifyProfileState.isError;
 
   const errorMssg =
     modifyEmailState.error?.message ||
-    modifyPasswordState.error?.message ||
+    modifyProfileState.error?.message ||
     "An error occurred";
 
   const onModifyEmail: SubmitHandler<{ email: string }> = async (formData) => {
+    const oldEmail = clientProfileState.data!.email;
+
     try {
       await modifyEmail({ id: params.id, newEmail: formData.email }).unwrap();
     } catch {
       /* empty */
     }
 
+    emailForm.reset({ email: oldEmail });
     modalRef.current?.showModal();
   };
 
   const onModifyPassword: SubmitHandler<{ password: string }> = async (
     formData,
   ) => {
+    const body = new FormData();
+    body.set("password", formData.password);
+
     try {
-      await modifyPassword({
+      await modifyProfile({
         id: params.id,
-        newPassword: formData.password,
+        formData: body,
       }).unwrap();
     } catch {
       /* empty */
     }
 
+    passwordForm.reset({ password: "" });
     modalRef.current?.showModal();
   };
 
@@ -76,7 +83,7 @@ export default function ProfileAccountForm() {
       </h1>
       <div className="divider"></div>
       <form
-        className="flex w-full flex-col"
+        className="flex w-full flex-col gap-4"
         onSubmit={emailForm.handleSubmit(onModifyEmail)}
         aria-label="form"
         aria-disabled={isBuffering || !isLoggedInUser}
@@ -97,7 +104,7 @@ export default function ProfileAccountForm() {
       </form>
       {isLoggedInUser && (
         <form
-          className="mt-8 flex w-full flex-col"
+          className="mt-8 flex w-full flex-col gap-4"
           onSubmit={passwordForm.handleSubmit(onModifyPassword)}
           aria-label="form"
           aria-disabled={isBuffering}

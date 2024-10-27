@@ -32,7 +32,7 @@ export default function Navbar() {
           <NavLinks />
         </ul>
         {loggedInClientId !== null ? (
-          <ProfilePicture src={{ id: loggedInClientId }} />
+          <ProfilePicture />
         ) : (
           <Link href="/login" className="btn btn-secondary btn-sm">
             Login

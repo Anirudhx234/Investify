@@ -6,8 +6,8 @@ interface AppClient {
   email: string;
   username: string;
   profilePicture?: string | undefined;
-  age?: number | undefined;
-  income?: number | undefined;
+  age?: number | undefined | null;
+  income?: number | undefined | null;
 }
 
 export default AppClient;

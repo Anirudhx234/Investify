@@ -6,7 +6,7 @@ export interface PageArgs {
 
 export interface VerificationArgs {
   type: "verification";
-  method: "PATCH";
+  method: "GET";
   url: string;
 }
 

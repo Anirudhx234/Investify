@@ -1,9 +1,9 @@
 import type { AppPage } from "../types/AppRouter";
 
-import { Redirect, Route, Switch } from "wouter";
+import { Redirect, Route, Switch, useLocation } from "wouter";
 import appPages from "./appPages";
 import VerificationPage from "../pages/VerificationPage";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import useAppDispatch from "../hooks/useAppDispatch";
 import { setAppRouteArgs } from "../features/appRouteSlice";
 import useAppSelector from "../hooks/useAppSelector";
@@ -20,6 +20,16 @@ export default function AppRouter() {
 }
 
 function AppPage({ ...appPage }: AppPage) {
+  const auth = useAppSelector((state) => state.client.id !== null);
+  const [prevAuth, setPrevAuth] = useState(auth);
+  const [, navigate] = useLocation();
+
+  if (prevAuth !== auth) {
+    setPrevAuth(auth);
+    if (appPage.protection === "signed-in" && !auth) navigate("/");
+    if (appPage.protection === "signed-out" && auth) navigate("/");
+  }
+
   return (
     <Route
       path={appPage.path}
@@ -31,7 +41,6 @@ function AppPage({ ...appPage }: AppPage) {
 
 function AppPageComponent({ ...appPage }: AppPage) {
   const dispatch = useAppDispatch();
-  const auth = useAppSelector((state) => state.client.id !== null);
 
   useEffect(() => {
     const appRoute = { ...appPage, component: undefined };
@@ -42,14 +51,6 @@ function AppPageComponent({ ...appPage }: AppPage) {
       dispatch(setAppRouteArgs(null));
     };
   }, [dispatch, appPage]);
-
-  if (appPage.protection === "signed-in" && !auth) {
-    return <Redirect to="/" replace />;
-  }
-
-  if (appPage.protection === "signed-out" && auth) {
-    return <Redirect to="/" replace />;
-  }
 
   if (appPage.routeArgs.type === "redirection") {
     return <Redirect to={appPage.routeArgs.path} replace />;

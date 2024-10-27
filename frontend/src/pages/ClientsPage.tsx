@@ -26,10 +26,10 @@ export default function ClientsPage() {
   if (data) {
     return (
       <Switch>
-        <Route path="/account" component={() => <ProfileAccountForm />} />
-        <Route path="/general" component={() => <ProfileGeneralForm />} />
+        <Route path="/account" component={ProfileAccountForm} />
+        <Route path="/general" component={ProfileGeneralForm} />
         {isLoggedInUser && (
-          <Route path="/personal" component={() => <ProfilePersonalForm />} />
+          <Route path="/personal" component={ProfilePersonalForm} />
         )}
         <Route path="*" component={() => <Redirect to="/account" replace />} />
       </Switch>

@@ -1,21 +1,17 @@
-import { useSearch } from "wouter";
-import { useVerifyMutation } from "../api/verify";
 import type { VerificationArgs } from "../types/AppRouter";
-import { useEffect } from "react";
+
+import { useSearch } from "wouter";
+import { useVerifyQuery } from "../api/verify";
 import { MdErrorOutline } from "react-icons/md";
 
 export default function VerificationPage({ url, method }: VerificationArgs) {
   const searchParams = useSearch();
-  const [verify, { data, isSuccess, isError, error }] = useVerifyMutation();
+  const { isSuccess, isError, error } = useVerifyQuery({ url, method, searchParams });
 
   const errorMssg = error?.message ?? "Invalid Verification URL";
 
-  useEffect(() => {
-    verify({ url, method, searchParams });
-  }, [verify, url, method, searchParams]);
-
   if (isSuccess) {
-    return <p className="text-success">{data.message}</p>;
+    return <p className="text-success">Success!</p>;
   }
 
   if (isError) {

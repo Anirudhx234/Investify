@@ -31,11 +31,14 @@ export default function FormNumberInput<T extends FieldValues>({
 
   const registerInputProps = form.register(name as Path<T>, {
     required: required ? `${label} is required` : false,
-    valueAsNumber: true,
     min,
     max,
     validate: {
-      decimal: (value) => `${value}`.includes(".") === !!decimal,
+      decimal: (value) => {
+        if (!decimal && `${value}`.includes(".")) {
+          return "Decimal values are not allowed";
+        }
+      },
     },
   });
 
@@ -48,6 +51,7 @@ export default function FormNumberInput<T extends FieldValues>({
       errors={form.formState.errors}
       autoComplete={autoComplete}
       disabled={disabled}
+      step="any"
     />
   );
 }

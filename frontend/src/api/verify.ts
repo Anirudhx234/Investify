@@ -3,13 +3,14 @@ import api from "./api";
 
 export const verifyApi = api.injectEndpoints({
   endpoints: (build) => ({
-    verify: build.mutation<Verify.Response, Verify.Args>({
+    verify: build.query<Verify.Response, Verify.Args>({
       query: ({ url, method, searchParams }) => ({
         url: url + "?" + (searchParams ?? ""),
         method,
       }),
+      providesTags: (res) => [{ type: "clients", id: res?.id }],
     }),
   }),
 });
 
-export const { useVerifyMutation } = verifyApi;
+export const { useVerifyQuery } = verifyApi;

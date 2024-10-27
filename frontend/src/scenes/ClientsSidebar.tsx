@@ -1,6 +1,5 @@
 import { useParams } from "wouter";
 import LinksMenu from "../components/LinksMenu";
-import useAppSelector from "../hooks/useAppSelector";
 import { useLogoutMutation } from "../api/auth";
 import { useDeleteClientMutation } from "../api/clients";
 import Modal from "../components/Modal";
@@ -15,8 +14,7 @@ export default function ClientsSidebar() {
   const modalRef = useRef<HTMLDialogElement>(null);
 
   const dispatch = useAppDispatch();
-  const loggedInClientId = useAppSelector((state) => state.client.id);
-  const isLoggedInUser = params.id === loggedInClientId;
+  const isLoggedInUser = params.id === "me";
 
   const isError = logoutState.isError || deleteAccountState.isError;
   const errorMssg =

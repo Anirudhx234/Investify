@@ -4,20 +4,18 @@ import type { SubmitHandler } from "react-hook-form";
 import { useRef } from "react";
 import { useForm } from "react-hook-form";
 import { useSignUpMutation } from "../api/auth";
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
 import FormEmailInput from "../components/FormEmailInput";
 import FormTextInput from "../components/FormTextInput";
 import FormPasswordInput from "../components/FormPasswordInput";
 import FormConfirmPasswordInput from "../components/FormConfirmPasswordInput";
 import Modal from "../components/Modal";
-import useAppDispatch from "../hooks/useAppDispatch";
-import { setClientId } from "../features/clientSlice";
 
 export default function SignUpForm() {
-  const dispatch = useAppDispatch();
+  const [, navigate] = useLocation();
   const form = useForm<Auth.SignUpRequest>();
   const modalRef = useRef<HTMLDialogElement>(null);
-  const [signUp, { data, isLoading, isSuccess, error }] = useSignUpMutation();
+  const [signUp, { isLoading, isSuccess, error }] = useSignUpMutation();
 
   const errorMssg = error?.message;
 
@@ -34,7 +32,7 @@ export default function SignUpForm() {
 
   const onModalExit = () => {
     modalRef.current?.close();
-    if (isSuccess) dispatch(setClientId(data.id));
+    navigate("/login");
   };
 
   return (

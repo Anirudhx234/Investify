@@ -27,7 +27,7 @@ export default function ProfileGeneralForm() {
         profilePicture: undefined,
       });
     }
-  }, [generalForm, clientProfileState.data]);
+  }, [generalForm, clientProfileState]);
 
   const isLoggedInUser = params.id === "me";
 

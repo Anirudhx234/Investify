@@ -21,17 +21,6 @@ const clientsApi = api.injectEndpoints({
         method: "PATCH",
         body: { newEmail },
       }),
-      invalidatesTags: (res) => [{ type: "clients", id: res?.id }],
-    }),
-    modifyPassword: build.mutation<
-      AppClient,
-      Clients.IdRequest & { newPassword: string }
-    >({
-      query: ({ id = "me", newPassword }) => ({
-        url: "/clients/" + id + "/password",
-        method: "PATCH",
-        body: { newPassword },
-      }),
     }),
     modifyProfile: build.mutation<
       AppClient,
@@ -57,7 +46,6 @@ const clientsApi = api.injectEndpoints({
 export const {
   useClientProfileQuery,
   useModifyEmailMutation,
-  useModifyPasswordMutation,
   useModifyProfileMutation,
   useDeleteClientMutation,
 } = clientsApi;

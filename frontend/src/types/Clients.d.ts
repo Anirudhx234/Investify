@@ -7,8 +7,8 @@ declare namespace Clients {
   interface ModifyProfileRequestBody {
     username?: string | undefined;
     profilePicture?: File | undefined;
-    age?: number | undefined;
-    income?: number | undefined;
+    age?: number | undefined | null;
+    income?: number | undefined | null;
   }
 
   interface ModifyProfileForm {
