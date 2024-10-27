@@ -45,6 +45,11 @@ declare namespace Assets {
   }
 
   type Set = Record<Type, Omit<Asset, "type">[]>;
+
+  interface MetaDataRequest {
+    type: Type;
+    symbol: string;
+  }
 }
 
 export default Assets;

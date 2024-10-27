@@ -24,7 +24,21 @@ export const assetsApi = api.injectEndpoints({
         return transformedData;
       },
     }),
+    assetMetaData: build.query<object, Assets.MetaDataRequest>({
+      query: ({ type, symbol }) => ({
+        url: `/assets/${type}/${symbol}/quote`,
+        method: "GET",
+      }),
+      providesTags: (_res, _err, args) => [
+        { type: "asset-metadata", id: `/${args.type}/${args.symbol}` },
+      ],
+    }),
+    // assetChartData: build.query<>({}),
   }),
 });
 
-export const { useLazyAssetsSetQuery, useAssetsSetQuery } = assetsApi;
+export const {
+  useLazyAssetsSetQuery,
+  useAssetsSetQuery,
+  useAssetMetaDataQuery,
+} = assetsApi;

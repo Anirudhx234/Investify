@@ -14,7 +14,7 @@ export default function AssetsSidebar() {
         menuItems={{ items: [{ link: "/", label: "search" }] }}
         icons={{ "/": <FaSearch /> }}
       />
-      <div className="divider"></div>
+      <div className="h-8"></div>
       {storeSearchValue && (
         <AssetsSidebarSearchResults searchValue={storeSearchValue} />
       )}
@@ -31,15 +31,14 @@ function AssetsSidebarSearchResults({ searchValue }: { searchValue: string }) {
 
   return (
     <>
-      <p>
-        (Searching for "<span className="text-info">{searchValue}</span>")
+      <p className="text-xs">
+        Searching for "<span className="text-info">{searchValue}</span>"...
       </p>
       <LinksMenu
         className="menu w-full"
         menuItems={{ items: data }}
         icons={assetsIcons}
       />
-      <div className="divider"></div>
     </>
   );
 }
