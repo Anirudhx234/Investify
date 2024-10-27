@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
+import software.amazon.awssdk.services.s3.endpoints.internal.Value;
 
 import java.util.UUID;
 
@@ -16,7 +17,9 @@ import java.util.UUID;
 @Builder
 @Data
 @Entity
-@Table(name = "client")
+@Table(name = "client", uniqueConstraints = {
+        @UniqueConstraint(columnNames = "username")
+})
 public class Client {
 
     @Id @GeneratedValue
@@ -42,7 +45,7 @@ public class Client {
     private String profilePicture;
 
     @Column(name = "age")
-    private int age;
+    private Integer age;
 
     @Column(name = "income")
     private Double income;
@@ -51,5 +54,5 @@ public class Client {
     private String financialGoals;
 
     @Column(name = "verification_token")
-    private String verificationToken;  // Add this field to store the verification token
+    private String verificationToken;
 }

@@ -1,6 +1,7 @@
 package com.investify.backend.controllers;
 
 import com.investify.backend.dtos.*;
+import com.investify.backend.exceptions.RestException;
 import com.investify.backend.services.AuthService;
 import com.investify.backend.services.ClientService;
 import com.investify.backend.services.EmailService;
@@ -9,6 +10,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -46,8 +48,12 @@ public class ClientController {
 
     @PatchMapping("/{clientId}/email")
     public ResponseEntity<ClientDto> updateEmail(@RequestBody @Valid UpdateEmailDto updateEmailDto, @PathVariable String clientId, HttpServletResponse response) {
-
+        String newEmail = updateEmailDto.getNewEmail();
         ClientDto client = clientService.findDtoById(clientId);
+
+        if (newEmail.equals(client.getEmail())) {
+            throw new RestException("New email must be different than current email.", HttpStatus.BAD_REQUEST);
+        }
 
         String verificationToken = UUID.randomUUID().toString();
         String verificationLink = frontendURL + "/verify-email?token=" + verificationToken + "&email=" + updateEmailDto.getNewEmail();
