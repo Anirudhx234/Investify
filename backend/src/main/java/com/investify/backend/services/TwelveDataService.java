@@ -1,11 +1,16 @@
 package com.investify.backend.services;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
+
+import java.util.*;
 
 @Service
 @PropertySource("classpath:application-APIs.properties")
@@ -20,6 +25,92 @@ public class TwelveDataService {
     public TwelveDataService(WebClient.Builder polygonWebClientBuilder) {
         this.webClient = polygonWebClientBuilder.baseUrl("https://api.twelvedata.com").build();
     }
+
+    public Mono<Map<String, List<Map<String, String>>>> searchForAssets(String symbol) {
+        return webClient.get()
+                .uri(uriBuilder -> uriBuilder
+                        .path("/symbol_search")
+                        .queryParam("symbol", symbol)
+                        .queryParam("source", "docs")
+                        .build())
+                .retrieve()
+                .bodyToMono(String.class)
+                .map(this::parseSearchAssets);
+    }
+
+    private Map<String, List<Map<String, String>>> parseSearchAssets(String jsonResponse) {
+        ObjectMapper objectMapper = new ObjectMapper();
+        Map<String, Object> parsedResponse;
+
+        try {
+            parsedResponse = objectMapper.readValue(jsonResponse, new TypeReference<>() {});
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException("Failed to parse API response", e);
+        }
+
+        List<Map<String, String>> data = (List<Map<String, String>>) parsedResponse.get("data");
+
+        // Initialize categorized asset lists
+        List<Map<String, String>> stocks = new ArrayList<>();
+        List<Map<String, String>> mutualFunds = new ArrayList<>();
+        List<Map<String, String>> etfs = new ArrayList<>();
+        List<Map<String, String>> cryptocurrencies = new ArrayList<>();
+
+        // Sets to track unique symbol-name pairs for each asset type
+        Set<String> stockSet = new HashSet<>();
+        Set<String> mutualFundSet = new HashSet<>();
+        Set<String> etfSet = new HashSet<>();
+        Set<String> cryptoSet = new HashSet<>();
+
+        // Categorize the assets based on their instrument type
+        for (Map<String, String> asset : data) {
+            String type = asset.get("instrument_type").toLowerCase();
+            String symbol = asset.get("symbol");
+            String name = asset.get("instrument_name");
+            String uniqueKey = symbol; // Unique key for tracking duplicates
+
+            Map<String, String> assetInfo = Map.of(
+                    "symbol", symbol,
+                    "name", name
+            );
+
+            switch (type) {
+                case "common stock":
+                case "preferred stock":
+                    if (stockSet.add(uniqueKey)) {
+                        stocks.add(assetInfo);
+                    }
+                    break;
+                case "mutual fund":
+                    if (mutualFundSet.add(uniqueKey)) {
+                        mutualFunds.add(assetInfo);
+                    }
+                    break;
+                case "etf":
+                    if (etfSet.add(uniqueKey)) {
+                        etfs.add(assetInfo);
+                    }
+                    break;
+                case "cryptocurrency":
+                    if (cryptoSet.add(uniqueKey)) {
+                        cryptocurrencies.add(assetInfo);
+                    }
+                    break;
+                default:
+                    // Ignore other types or handle them as needed
+                    break;
+            }
+        }
+
+        // Return the final structured JSON response
+        return Map.of(
+                "stocks", stocks,
+                "mutual-funds", mutualFunds,
+                "etfs", etfs,
+                "crypto", cryptocurrencies
+        );
+    }
+
 
     // Example GET request:
     // https://api.twelvedata.com/time_series?symbol=AAPL&interval=1min&apikey=your_api_key

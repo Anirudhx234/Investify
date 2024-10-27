@@ -108,7 +108,7 @@ public class ClientService {
             }
         }
 
-        if (updateProfileDto.getAge() > 0) {
+        if (updateProfileDto.getAge() != null && updateProfileDto.getAge() > 0) {
             client.setAge(updateProfileDto.getAge());
         }
 
