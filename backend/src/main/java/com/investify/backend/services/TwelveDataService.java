@@ -2,6 +2,7 @@ package com.investify.backend.services;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -10,6 +11,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 @Service
@@ -91,7 +94,7 @@ public class TwelveDataService {
                         etfs.add(assetInfo);
                     }
                     break;
-                case "cryptocurrency":
+                case "digital currency":
                     if (cryptoSet.add(uniqueKey)) {
                         cryptocurrencies.add(assetInfo);
                     }
@@ -116,7 +119,7 @@ public class TwelveDataService {
     // https://api.twelvedata.com/time_series?symbol=AAPL&interval=1min&apikey=your_api_key
 
     // Valid intervals: 1min, 5min, 15min, 30min, 45min, 1h, 2h, 4h, 1day, 1week, 1month
-    public Mono<String> getAssetData(String ticker, String interval) {
+    public Mono<Map> getAssetTimeSeries(String ticker, String interval) {
         return webClient.get()
                 .uri(uriBuilder -> uriBuilder
                         .path("/time_series")
@@ -126,10 +129,10 @@ public class TwelveDataService {
                         .queryParam("apikey", twelveDataApiKey)
                         .build())
                 .retrieve()
-                .bodyToMono(String.class);
+                .bodyToMono(Map.class); // Parse response directly into a Map
     }
 
-    public Mono<String> getAssetQuote(String ticker, String interval) {
+    public Mono<Map> getAssetQuote(String ticker, String interval) {
         return webClient.get()
                 .uri(uriBuilder -> uriBuilder
                         .path("/quote")
@@ -137,13 +140,43 @@ public class TwelveDataService {
                         .queryParam("interval", interval)
                         .queryParam("outputsize", 5000) // Number of data points to get (5k is max)
                         .queryParam("apikey", twelveDataApiKey)
+                        .queryParam("source", "docs")
                         .build())
                 .retrieve()
-                .bodyToMono(String.class);
+                .bodyToMono(Map.class);
+    }
+
+    // Get current price of an asset
+    public Mono<String> getLivePrice(String symbol) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        return webClient.get()
+                .uri(uriBuilder -> uriBuilder
+                        .path("/price")
+                        .queryParam("symbol", symbol)
+                        .queryParam("apikey", twelveDataApiKey)
+                        .queryParam("source", "docs")
+                        .build())
+                .retrieve()
+                .bodyToMono(String.class)
+                .flatMap(priceResponse -> {
+                    try {
+                        // Parse the API response to extract the price
+                        JsonNode jsonNode = objectMapper.readTree(priceResponse);
+                        double price = jsonNode.get("price").asDouble();
+                        String datetime = LocalDateTime.now().format(formatter);
+
+                        // Create a new response object
+                        return Mono.just(String.format("{\"symbol\":\"%s\", \"price\":%s, \"datetime\":\"%s\"}", symbol, price, datetime));
+                    } catch (Exception e) {
+                        return Mono.error(new RuntimeException("Failed to parse API response", e));
+                    }
+                });
     }
 
     // Top 50 mutual funds (by total asset value)
-    public Mono<String> getPopularFunds() {
+    public Mono<Map> getPopularMutualFunds() {
         return webClient.get()
                 .uri(uriBuilder -> uriBuilder
                         .path("/mutual_funds/list")
@@ -151,11 +184,11 @@ public class TwelveDataService {
                         .queryParam("apikey", twelveDataApiKey)
                         .build())
                 .retrieve()
-                .bodyToMono(String.class);
+                .bodyToMono(Map.class);
     }
 
     // Top 50 mutual funds (by total asset value)
-    public Mono<String> getPopularETFs() {
+    public Mono<Map> getPopularETFs() {
         return webClient.get()
                 .uri(uriBuilder -> uriBuilder
                         .path("/etfs/list")
@@ -163,7 +196,7 @@ public class TwelveDataService {
                         .queryParam("apikey", twelveDataApiKey)
                         .build())
                 .retrieve()
-                .bodyToMono(String.class);
+                .bodyToMono(Map.class);
     }
 
     // The following methods will return lists containing all symbols of the requested asset type
@@ -186,16 +219,16 @@ public class TwelveDataService {
                 .bodyToMono(String.class);
     }
 
-    public Mono<String> getCryptoList() {
+    public Mono<Map> getCryptoList() {
         return webClient.get()
                 .uri(uriBuilder -> uriBuilder
                         .path("/cryptocurrencies")
                         .build())
                 .retrieve()
-                .bodyToMono(String.class);
+                .bodyToMono(Map.class);
     }
 
-    public Mono<String> getFundsList() {
+    public Mono<String> getMutualFundsList() {
         return webClient.get()
                 .uri(uriBuilder -> uriBuilder
                         .path("/funds")
