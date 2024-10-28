@@ -4,6 +4,7 @@ import { useParams } from "wouter";
 import { useAssetMetaDataQuery } from "../api/assets";
 import { MdErrorOutline } from "react-icons/md";
 import DataTable from "../components/DataTable";
+import AssetPageChart from "../scenes/AssetPageChart";
 
 export default function AssetPage() {
   return (
@@ -53,10 +54,6 @@ export default function AssetPage() {
       </div>
     </div>
   );
-}
-
-function AssetPageChart() {
-  return <></>;
 }
 
 function AssetPageGeneral() {

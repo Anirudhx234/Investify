@@ -50,6 +50,25 @@ declare namespace Assets {
     type: Type;
     symbol: string;
   }
+
+  interface ChartDataRequest {
+    type: Type;
+    symbol: string;
+    interval: string;
+  }
+
+  interface ChartDataEntry {
+    datetime: string;
+    open: number;
+    high: number;
+    low: number;
+    close: number;
+    volume: number;
+  }
+
+  interface ChartData {
+    values: ChartDataEntry[];
+  }
 }
 
 export default Assets;
