@@ -456,9 +456,11 @@ function SearchPage() {
   return (
     <div className="mt-12 flex w-full flex-col items-center gap-12">
       <SearchBar />
-        <StocksList stocks={top_gainers.top_gainers}/>
-        <StocksList stocks={top_losers.top_losers}/>
-        <StocksList stocks={popular_stocks.most_actively_traded}/>
+        <div className="grid grid-cols-3">
+            <StocksList title={"Top Gainers"} stocks={top_gainers.top_gainers}/>
+            <StocksList title={"Top Losers"} stocks={top_losers.top_losers}/>
+            <StocksList title={"Most Popular"} stocks={popular_stocks.most_actively_traded}/>
+        </div>
     </div>
   );
 }
