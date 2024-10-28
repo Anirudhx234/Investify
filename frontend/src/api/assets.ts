@@ -25,6 +25,39 @@ export const assetsApi = api.injectEndpoints({
         return transformedData;
       },
     }),
+
+    popularStocks: build.query<Assets.PopularStocksResponse, void>({
+      query: () => ({
+        url: "/assets/popular/stocks",
+        method: "GET",
+      }),
+    }),
+
+    popularMutualFunds: build.query<Assets.MutualFund[], void>({
+      query: () => ({
+        url: "/assets/popular/mutual-funds",
+        method: "GET",
+      }),
+      transformResponse: (res: Assets.PopularMutualFundsResponse) =>
+        res.result.list,
+    }),
+
+    popularEtfs: build.query<Assets.Etf[], void>({
+      query: () => ({
+        url: "/assets/popular/etfs",
+        method: "GET",
+      }),
+      transformResponse: (res: Assets.PopularEtfsResponse) => res.result.list,
+    }),
+
+    popularCrypto: build.query<Assets.Crypto[], void>({
+      query: () => ({
+        url: "/assets/popular/crypto",
+        method: "GET",
+      }),
+      transformResponse: (res: Assets.PopularCryptoResponse) => res.crypto,
+    }),
+
     assetMetaData: build.query<object, Assets.MetaDataRequest>({
       query: ({ type, symbol }) => ({
         url: `/assets/${type}/${symbol}/quote`,
@@ -34,6 +67,7 @@ export const assetsApi = api.injectEndpoints({
         { type: "asset-metadata", id: `/${args.type}/${args.symbol}` },
       ],
     }),
+
     assetChartData: build.query<Assets.ChartData, Assets.ChartDataRequest>({
       query: ({ type, symbol, interval }) => ({
         url: `/assets/${type}/${symbol}/chart?interval=${interval}`,
@@ -81,5 +115,9 @@ export const {
   useLazyAssetsSetQuery,
   useAssetsSetQuery,
   useAssetMetaDataQuery,
-  useAssetChartDataQuery
+  useAssetChartDataQuery,
+  usePopularStocksQuery,
+  usePopularMutualFundsQuery,
+  usePopularEtfsQuery,
+  usePopularCryptoQuery,
 } = assetsApi;

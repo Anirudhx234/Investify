@@ -76,6 +76,24 @@ declare namespace Assets {
   interface ChartData {
     values: ChartDataEntry[];
   }
+
+  interface PopularStocksResponse {
+    top_gainers: Stock[];
+    top_losers: Stock[];
+    most_actively_traded: Stock[];
+  }
+
+  interface PopularMutualFundsResponse {
+    result: { list: MutualFund[] };
+  }
+
+  interface PopularEtfsResponse {
+    result: { list: Etf[] };
+  }
+
+  interface PopularCryptoResponse {
+    crypto: Crypto[];
+  }
 }
 
 export default Assets;

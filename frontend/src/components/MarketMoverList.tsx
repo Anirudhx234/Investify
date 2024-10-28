@@ -7,7 +7,7 @@ import twMerge from "../util/twMerge.ts";
 
 export interface MarketMoverListProps<T extends object> {
   title: string;
-  data: T[];
+  data: T[] | undefined;
   getKey: (item: T) => string;
   getDataHeading1: (item: T) => ReactNode;
   getDataHeading2: (item: T) => ReactNode;
@@ -25,42 +25,49 @@ export function MarketMoverList<T extends object>({
   getDataContent2,
 }: MarketMoverListProps<T>) {
   return (
-    <div className="card h-80 w-80 overflow-y-auto">
-      <h2 className="card-title">{title}</h2>
-      <div className="card-body">
-        <table className="table table-zebra">
-          <tbody>
-            {data.map((item) => (
-              <tr key={getKey(item)}>
-                <th>
-                  <Link
-                    href={`/stocks/${getKey(item)}`}
-                    className="link capitalize"
-                  >
-                    {getKey(item)}
-                  </Link>
-                </th>
-                <td>
-                  <div className="flex flex-col items-center justify-center">
-                    <p className="text-sm font-semibold text-gray-500">
-                      {getDataHeading1(item)}
-                    </p>
-                    <p className="text-base">{getDataContent1(item)}</p>
-                  </div>
-                </td>
-                <td>
-                  <div className="flex flex-col items-center justify-center">
-                    <p className="text-sm font-semibold text-gray-500">
-                      {getDataHeading2(item)}
-                    </p>
-                    <p className="text-base">{getDataContent2(item)}</p>
-                  </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+    <div className="flex h-[25rem] w-[20rem] flex-col gap-4 overflow-hidden rounded-md bg-base-200 shadow-sm">
+      <h2 className="p-4 text-center text-lg font-semibold">{title}</h2>
+      {!data && (
+        <div className="flex h-full w-full items-center justify-center">
+          <span className="loading loading-bars"></span>
+        </div>
+      )}
+      {data && (
+        <div className="h-full w-full overflow-y-auto">
+          <table className="table text-center">
+            <tbody>
+              {data.map((item) => (
+                <tr key={getKey(item)}>
+                  <th>
+                    <Link
+                      href={`/stocks/${getKey(item)}`}
+                      className="link capitalize"
+                    >
+                      {getKey(item)}
+                    </Link>
+                  </th>
+                  <td>
+                    <div className="flex flex-col items-center justify-center">
+                      <p className="text-sm font-semibold text-gray-500">
+                        {getDataHeading1(item)}
+                      </p>
+                      <p className="text-base">{getDataContent1(item)}</p>
+                    </div>
+                  </td>
+                  <td>
+                    <div className="flex flex-col items-center justify-center">
+                      <p className="text-sm font-semibold text-gray-500">
+                        {getDataHeading2(item)}
+                      </p>
+                      <p className="text-base">{getDataContent2(item)}</p>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
     </div>
   );
 }
@@ -70,7 +77,7 @@ export function StocksList({
   stocks,
 }: {
   title: string;
-  stocks: Assets.Stock[];
+  stocks: Assets.Stock[] | undefined;
 }) {
   return (
     <MarketMoverList
@@ -88,7 +95,7 @@ export function StocksList({
           {item.change_percentage}
         </span>
       )}
-      getDataContent2={(item) => `$${item.price.toFixed(2)}`}
+      getDataContent2={(item) => `$${Math.round(item.price * 100) / 100}`}
     />
   );
 }
@@ -98,18 +105,18 @@ export function MutualFundsList({
   mutualFunds,
 }: {
   title: string;
-  mutualFunds: Assets.MutualFund[];
+  mutualFunds: Assets.MutualFund[] | undefined;
 }) {
   return (
     <MarketMoverList
       title={title}
       data={mutualFunds}
       getKey={(mf) => mf.symbol}
-      getDataHeading1={() => "Performance"}
+      getDataHeading1={() => "Perform"}
       getDataContent1={(mf) => (
         <span className="text-success">{mf.performance_rating}</span>
       )}
-      getDataHeading2={() => "Risk"}
+      getDataHeading2={() => "Risk Rat."}
       getDataContent2={(mf) => (
         <span className="text-error">{mf.risk_rating}</span>
       )}
@@ -122,17 +129,17 @@ export function EtfList({
   etfs,
 }: {
   title: string;
-  etfs: Assets.Etf[];
+  etfs: Assets.Etf[] | undefined;
 }) {
   return (
     <MarketMoverList
       title={title}
       data={etfs}
       getKey={(etf) => etf.symbol}
-      getDataHeading1={() => "Type"}
-      getDataContent1={(etf) => etf.fund_type}
-      getDataHeading2={() => "Family"}
-      getDataContent2={(etf) => etf.fund_family}
+      getDataHeading1={(etf) => etf.fund_type}
+      getDataContent1={() => <></>}
+      getDataHeading2={(etf) => etf.fund_family}
+      getDataContent2={() => <></>}
     />
   );
 }
@@ -142,7 +149,7 @@ export function CryptoList({
   crypto,
 }: {
   title: string;
-  crypto: Assets.Crypto[];
+  crypto: Assets.Crypto[] | undefined;
 }) {
   return (
     <MarketMoverList
@@ -157,10 +164,10 @@ export function CryptoList({
             item.percent_change_24h < 0 ? "text-error" : "text-success",
           )}
         >
-          {item.percent_change_24h.toFixed(2)}
+          {Math.round(item.percent_change_24h * 100) / 100}%
         </span>
       )}
-      getDataContent2={(item) => `$${item.price.toFixed(2)}`}
+      getDataContent2={(item) => `$${Math.round(item.price * 100) / 100}`}
     />
   );
 }
