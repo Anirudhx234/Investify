@@ -1,6 +1,7 @@
 import { Redirect, Route, Switch } from "wouter";
 import SearchBar from "../scenes/SearchBar";
 import AssetPage from "./AssetPage";
+import MarketMovers from "../scenes/MarketMovers";
 
 export default function AssetsPage() {
   return (
@@ -16,6 +17,7 @@ function SearchPage() {
   return (
     <div className="mt-12 flex w-full flex-col items-center gap-12">
       <SearchBar />
+      <MarketMovers />
     </div>
   );
 }

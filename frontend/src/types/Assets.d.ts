@@ -13,14 +13,17 @@ declare namespace Assets {
     name: string;
   }
 
-  interface Stock extends Asset {
+  interface Stock {
     ticker: string;
+    price: number;
     change_amount: number;
-    change_percentage: number;
+    change_percentage: string;
     volume: number;
   }
 
-  interface MutualFund extends Asset {
+  interface MutualFund {
+    symbol: string;
+    name: string;
     country: string;
     fund_family: string;
     fund_type: string;
@@ -30,14 +33,18 @@ declare namespace Assets {
     mic_code: string;
   }
 
-  interface Etf extends Asset {
+  interface Etf {
+    symbol: string;
+    name: string;
     country: string;
     mic_code: string;
     fund_family: string;
     fund_type: string;
   }
 
-  interface Crypto extends Asset {
+  interface Crypto {
+    symbol: string;
+    name: string;
     price: number;
     volume_24h: number;
     percent_change_24h: number;
