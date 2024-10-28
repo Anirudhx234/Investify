@@ -47,7 +47,6 @@ public class AlphaVantageService {
     }
 
     public Mono<String> getTopLosers() {
-        System.out.println(alphaVantageApiKey);
         return webClient.get()
                 .uri(uriBuilder -> uriBuilder
                         .path("/query")

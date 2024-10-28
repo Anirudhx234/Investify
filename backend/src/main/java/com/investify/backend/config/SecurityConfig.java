@@ -29,9 +29,11 @@ public class SecurityConfig {
                 .and()
                 .authorizeHttpRequests((requests) -> requests
                         // Allow access to signup, login, and verification without authentication
-                        .requestMatchers(HttpMethod.POST, "/api/auth/login", "/api/auth/signup","/api/auth/forgot-password").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/auth/login", "/api/auth/signup", "/api/auth/forgot-password").permitAll()
                         .requestMatchers(HttpMethod.PATCH, "/api/auth/reset-password").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/auth/verify-email", "/api/assets").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/auth/verify-email", "/api/assets/**").permitAll()
+                        // Allow unauthenticated access to WebSocket endpoint
+                        .requestMatchers("/prices/**").permitAll()
                         .anyRequest().authenticated())
         ;
         return http.build();

@@ -1,6 +1,7 @@
 package com.investify.backend.controllers;
 
 import com.investify.backend.services.AlphaVantageService;
+import com.investify.backend.services.CoinMarketService;
 import com.investify.backend.services.PolygonService;
 import com.investify.backend.services.TwelveDataService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +24,9 @@ public class AssetController {
 
     @Autowired
     private PolygonService polygonService;
+
+    @Autowired
+    private CoinMarketService coinMarketService;
 
     /* TwelveData */
     @Cacheable(value = "searchAssets", cacheManager = "cacheManager")
@@ -54,13 +58,13 @@ public class AssetController {
     }
 
     /* TwelveData */
-    @GetMapping("/assetData/{symbol}/{interval}")
-    public Mono<String> getStockData(@PathVariable String symbol, @PathVariable String interval) {
-        return twelveDataService.getAssetData(symbol, interval);
+    @GetMapping("/time-series/{symbol}")
+    public Mono<Map> getAssetTimeSeries(@PathVariable String symbol, @RequestParam("interval") String interval) {
+        return twelveDataService.getAssetTimeSeries(symbol, interval);
     }
 
-    @GetMapping("/quote/{symbol}/{interval}")
-    public Mono<String> getQuote(@PathVariable String symbol, @PathVariable String interval) {
+    @GetMapping("/quote/{symbol}")
+    public Mono<Map> getQuote(@PathVariable String symbol, @RequestParam("interval") String interval) {
         return twelveDataService.getAssetQuote(symbol, interval);
     }
 
@@ -74,6 +78,11 @@ public class AssetController {
         return twelveDataService.getPopularETFs();
     }
 
+    @GetMapping("/popular/crypto")
+    public Mono<Map<String, Object>> getPopularCrypto() {
+        return coinMarketService.getPopularCrypto();
+    }
+
     @GetMapping("/stocks/list")
     public Mono<String> getStocksList() {
         return twelveDataService.getStocksList();
@@ -85,7 +94,7 @@ public class AssetController {
     }
 
     @GetMapping("/crypto/list")
-    public Mono<String> getCryptoList() {
+    public Mono<Map> getCryptoList() {
         return twelveDataService.getCryptoList();
     }
 
