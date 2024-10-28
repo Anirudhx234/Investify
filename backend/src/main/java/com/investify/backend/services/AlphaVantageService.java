@@ -7,7 +7,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @PropertySource("classpath:application-APIs.properties")
@@ -34,7 +37,29 @@ public class AlphaVantageService {
                         .queryParam("apikey", alphaVantageApiKey)
                         .build())
                 .retrieve()
-                .bodyToMono(Map.class);
+                .bodyToMono(Map.class)
+                .flatMap(response -> {
+                    List<Map<String, Object>> topGainers = (List<Map<String, Object>>) response.get("top_gainers");
+
+                    // Use the parsing method to transform the gainers
+                    List<Map<String, Object>> transformedGainers = parseTopGainers(topGainers);
+
+                    // Put transformed data back into response
+                    response.put("top_gainers", transformedGainers);
+                    return Mono.just(response);
+                });
+    }
+
+    private List<Map<String, Object>> parseTopGainers(List<Map<String, Object>> topGainers) {
+        return topGainers.stream()
+                .map(gainer -> {
+                    Map<String, Object> transformedGainer = new HashMap<>(gainer);
+                    transformedGainer.put("price", Double.parseDouble((String) gainer.get("price")));
+                    transformedGainer.put("change_amount", Double.parseDouble((String) gainer.get("change_amount")));
+                    transformedGainer.put("volume", Integer.parseInt((String) gainer.get("volume")));
+                    return transformedGainer;
+                })
+                .collect(Collectors.toList());
     }
 
     public Mono<String> getTopGainers() {
