@@ -1,23 +1,23 @@
-import React from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { setShortTermGoal, setLongTermGoal, setRiskTolerance } from '../features/store';
-import { RootState } from '../features/store';
+import React, { useState } from 'react';
 
 const QuestionnaireForm: React.FC = () => {
-  const dispatch = useDispatch();
-  const { shortTermGoal, longTermGoal, riskTolerance } = useSelector((state: RootState) => state.questionnaire);
+  const [shortTermGoal, setShortTermGoal] = useState('');
+  const [longTermGoal, setLongTermGoal] = useState('');
+  const [riskTolerance, setRiskTolerance] = useState('');
 
   const handleShortTermGoalChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    dispatch(setShortTermGoal(e.target.value));
+    setShortTermGoal(e.target.value);
   };
 
   const handleLongTermGoalChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    dispatch(setLongTermGoal(e.target.value));
+    setLongTermGoal(e.target.value);
   };
 
   const handleRiskToleranceChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    dispatch(setRiskTolerance(e.target.value));
+    setRiskTolerance(e.target.value);
   };
+
+  const isFormComplete = shortTermGoal && longTermGoal && riskTolerance;
 
   return (
     <form className="p-6 bg-white rounded shadow-md">
@@ -57,7 +57,9 @@ const QuestionnaireForm: React.FC = () => {
         </select>
       </div>
 
-      <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded">Submit</button>
+      <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded" disabled={!isFormComplete}>
+        Submit
+      </button>
     </form>
   );
 };
