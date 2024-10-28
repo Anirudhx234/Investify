@@ -7,6 +7,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
+import java.util.Map;
+
 @Service
 @PropertySource("classpath:application-APIs.properties")
 public class AlphaVantageService {
@@ -24,7 +26,7 @@ public class AlphaVantageService {
     // Example GET request:
     // https://www.alphavantage.co/query?function=TOP_GAINERS_LOSERS&apikey=
 
-    public Mono<String> getPopularStocks() {
+    public Mono<Map> getPopularStocks() {
         return webClient.get()
                 .uri(uriBuilder -> uriBuilder
                         .path("/query")
@@ -32,7 +34,7 @@ public class AlphaVantageService {
                         .queryParam("apikey", alphaVantageApiKey)
                         .build())
                 .retrieve()
-                .bodyToMono(String.class);
+                .bodyToMono(Map.class);
     }
 
     public Mono<String> getTopGainers() {

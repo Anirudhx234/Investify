@@ -36,11 +36,6 @@ public class AssetController {
     }
 
     /* AlphaVantage */
-    @GetMapping("/popular/stocks")
-    public Mono<String> getPopularStocks() {
-        return alphaVantageService.getPopularStocks();
-    }
-
     @GetMapping("/top/gainers")
     public Mono<String> getTopGainers() {
         return alphaVantageService.getTopGainers();
@@ -68,13 +63,18 @@ public class AssetController {
         return twelveDataService.getAssetQuote(symbol, interval);
     }
 
-    @GetMapping("/popular/funds")
-    public Mono<String> getPopularFunds() {
-        return twelveDataService.getPopularFunds();
+    @GetMapping("/popular/stocks")
+    public Mono<Map> getPopularStocks() {
+        return alphaVantageService.getPopularStocks();
+    }
+
+    @GetMapping("/popular/mutual-funds")
+    public Mono<Map> getPopularMutualFunds() {
+        return twelveDataService.getPopularMutualFunds();
     }
 
     @GetMapping("/popular/etfs")
-    public Mono<String> getPopularEtfs() {
+    public Mono<Map> getPopularEtfs() {
         return twelveDataService.getPopularETFs();
     }
 
@@ -83,23 +83,23 @@ public class AssetController {
         return coinMarketService.getPopularCrypto();
     }
 
-    @GetMapping("/stocks/list")
+    @GetMapping("/list/stocks")
     public Mono<String> getStocksList() {
         return twelveDataService.getStocksList();
     }
 
-    @GetMapping("/etfs/list")
+    @GetMapping("/list/mutual-funds")
+    public Mono<String> getMutualFundsList() {
+        return twelveDataService.getMutualFundsList();
+    }
+
+    @GetMapping("/list/etfs")
     public Mono<String> getEtfsList() {
         return twelveDataService.getETFsList();
     }
 
-    @GetMapping("/crypto/list")
+    @GetMapping("/list/crypto")
     public Mono<Map> getCryptoList() {
         return twelveDataService.getCryptoList();
-    }
-
-    @GetMapping("/funds/list")
-    public Mono<String> getFundsList() {
-        return twelveDataService.getFundsList();
     }
 }

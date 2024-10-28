@@ -176,7 +176,7 @@ public class TwelveDataService {
     }
 
     // Top 50 mutual funds (by total asset value)
-    public Mono<String> getPopularFunds() {
+    public Mono<Map> getPopularMutualFunds() {
         return webClient.get()
                 .uri(uriBuilder -> uriBuilder
                         .path("/mutual_funds/list")
@@ -184,11 +184,11 @@ public class TwelveDataService {
                         .queryParam("apikey", twelveDataApiKey)
                         .build())
                 .retrieve()
-                .bodyToMono(String.class);
+                .bodyToMono(Map.class);
     }
 
     // Top 50 mutual funds (by total asset value)
-    public Mono<String> getPopularETFs() {
+    public Mono<Map> getPopularETFs() {
         return webClient.get()
                 .uri(uriBuilder -> uriBuilder
                         .path("/etfs/list")
@@ -196,7 +196,7 @@ public class TwelveDataService {
                         .queryParam("apikey", twelveDataApiKey)
                         .build())
                 .retrieve()
-                .bodyToMono(String.class);
+                .bodyToMono(Map.class);
     }
 
     // The following methods will return lists containing all symbols of the requested asset type
@@ -228,7 +228,7 @@ public class TwelveDataService {
                 .bodyToMono(Map.class);
     }
 
-    public Mono<String> getFundsList() {
+    public Mono<String> getMutualFundsList() {
         return webClient.get()
                 .uri(uriBuilder -> uriBuilder
                         .path("/funds")
