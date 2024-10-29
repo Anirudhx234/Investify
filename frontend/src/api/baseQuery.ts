@@ -1,21 +1,21 @@
-import {
-  fetchBaseQuery,
-  retry,
-  type BaseQueryFn,
-} from "@reduxjs/toolkit/query";
 import type CustomBaseQuery from "../types/CustomBaseQuery";
-import buildUrl from "../utils/buildUrl";
-import { resetProfileData } from "../features/profileSlice";
 
-const rawBaseQuery = fetchBaseQuery({ baseUrl: "http://localhost:8080/api" });
+import { fetchBaseQuery, retry } from "@reduxjs/toolkit/query";
+import buildUrl from "../util/buildUrl";
 
-const baseQuery: BaseQueryFn<
-  CustomBaseQuery.Args,
-  CustomBaseQuery.Result,
-  CustomBaseQuery.Error,
-  CustomBaseQuery.DefinitionExtraOptions,
-  CustomBaseQuery.Meta
-> = async (args, api, extraOptions) => {
+/* basic fetch wrapper */
+const rawBaseQuery = fetchBaseQuery({
+  baseUrl: "http://localhost:8080/api",
+  credentials: "include",
+  timeout: 3000,
+});
+
+/* custom base query for api */
+const baseQuery: CustomBaseQuery.CustomBaseQueryFn = async (
+  args,
+  api,
+  extraOptions,
+) => {
   const { url, queryParams, ...remainingArgs } = args;
   const fullUrl = buildUrl(url, queryParams);
 
@@ -26,12 +26,6 @@ const baseQuery: BaseQueryFn<
   );
 
   if (result.error) {
-    if (result.error.status === 401) {
-      alert("You have been logged out");
-      api.dispatch(resetProfileData());
-      retry.fail(result.error);
-    }
-
     const data = result.error.data as undefined | { message?: string };
     const status = result.error.status;
     let message: string;

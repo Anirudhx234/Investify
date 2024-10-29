@@ -1,28 +1,52 @@
-import type {
-  LoginRequest,
-  LoginResponse,
-  SignUpRequest,
-  SignUpResponse,
-} from "../types/Auth";
-import { api } from "./api";
+import type Auth from "../types/Auth";
+import api from "./api";
 
-export const authApi = api.injectEndpoints({
+const authApi = api.injectEndpoints({
   endpoints: (build) => ({
-    signup: build.mutation<SignUpResponse, SignUpRequest>({
+    signUp: build.mutation<Auth.SignUpResponse, Auth.SignUpRequest>({
       query: ({ ...args }) => ({
-        url: "/signup",
+        url: "/auth/signup",
         method: "POST",
         body: args,
       }),
     }),
-    login: build.mutation<LoginResponse, LoginRequest>({
+    login: build.mutation<Auth.LoginResponse, Auth.LoginRequest>({
       query: ({ ...args }) => ({
-        url: "/login",
+        url: "/auth/login",
         method: "POST",
         body: args,
+      }),
+    }),
+    logout: build.mutation<void, void>({
+      query: () => ({
+        url: "/auth/logout",
+        method: "POST",
+      }),
+    }),
+    forgotPassword: build.mutation<void, { email: string }>({
+      query: ({ ...args }) => ({
+        url: "/auth/forgot-password",
+        method: "POST",
+        body: args,
+      }),
+    }),
+    resetPassword: build.mutation<
+      void,
+      { searchParams?: string | undefined; newPassword: string }
+    >({
+      query: ({ newPassword, searchParams }) => ({
+        url: "/auth/reset-password?" + (searchParams ?? ""),
+        method: "PATCH",
+        body: { newPassword },
       }),
     }),
   }),
 });
 
-export const { useSignupMutation, useLoginMutation } = authApi;
+export const {
+  useSignUpMutation,
+  useLoginMutation,
+  useLogoutMutation,
+  useForgotPasswordMutation,
+  useResetPasswordMutation,
+} = authApi;

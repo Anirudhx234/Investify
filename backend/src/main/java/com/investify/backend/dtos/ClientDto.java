@@ -10,8 +10,11 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 public class ClientDto {
-    private Long id;
-    private String username;
+    private String id;
     private String email;
-    private String token;
+    private String username;
+    private String profilePicture;
+    private Integer age;
+    private Double income;
+    private String financialGoals;
 }

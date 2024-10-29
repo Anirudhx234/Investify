@@ -1,6 +1,19 @@
 spring:
   application:
     name: backend
+  codec:
+    max-in-memory-size: 1000MB
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 10MB
+      max-request-size: 10MB
+  aws:
+    access-key: AKIA6JQ44NFNSDFLEEVR
+    secret-key: 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
+    s3:
+      bucket-name: investify-dev
+      region: us-east-2
   datasource:
     username: postgres
     password: postgres
@@ -11,3 +24,20 @@ spring:
     show-sql: false
     hibernate:
       ddl-auto: create
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: investify16@gmail.com
+    password: ibbnisixbrfemtku
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+          connectiontimeout: 5000
+          timeout: 3000
+          writetimeout: 5000
+  frontend:
+    url: http://localhost:5173

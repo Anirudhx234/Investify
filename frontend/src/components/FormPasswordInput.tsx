@@ -1,8 +1,8 @@
 import type { Path, UseFormReturn } from "react-hook-form";
+import type { HTMLInputAutoCompleteAttribute } from "react";
 
-import FormTextInput from "./FormTextInput";
-import passwordStrengthCheck from "../utils/passwordStrengthCheck";
-import { HTMLInputAutoCompleteAttribute } from "react";
+import FormInput from "./FormInput";
+import passwordStrengthCheck from "../util/passwordStrengthCheck";
 
 export interface FormPasswordInputProps<T extends { password: string }> {
   form: UseFormReturn<T>;
@@ -23,7 +23,7 @@ export default function FormPasswordInput<T extends { password: string }>({
   });
 
   return (
-    <FormTextInput
+    <FormInput
       name="password"
       labelText="Password"
       registerInputProps={registerInputProps}

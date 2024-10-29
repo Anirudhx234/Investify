@@ -28,7 +28,12 @@ public class SecurityConfig {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeHttpRequests((requests) -> requests
-                        .requestMatchers(HttpMethod.POST, "/api/login", "/api/signup").permitAll()
+                        // Allow access to signup, login, and verification without authentication
+                        .requestMatchers(HttpMethod.POST, "/api/auth/login", "/api/auth/signup", "/api/auth/forgot-password").permitAll()
+                        .requestMatchers(HttpMethod.PATCH, "/api/auth/reset-password").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/auth/verify-email", "/api/assets/**").permitAll()
+                        // Allow unauthenticated access to WebSocket endpoint
+                        .requestMatchers("/prices/**").permitAll()
                         .anyRequest().authenticated())
         ;
         return http.build();

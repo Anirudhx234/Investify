@@ -1,69 +1,96 @@
 package com.investify.backend.controllers;
 
-import com.investify.backend.config.ClientAuthenticationProvider;
-import com.investify.backend.dtos.ClientResponseDto;
-import com.investify.backend.dtos.CredentialsDto;
-import com.investify.backend.dtos.SignUpDto;
-import com.investify.backend.dtos.ClientDto;
+import com.investify.backend.dtos.*;
 import com.investify.backend.mappers.ClientMapper;
+import com.investify.backend.services.AuthService;
 import com.investify.backend.services.ClientService;
+import com.investify.backend.services.EmailService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import java.net.URI;
+import java.util.UUID;
 
 @RequiredArgsConstructor
 @RestController
+@RequestMapping("/api/auth")
 public class AuthController {
 
-    private final ClientService clientService;
-    private final ClientAuthenticationProvider clientAuthenticationProvider;
-    private final ClientMapper clientMapper;
+    @Value("${spring.frontend.url}")
+    private String frontendURL;
 
-    @PostMapping("/api/login")
-    public ResponseEntity<ClientResponseDto> login(
+    private final AuthService authService;
+    private final ClientService clientService;
+    private final ClientMapper clientMapper;
+    private final EmailService emailService;
+
+    @PostMapping("/login")
+    public ResponseEntity<ClientDto> login(
             @RequestBody @Valid CredentialsDto credentialsDto,
             HttpServletResponse response) {
 
-        ClientDto clientDto = clientService.login(credentialsDto);
-        String token = clientAuthenticationProvider.createToken(clientDto.getEmail());
+        ClientDto client = clientService.login(credentialsDto);
 
-        Cookie jwtCookie = generateJWTCookie("jwt", token);
+        Cookie jwtCookie = authService.generateJWTCookie(client, "jwt");
         response.addCookie(jwtCookie);
 
-        ClientResponseDto clientResponseDto = clientMapper.toClientResponseDto(clientDto);
-        return ResponseEntity.ok(clientResponseDto);
+        return ResponseEntity.ok(client);
     }
 
-    @PostMapping("/api/signup")
-    public ResponseEntity<ClientResponseDto> register(
-            @RequestBody @Valid SignUpDto client,
+    @PostMapping("/signup")
+    public ResponseEntity<ClientDto> signup(
+            @RequestBody @Valid SignUpDto signUpDto,
             HttpServletResponse response) {
 
-        ClientDto createdClient = clientService.register(client);
-        String token = clientAuthenticationProvider.createToken(createdClient.getEmail());
+        ClientDto newClient = clientService.signup(signUpDto);
 
-        Cookie jwtCookie = generateJWTCookie("jwt", token);
-        response.addCookie(jwtCookie);
+        String verificationToken = UUID.randomUUID().toString();
+        String verificationLink = frontendURL + "/verify-email?token=" + verificationToken + "&email=" + newClient.getEmail();
+        emailService.sendVerificationEmail(newClient.getEmail(), verificationLink);
 
-        ClientResponseDto clientResponseDto = clientMapper.toClientResponseDto(createdClient);
-        return ResponseEntity.created(URI.create("/clients/" + clientResponseDto.getId()))
-                .body(clientResponseDto);
+        clientService.saveVerificationToken(newClient.getEmail(), verificationToken);
+
+        return ResponseEntity.ok(newClient);
     }
 
-    public static Cookie generateJWTCookie(String cookieName, String token) {
-        Cookie jwtCookie = new Cookie(cookieName, token);
-        jwtCookie.setHttpOnly(true);
-        jwtCookie.setSecure(false);
-        jwtCookie.setPath("/");
-        jwtCookie.setMaxAge(3600 * 24 * 7); // Cookie expires in 7 days
+    @GetMapping("/verify-email")
+    public ResponseEntity<ClientDto> verifyEmail(@RequestParam("token") String token, @RequestParam("email") String email) {
+        return ResponseEntity.ok(clientService.verifyClient(token, email));
+    }
 
-        return jwtCookie;
+    @PostMapping("/forgot-password")
+    public ResponseEntity<MessageDto> forgotPassword(
+            @RequestBody @Valid ForgotPasswordDto forgotPasswordDto,
+            HttpServletResponse response) {
+
+        String clientEmail = forgotPasswordDto.getEmail();
+
+        String verificationToken = UUID.randomUUID().toString();
+        clientService.saveVerificationToken(clientEmail, verificationToken);
+
+        String resetPasswordLink = frontendURL + "/reset-password?token=" + verificationToken;
+        emailService.sendResetPasswordEmail(clientEmail, resetPasswordLink);
+
+        return ResponseEntity.ok(new MessageDto("Reset password email sent."));
+    }
+
+    @PatchMapping("/reset-password")
+    public ResponseEntity<ClientDto> updatePassword(@RequestBody @Valid ResetPasswordDto resetPasswordDto, @RequestParam("token") String token) {
+
+        ClientDto client = clientService.updatePassword(token, resetPasswordDto.getNewPassword());
+
+        return ResponseEntity.ok(client);
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<MessageDto> logout(HttpServletResponse response) {
+        Cookie jwtCookie = AuthService.removeJWTCookie("jwt");
+        response.addCookie(jwtCookie);
+
+        return ResponseEntity.ok(new MessageDto("Logged out successfully."));
     }
 }

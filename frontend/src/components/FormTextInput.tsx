@@ -1,56 +1,41 @@
-import type { FieldErrors, UseFormRegisterReturn } from "react-hook-form";
+import type { FieldValues, Path, UseFormReturn } from "react-hook-form";
+import type { HTMLInputAutoCompleteAttribute } from "react";
 
-import { ErrorMessage } from "@hookform/error-message";
-import { MdErrorOutline } from "react-icons/md";
-import { HTMLInputAutoCompleteAttribute } from "react";
+import FormInput from "./FormInput";
+import toTitleCase from "../util/toTitleCase";
 
-export interface FormTextInputProps {
+export interface FormTextInputProps<T extends FieldValues = FieldValues> {
   name: string;
-  labelText: string;
-  registerInputProps: UseFormRegisterReturn;
-  type?: "text" | "email" | "password" | undefined;
-  errors?: FieldErrors | undefined;
+  labelText?: string | undefined;
+  form: UseFormReturn<T>;
+  required?: boolean | undefined;
   autoComplete?: HTMLInputAutoCompleteAttribute;
   disabled?: boolean;
 }
 
-export default function FormTextInput({
+export default function FormTextInput<T extends FieldValues>({
   name,
   labelText,
-  registerInputProps,
-  type,
-  errors,
+  form,
+  required,
   autoComplete,
   disabled,
-}: FormTextInputProps) {
+}: FormTextInputProps<T>) {
+  const label = labelText ?? toTitleCase(name);
+
+  const registerInputProps = form.register(name as Path<T>, {
+    required: required ? `${label} is required` : false,
+  });
+
   return (
-    <label className="form-control">
-      <div className="label">
-        <span>{labelText}</span>
-      </div>
-      <input
-        className="input input-bordered"
-        type={type ?? "text"}
-        {...registerInputProps}
-        autoComplete={autoComplete}
-        disabled={disabled}
-      />
-      <div className="label">
-        <span className="label-text-alt">
-          <div className="flex items-center gap-1 text-error">
-            <ErrorMessage
-              errors={errors}
-              name={name}
-              render={({ message }) => (
-                <>
-                  <MdErrorOutline />
-                  <p>{message}</p>
-                </>
-              )}
-            />
-          </div>
-        </span>
-      </div>
-    </label>
+    <FormInput
+      name={name}
+      labelText={label}
+      registerInputProps={registerInputProps}
+      type="text"
+      errors={form.formState.errors}
+      autoComplete={autoComplete}
+      disabled={disabled}
+    />
   );
 }
