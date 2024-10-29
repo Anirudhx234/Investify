@@ -5,21 +5,21 @@ export default function DataTable({ data }: { data: object }) {
         <thead>
           <tr>
             <th className="px-4">Attribute</th>
-            <th className="px-4">MetaData</th>
+            <th className="px-8">Value</th>
           </tr>
         </thead>
         <tbody>
           {Object.entries(data).map(([attr, meta]) => (
             <tr key={attr}>
-              <th>{attr.replace("_", " ")}</th>
+              <th className="capitalize align-top">{attr.split("_").join(" ")}</th>
               <td>
                 {(() => {
                   if (typeof meta === "object")
                     return <DataTable data={meta} />;
                   if (typeof meta === "boolean")
-                    return <span className="px-4">{meta ? "Yes" : "No"}</span>;
+                    return <p className="px-4">{meta ? "Yes" : "No"}</p>;
 
-                  return <span className="px-4">{meta}</span>;
+                  return <p className="px-4">{meta}</p>;
                 })()}
               </td>
             </tr>

@@ -53,18 +53,16 @@ declare namespace Assets {
 
   type Set = Record<Type, Omit<Asset, "type">[]>;
 
-  interface MetaDataRequest {
-    type: Type;
+  interface AssetDataRequest {
     symbol: string;
   }
 
-  interface ChartDataRequest {
-    type: Type;
+  interface TimeSeriesRequest {
     symbol: string;
     interval: string;
   }
 
-  interface ChartDataEntry {
+  interface TimeSeriesEntry {
     datetime: string;
     open: number;
     high: number;
@@ -73,8 +71,21 @@ declare namespace Assets {
     volume: number;
   }
 
-  interface ChartData {
-    values: ChartDataEntry[];
+  interface PriceDataEntry {
+    symbol: string;
+    datetime: string;
+    price: number;
+  }
+
+  interface TimeSeriesResponse {
+    values: {
+      datetime: string;
+      open: string;
+      high: string;
+      low: string;
+      close: string;
+      volume: string;
+    }[];
   }
 
   interface PopularStocksResponse {

@@ -1,4 +1,6 @@
 import type Assets from "../types/Assets";
+import convertToUnixTimestamp from "../util/convertToUnixTimestamp";
+import intervalSecs from "../util/intervalSecs";
 
 import api from "./api";
 import { createWebSocket } from "./websocket";
@@ -58,21 +60,66 @@ export const assetsApi = api.injectEndpoints({
       transformResponse: (res: Assets.PopularCryptoResponse) => res.crypto,
     }),
 
-    assetMetaData: build.query<object, Assets.MetaDataRequest>({
-      query: ({ type, symbol }) => ({
-        url: `/assets/${type}/${symbol}/quote`,
+    assetMetaData: build.query<object, Assets.AssetDataRequest>({
+      query: ({ symbol }) => ({
+        url: `/assets/quote/${symbol}?interval=1day`,
         method: "GET",
       }),
       providesTags: (_res, _err, args) => [
-        { type: "asset-metadata", id: `/${args.type}/${args.symbol}` },
+        { type: "asset-metadata", id: args.symbol },
       ],
     }),
 
-    assetChartData: build.query<Assets.ChartData, Assets.ChartDataRequest>({
-      query: ({ type, symbol, interval }) => ({
-        url: `/assets/${type}/${symbol}/chart?interval=${interval}`,
+    assetTimeSeriesData: build.query<
+      Assets.TimeSeriesEntry[],
+      Assets.TimeSeriesRequest
+    >({
+      query: ({ symbol, interval }) => ({
+        url: `/assets/time-series/${symbol}?interval=${interval}`,
         method: "GET",
       }),
+      transformResponse: (res: Assets.TimeSeriesResponse) => {
+        const transformed: Assets.TimeSeriesEntry[] = [];
+        for (let i = res.values.length - 1; i >= 0; i--) {
+          const item = res.values[i];
+          transformed.push({
+            datetime: item.datetime,
+            open: parseFloat(item.open),
+            close: parseFloat(item.close),
+            high: parseFloat(item.high),
+            low: parseFloat(item.low),
+            volume: parseFloat(item.volume),
+          });
+        }
+
+        return transformed;
+      },
+    }),
+
+    assetLivePriceData: build.query<
+      (Assets.TimeSeriesEntry | Assets.PriceDataEntry)[],
+      Assets.TimeSeriesRequest
+    >({
+      query: ({ symbol, interval }) => ({
+        url: `/assets/time-series/${symbol}?interval=${interval}`,
+        method: "GET",
+      }),
+      transformResponse: (res: Assets.TimeSeriesResponse) => {
+        const transformed: Assets.TimeSeriesEntry[] = [];
+        for (let i = res.values.length - 1; i >= 0; i--) {
+          const item = res.values[i];
+          transformed.push({
+            datetime: item.datetime,
+            open: parseFloat(item.open),
+            close: parseFloat(item.close),
+            high: parseFloat(item.high),
+            low: parseFloat(item.low),
+            volume: parseFloat(item.volume),
+          });
+        }
+
+        return transformed;
+      },
       onCacheEntryAdded: async (
         arg,
         { cacheDataLoaded, cacheEntryRemoved, updateCachedData },
@@ -80,7 +127,7 @@ export const assetsApi = api.injectEndpoints({
         await cacheDataLoaded;
 
         const ws = createWebSocket({
-          url: `/assets/${arg.type}/${arg.symbol}/subscribe?interval=${arg.interval}`,
+          url: `/prices`,
         });
 
         try {
@@ -88,24 +135,37 @@ export const assetsApi = api.injectEndpoints({
             const data = JSON.parse(e.data);
 
             if (typeof data !== "object") return;
+            if (typeof data["symbol"] !== "string") return;
+            if (data["symbol"] !== arg.symbol) return;
             if (typeof data["datetime"] !== "string") return;
-            if (typeof data["open"] !== "number") return;
-            if (typeof data["high"] !== "number") return;
-            if (typeof data["low"] !== "number") return;
-            if (typeof data["close"] !== "number") return;
-            if (typeof data["volume"] !== "number") return;
+            if (typeof data["price"] !== "number") return;
 
             updateCachedData((draft) => {
-              draft.values.push(data);
+              const lastEnteredDataTime = convertToUnixTimestamp(
+                draft[draft.length - 1].datetime,
+              ) as number;
+
+              const newTime = convertToUnixTimestamp(
+                data["datetime"],
+              ) as number;
+
+              if (intervalSecs(arg.interval) <= newTime - lastEnteredDataTime) {
+                draft.push(data);
+              }
             });
           };
 
-          ws.addEventListener("message", listener);
+          ws.onopen = () => {
+            ws.send(JSON.stringify({ symbol: arg.symbol }));
+          };
+
+          ws.onmessage = listener;
         } catch {
           /* empty */
         }
 
         await cacheEntryRemoved;
+        ws.close();
       },
     }),
   }),
@@ -115,7 +175,8 @@ export const {
   useLazyAssetsSetQuery,
   useAssetsSetQuery,
   useAssetMetaDataQuery,
-  useAssetChartDataQuery,
+  useAssetTimeSeriesDataQuery,
+  useAssetLivePriceDataQuery,
   usePopularStocksQuery,
   usePopularMutualFundsQuery,
   usePopularEtfsQuery,

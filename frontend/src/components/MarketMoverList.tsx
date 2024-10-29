@@ -116,7 +116,7 @@ export function MutualFundsList({
       getDataContent1={(mf) => (
         <span className="text-success">{mf.performance_rating}</span>
       )}
-      getDataHeading2={() => "Risk Rat."}
+      getDataHeading2={() => "Risk"}
       getDataContent2={(mf) => (
         <span className="text-error">{mf.risk_rating}</span>
       )}

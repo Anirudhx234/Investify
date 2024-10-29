@@ -7,50 +7,57 @@ import DataTable from "../components/DataTable";
 import AssetPageChart from "../scenes/AssetPageChart";
 
 export default function AssetPage() {
+  const params = useParams() as { symbol: string };
+
   return (
-    <div role="tablist" className="tabs-boxed tabs w-full bg-base-100">
-      <input
-        type="radio"
-        name="asset_page_tabs"
-        role="tab"
-        className="tab"
-        aria-label="Chart"
-        defaultChecked
-      />
+    <div className="flex w-full flex-col gap-4">
+      <h1 className="ml-8 font-bold ~text-lg/xl">{params.symbol}</h1>
       <div
-        role="tabpanel"
-        className="tab-content border-t-2 border-t-primary p-4"
+        role="tablist"
+        className="tabs-boxed tabs tabs-sm w-full bg-base-100 lg:tabs-md"
       >
-        <AssetPageChart />
-      </div>
+        <input
+          type="radio"
+          name="asset-page-tablist"
+          role="tab"
+          className="tab ml-4"
+          aria-label="General"
+          defaultChecked
+        />
+        <div
+          role="tabpanel"
+          className="tab-content w-full border-t-2 border-t-primary ~p-2/4"
+        >
+          <AssetPageGeneral />
+        </div>
 
-      <input
-        type="radio"
-        name="asset_page_tabs"
-        role="tab"
-        className="tab"
-        aria-label="General"
-        defaultChecked
-      />
-      <div
-        role="tabpanel"
-        className="tab-content border-t-2 border-t-primary p-4"
-      >
-        <AssetPageGeneral />
-      </div>
+        <input
+          type="radio"
+          name="asset-page-tablist"
+          role="tab"
+          className="tab"
+          aria-label="Chart"
+        />
+        <div
+          role="tabpanel"
+          className="tab-content w-full border-t-2 border-t-primary ~p-2/4"
+        >
+          <AssetPageChart />
+        </div>
 
-      <input
-        type="radio"
-        name="asset_page_tabs"
-        role="tab"
-        className="tab"
-        aria-label="Portfolio"
-      />
-      <div
-        role="tabpanel"
-        className="tab-content border-t-2 border-t-primary p-4"
-      >
-        <AssetPagePortfolio />
+        <input
+          type="radio"
+          name="asset-page-tablist"
+          role="tab"
+          className="tab"
+          aria-label="Portfolio"
+        />
+        <div
+          role="tabpanel"
+          className="tab-content w-full border-t-2 border-t-primary ~p-2/4"
+        >
+          <AssetPagePortfolio />
+        </div>
       </div>
     </div>
   );
