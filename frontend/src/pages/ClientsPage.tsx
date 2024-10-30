@@ -4,6 +4,7 @@ import { MdErrorOutline } from "react-icons/md";
 import ProfileAccountForm from "../forms/ProfileAccountForm";
 import ProfileGeneralForm from "../forms/ProfileGeneralForm";
 import ProfilePersonalForm from "../forms/ProfilePersonalForm";
+import ProfileFinancialForm from "../forms/ProfileFinancialForm";
 
 export default function ClientsPage() {
   const params = useParams() as { id: string };
@@ -29,7 +30,10 @@ export default function ClientsPage() {
         <Route path="/account" component={ProfileAccountForm} />
         <Route path="/general" component={ProfileGeneralForm} />
         {isLoggedInUser && (
+          <>
           <Route path="/personal" component={ProfilePersonalForm} />
+          <Route path="/financial goals" component={ProfileFinancialForm} />
+          </>
         )}
         <Route path="*" component={() => <Redirect to="/account" replace />} />
       </Switch>

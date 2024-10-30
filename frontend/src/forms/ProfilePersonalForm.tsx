@@ -7,7 +7,6 @@ import { SubmitHandler, useForm } from "react-hook-form";
 import Clients from "../types/Clients";
 import Modal from "../components/Modal";
 import FormNumberInput from "../components/FormNumberInput";
-import FormTextInput from "../components/FormTextInput";
 
 export default function ProfilePersonalForm() {
   const clientProfileState = useClientProfileQuery({});
@@ -20,9 +19,6 @@ export default function ProfilePersonalForm() {
       personalForm.reset({
         age: clientProfileState.data.age ?? 0,
         income: clientProfileState.data.income ?? 0,
-        shortTermGoal: clientProfileState.data.shortTermGoal ?? "",
-        longTermGoal: clientProfileState.data.longTermGoal ?? "",
-        investmentRisk: clientProfileState.data.investmentRisk ?? "Low",
       });
     }
   }, [personalForm, clientProfileState]);
@@ -44,17 +40,6 @@ export default function ProfilePersonalForm() {
     if (data.income !== clientProfileState.data?.income)
       formData.set("income", `${data.income}`);
 
-    if (data.shortTermGoal !== clientProfileState.data?.shortTermGoal) {
-      formData.set("shortTermGoal", `${data.shortTermGoal}`);
-  }
-
-  if (data.longTermGoal !== clientProfileState.data?.longTermGoal) {
-      formData.set("longTermGoal", `${data.longTermGoal}`);
-  }
-
-  if (data.investmentRisk !== clientProfileState.data?.investmentRisk) {
-      formData.set("investmentRisk", `${data.investmentRisk}`);
-  }
     try {
       await modifyProfile({ formData }).unwrap();
     } catch {
@@ -96,32 +81,6 @@ export default function ProfilePersonalForm() {
           disabled={isBuffering}
           min={0}
           decimal
-        />
-
-        <FormTextInput
-          name="shortTermGoal"
-          labelText="What is your short-term goal?"
-          form={personalForm}
-          disabled={isBuffering}
-        />
-
-        <FormTextInput
-          name="longTermGoal"
-          labelText="What is your long-term goal?"
-          form={personalForm}
-          disabled={isBuffering}
-        />
-
-        <FormTextInput
-          name="investmentRisk"
-          labelText="How risky are you willing to be with your investments?"
-          form={personalForm}
-          // options={[
-          //   { value: "Low", label: "Low" },
-          //   { value: "Medium", label: "Medium" },
-          //   { value: "High", label: "High" },
-          // ]}
-          disabled={isBuffering}
         />
 
         <div>

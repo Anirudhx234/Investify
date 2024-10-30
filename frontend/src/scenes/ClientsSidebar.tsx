@@ -23,7 +23,12 @@ export default function ClientsSidebar() {
     "An error occurred";
 
   const items = ["/account", "/general"];
-  if (isLoggedInUser) items.push("/personal");
+  if (isLoggedInUser) 
+    {
+      items.push("/personal");
+      items.push("/financial goals");
+      
+    };
 
   const onLogoutClick = async () => {
     try {
