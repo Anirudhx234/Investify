@@ -120,6 +120,10 @@ public class ClientService {
             client.setFinancialGoals(updateProfileDto.getFinancialGoals());
         }
 
+        client.setShortTermGoal(updateProfileDto.getShortTermGoal());
+        client.setLongTermGoal(updateProfileDto.getLongTermGoal());
+        client.setInvestmentRisk(updateProfileDto.getInvestmentRisk());
+
         Client updatedClient = clientRepository.save(client);
         return clientMapper.toClientDto(updatedClient);
     }

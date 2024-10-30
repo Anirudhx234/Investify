@@ -55,4 +55,13 @@ public class Client {
 
     @Column(name = "verification_token")
     private String verificationToken;
+
+    @Column(name = "short_term_goal", columnDefinition = "TEXT")
+    private String shortTermGoal;
+
+    @Column(name = "long_term_goal", columnDefinition = "TEXT")
+    private String longTermGoal;
+
+    @Column(name = "investment_risk")
+    private String investmentRisk;
 }

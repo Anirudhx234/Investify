@@ -17,4 +17,7 @@ public class ClientDto {
     private Integer age;
     private Double income;
     private String financialGoals;
+    private String shortTermGoal;
+    private String longTermGoal;
+    private String investmentRisk;
 }

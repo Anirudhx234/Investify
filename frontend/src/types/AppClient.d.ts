@@ -8,6 +8,9 @@ interface AppClient {
   profilePicture?: string | undefined;
   age?: number | undefined | null;
   income?: number | undefined | null;
+  shortTermGoal?: string;
+  longTermGoal?: string;
+  investmentRisk?: string;
 }
 
 export default AppClient;

@@ -9,6 +9,9 @@ declare namespace Clients {
     profilePicture?: File | undefined;
     age?: number | undefined | null;
     income?: number | undefined | null;
+    shortTermGoal?: string | undefined; 
+    longTermGoal?: string | undefined;  
+    investmentRisk?: string | undefined;
   }
 
   interface ModifyProfileForm {
@@ -16,6 +19,9 @@ declare namespace Clients {
     profilePicture: FileList;
     age: number;
     income: number;
+    shortTermGoal?: string; 
+    longTermGoal?: string;  
+    investmentRisk?: string;
   }
 
   type ModifyProfileGeneralForm = Pick<
@@ -23,7 +29,7 @@ declare namespace Clients {
     "username" | "profilePicture"
   >;
 
-  type ModifyProfilePersonalForm = Pick<ModifyProfileForm, "age" | "income">;
+  type ModifyProfilePersonalForm = Pick<ModifyProfileForm, "age" | "income" | "shortTermGoal" | "longTermGoal" | "investmentRisk">;
 }
 
 export default Clients;
