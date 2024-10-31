@@ -147,32 +147,26 @@ public class TwelveDataService {
     }
 
     // Get current price of an asset
-    public Mono<String> getLivePrice(String symbol) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    public double getLivePrice(String symbol) {
         ObjectMapper objectMapper = new ObjectMapper();
 
-        return webClient.get()
-                .uri(uriBuilder -> uriBuilder
-                        .path("/price")
-                        .queryParam("symbol", symbol)
-                        .queryParam("apikey", twelveDataApiKey)
-                        .queryParam("source", "docs")
-                        .build())
-                .retrieve()
-                .bodyToMono(String.class)
-                .flatMap(priceResponse -> {
-                    try {
-                        // Parse the API response to extract the price
-                        JsonNode jsonNode = objectMapper.readTree(priceResponse);
-                        double price = jsonNode.get("price").asDouble();
-                        String datetime = LocalDateTime.now().format(formatter);
+        try {
+            String priceResponse = webClient.get()
+                    .uri(uriBuilder -> uriBuilder
+                            .path("/price")
+                            .queryParam("symbol", symbol)
+                            .queryParam("apikey", twelveDataApiKey)
+                            .queryParam("source", "docs")
+                            .build())
+                    .retrieve()
+                    .bodyToMono(String.class)
+                    .block();
 
-                        // Create a new response object
-                        return Mono.just(String.format("{\"symbol\":\"%s\", \"price\":%s, \"datetime\":\"%s\"}", symbol, price, datetime));
-                    } catch (Exception e) {
-                        return Mono.error(new RuntimeException("Failed to parse API response", e));
-                    }
-                });
+            JsonNode jsonNode = objectMapper.readTree(priceResponse);
+            return jsonNode.get("price").asDouble();
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to fetch or parse the API response", e);
+        }
     }
 
     // Top 50 mutual funds (by total asset value)

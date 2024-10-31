@@ -174,7 +174,7 @@ public class ClientService {
         return clientMapper.toClientDto(findById(clientId));
     }
 
-    private Client findById(String clientId) {
+    public Client findById(String clientId) {
         if ("me".equals(clientId)) {
             return authService.getLoggedInClient();
         }
