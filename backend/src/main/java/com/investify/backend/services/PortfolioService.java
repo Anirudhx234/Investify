@@ -36,13 +36,14 @@ public class PortfolioService {
         List<PortfolioAssetResponse> portfolioAssets = portfolioAssetRepository.findByPortfolio(portfolio)
                 .stream()
                 .map(asset -> {
-                    double price = twelveDataService.getLivePrice(asset.getAsset().getSymbol());
-                    double totalAssetValue = asset.getQuantity() * price;
+                    double currentPrice = twelveDataService.getLivePrice(asset.getAsset().getSymbol());
+                    double totalAssetValue = asset.getQuantity() * currentPrice;
                     return new PortfolioAssetResponse(
                             asset.getId(),
                             asset.getAsset(),
                             asset.getQuantity(),
-                            price,
+                            asset.getInitialPrice(),
+                            currentPrice,
                             totalAssetValue
                     );
                 })
@@ -56,22 +57,29 @@ public class PortfolioService {
         return new PortfolioResponse(portfolioAssets, totalPortfolioValue);
     }
 
-    public PortfolioAsset addAssetToPortfolio(Portfolio portfolio, Asset asset, double quantity) {
+    public PortfolioAsset addAssetToPortfolio(Portfolio portfolio, Asset asset, double initialPrice, double quantity) {
         // Check if the asset already exists in the portfolio
         Optional<PortfolioAsset> existingAsset = portfolioAssetRepository.findByPortfolioAndAsset(portfolio, asset);
         if (existingAsset.isPresent()) {
             throw new RestException("Asset already exists in the portfolio", HttpStatus.CONFLICT);
         }
 
-        PortfolioAsset portfolioAsset = new PortfolioAsset(portfolio, asset, quantity);
+        PortfolioAsset portfolioAsset = new PortfolioAsset(portfolio, asset, initialPrice, quantity);
         portfolioAssetRepository.save(portfolioAsset);
         return portfolioAsset;
     }
 
-    public PortfolioAsset updatePortfolioAsset(Portfolio portfolio, UUID assetId, double quantity) {
+    public PortfolioAsset updatePortfolioAsset(Portfolio portfolio, UUID assetId, double initialPrice, double quantity) {
         PortfolioAsset portfolioAsset = portfolioAssetRepository.findByPortfolioAndAssetId(portfolio, assetId)
                 .orElseThrow(() -> new RuntimeException("Asset not found in portfolio"));
 
+        if (initialPrice < 0) {
+            throw new RestException("Initial price must be greater than 0", HttpStatus.BAD_REQUEST);
+        }
+        if (quantity < 0) {
+            throw new RestException("Quantity must be greater than 0", HttpStatus.BAD_REQUEST);
+        }
+        portfolioAsset.setInitialPrice(initialPrice);
         portfolioAsset.setQuantity(quantity);
         portfolioAssetRepository.save(portfolioAsset);
         return portfolioAsset;

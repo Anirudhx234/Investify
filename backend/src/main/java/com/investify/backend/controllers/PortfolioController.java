@@ -1,15 +1,12 @@
 package com.investify.backend.controllers;
 
-import com.investify.backend.dtos.PortfolioAssetRequest;
+import com.investify.backend.dtos.AddPortfolioAssetRequest;
 import com.investify.backend.dtos.PortfolioResponse;
 import com.investify.backend.dtos.UpdatePortfolioAssetRequest;
 import com.investify.backend.entities.*;
-import com.investify.backend.repositories.*;
 import com.investify.backend.services.AssetService;
 import com.investify.backend.services.PortfolioService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -36,13 +33,13 @@ public class PortfolioController {
     @PostMapping("/{clientId}/assets")
     public ResponseEntity addPortfolioAsset(
             @PathVariable String clientId,
-            @RequestBody PortfolioAssetRequest request) {
+            @RequestBody AddPortfolioAssetRequest request) {
 
         Asset asset = assetService.findOrCreateAsset(request.getSymbol(), request.getName(), request.getAssetType());
 
         Portfolio portfolio = portfolioService.findOrCreatePortfolio(clientId);
 
-        PortfolioAsset portfolioAsset = portfolioService.addAssetToPortfolio(portfolio, asset, request.getQuantity());
+        PortfolioAsset portfolioAsset = portfolioService.addAssetToPortfolio(portfolio, asset, request.getInitialPrice(), request.getQuantity());
 
         return ResponseEntity.ok(portfolioAsset);
     }
@@ -56,7 +53,7 @@ public class PortfolioController {
 
         Portfolio portfolio = portfolioService.findPortfolio(clientId);
 
-        PortfolioAsset portfolioAsset = portfolioService.updatePortfolioAsset(portfolio, assetId, request.getQuantity());
+        PortfolioAsset portfolioAsset = portfolioService.updatePortfolioAsset(portfolio, assetId, request.getInitialPrice(), request.getQuantity());
 
         return ResponseEntity.ok(portfolioAsset);
     }
