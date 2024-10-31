@@ -3,10 +3,12 @@ import Logo from "../components/Logo";
 import useAppSelector from "../hooks/useAppSelector";
 import ClientsSidebar from "../scenes/ClientsSidebar";
 import AssetsSidebar from "../scenes/AssetsSidebar";
+import PortfolioAssetForm from "../forms/PortfolioAssetForm";
 
 const sidebarRoutes = {
   "/clients/:id": { component: ClientsSidebar, nest: true },
   "/assets": { component: AssetsSidebar, nest: true },
+  "/portfolio": { component: PortfolioAssetForm },
 };
 
 export default function AppSidebar() {
