@@ -1,6 +1,7 @@
 /* client data: this interface only represents
  * info that is expected to be available on the frontend
  */
+import { InvestmentRisk } from "../enums/InvestmentRisk";
 interface AppClient {
   id: string;
   email: string;
@@ -10,7 +11,7 @@ interface AppClient {
   income?: number | undefined | null;
   shortTermGoal?: string;
   longTermGoal?: string;
-  investmentRisk?: string;
+  investmentRisk?: InvestmentRisk;
 }
 
 export default AppClient;

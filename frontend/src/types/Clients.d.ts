@@ -29,7 +29,8 @@ declare namespace Clients {
     "username" | "profilePicture"
   >;
 
-  type ModifyProfilePersonalForm = Pick<ModifyProfileForm, "age" | "income" | "shortTermGoal" | "longTermGoal" | "investmentRisk">;
+  type ModifyProfilePersonalForm = Pick<ModifyProfileForm, "age" | "income">;
+  type ModifyProfileFinancialForm = Pick<ModifyProfileForm,  "shortTermGoal" | "longTermGoal" | "investmentRisk">;
 }
 
 export default Clients;

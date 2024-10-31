@@ -1,10 +1,12 @@
 package com.investify.backend.dtos;
 
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.web.multipart.MultipartFile;
+import com.investify.backend.enums.InvestmentRisk;
 
 @Data
 @AllArgsConstructor
@@ -19,5 +21,5 @@ public class UpdateProfileDto {
     private String financialGoals;
     private String shortTermGoal;
     private String longTermGoal;
-    private String investmentRisk;
+    private InvestmentRisk investmentRisk;
 }
