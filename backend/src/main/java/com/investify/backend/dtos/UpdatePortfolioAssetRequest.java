@@ -4,5 +4,6 @@ import lombok.Data;
 
 @Data
 public class UpdatePortfolioAssetRequest {
+    private double initialPrice;
     private double quantity;
 }
