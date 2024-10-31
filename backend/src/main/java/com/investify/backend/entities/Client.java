@@ -8,7 +8,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
-import software.amazon.awssdk.services.s3.endpoints.internal.Value;
 
 import java.util.UUID;
 

@@ -6,6 +6,10 @@ import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
+import reactor.core.publisher.Mono;
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
 import java.util.Map;
@@ -58,10 +62,21 @@ public class WebSocketHandler extends TextWebSocketHandler {
 
     // Helper method to fetch price and send it to the client
     private void fetchAndSendPrice(String symbol, WebSocketSession session) {
-        twelveDataService.getLivePrice(symbol).subscribe(
-                priceData -> sendMessageToClient(session, priceData),
-                error -> System.err.println("Failed to fetch price for " + symbol + ": " + error.getMessage())
-        );
+        try {
+            // Fetch the price synchronously
+            double price = twelveDataService.getLivePrice(symbol);
+
+            // Send the message to the client
+            sendMessageToClient(session, priceMessage(symbol, price));
+        } catch (Exception error) {
+            System.err.println("Failed to fetch price for " + symbol + ": " + error.getMessage());
+        }
+    }
+
+    private String priceMessage(String symbol, double price) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        String datetime = LocalDateTime.now().format(formatter);
+        return String.format("{\"symbol\":\"%s\", \"price\":%s, \"datetime\":\"%s\"}", symbol, price, datetime);
     }
 
     private void sendMessageToClient(WebSocketSession session, String message) {
