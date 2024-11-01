@@ -13,6 +13,7 @@ declare namespace Clients {
     longTermGoal?: string | undefined;  
     investmentRisk?: string | undefined;
     userSavings?: number | undefined | null;
+    currentSavings?:number | undefined | null;
   }
 
   interface ModifyProfileForm {
@@ -24,7 +25,7 @@ declare namespace Clients {
     longTermGoal?: string;  
     investmentRisk?: string;
     userSavings?: number;
-    currentSavings?: number
+    currentSavings?:number;
   }
 
   type ModifyProfileGeneralForm = Pick<

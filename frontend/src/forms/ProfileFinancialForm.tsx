@@ -118,9 +118,17 @@ export default function ProfileFinancialForm() {
           disabled={isBuffering}
         />
 
-        <FormNumberInput
+<FormNumberInput
           name="userSavings"
           labelText="Savings goal"
+          form={financialForm}
+          disabled={isBuffering}
+          min={0}
+        />
+
+<FormNumberInput
+          name="currentSavings"
+          labelText="Current Savings"
           form={financialForm}
           disabled={isBuffering}
           min={0}
