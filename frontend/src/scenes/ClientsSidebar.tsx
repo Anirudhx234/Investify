@@ -27,7 +27,7 @@ export default function ClientsSidebar() {
     {
       items.push("/personal");
       items.push("/financial goals");
-      
+      items.push("/investment advice");
     };
 
   const onLogoutClick = async () => {
