@@ -1,4 +1,5 @@
 package com.investify.backend.dtos;
+import com.investify.backend.enums.InvestmentRisk;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,4 +18,8 @@ public class ClientDto {
     private Integer age;
     private Double income;
     private String financialGoals;
+    private String shortTermGoal;
+    private String longTermGoal;
+    private InvestmentRisk investmentRisk;
+    private Integer userSavings;
 }

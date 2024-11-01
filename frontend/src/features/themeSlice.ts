@@ -1,4 +1,4 @@
-import type ThemeState from "../types/ThemeState";
+import type { ThemeState } from "../types/AppState";
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState: ThemeState = { mode: "light" };

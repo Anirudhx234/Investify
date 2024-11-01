@@ -1,63 +1,204 @@
-import Asset from "../types/Asset";
-import { api } from "./api";
+import type Assets from "../types/Assets";
+import convertToUnixTimestamp from "../util/convertToUnixTimestamp";
+import intervalSecs from "../util/intervalSecs";
+
+import api from "./api";
+import { createWebSocket } from "./websocket";
 
 export const assetsApi = api.injectEndpoints({
   endpoints: (build) => ({
-    assetSet: build.query<Asset.Set, void>({
-      query: () => ({
-        url: "/assets/set",
+    assetsSearch: build.query<Assets.SearchMenuItems, { symbol: string }>({
+      query: ({ symbol }) => ({
+        url: "/assets?symbol=" + symbol,
         method: "GET",
       }),
-      extraOptions: { base: false },
-    }),
-    popularStocks: build.query<
-      {
-        top_gainers: Asset.Stock[];
-        top_losers: Asset.Stock[];
-        most_actively_traded: Asset.Stock[];
+      transformResponse: (res: Assets.Set) => {
+        const transformedData: Assets.SearchMenuItems = {};
+
+        Object.entries(res).forEach(([type, list]) => {
+          transformedData[type] = {
+            items: list.map((item) => ({
+              link: `/${type}/${item.symbol}`,
+              label: `${item.name} (${item.symbol})`,
+            })),
+          };
+        });
+
+        return transformedData;
       },
-      void
-    >({
-      query: () => ({
-        url: "https://www.alphavantage.co/query?function=TOP_GAINERS_LOSERS&apikey=G",
+    }),
+
+    assetsList: build.query<Assets.Asset[], { symbol: string }>({
+      query: ({ symbol }) => ({
+        url: "/assets?symbol=" + symbol,
         method: "GET",
       }),
-      extraOptions: { base: true },
+      transformResponse: (res: Assets.Set) => {
+        const result: Assets.Asset[] = [];
+
+        Object.entries(res).forEach(([type, list]) => {
+          list.forEach((item) => {
+            const assetType = type as Assets.Type;
+            result.push({ type: assetType, ...item });
+          });
+        });
+
+        return result;
+      },
     }),
-    popularMutualFunds: build.query<
-      { result: { list: Asset.MutualFund[] } },
-      void
-    >({
+
+    popularStocks: build.query<Assets.PopularStocksResponse, void>({
       query: () => ({
-        url: "https://api.twelvedata.com/mutual_funds/list?outputsize=50&apikey=439328def79441b9b6c17cf807f26b09",
+        url: "/assets/popular/stocks",
         method: "GET",
       }),
-      extraOptions: { base: true },
     }),
-    popularETFS: build.query<
-      { result: { list: Asset.ETF[] } },
-      void
-    >({
+
+    popularMutualFunds: build.query<Assets.MutualFund[], void>({
       query: () => ({
-        url: "https://api.twelvedata.com/etfs/list?outputsize=50&apikey=439328def79441b9b6c17cf807f26b09",
+        url: "/assets/popular/mutual-funds",
         method: "GET",
       }),
-      extraOptions: { base: true },
+      transformResponse: (res: Assets.PopularMutualFundsResponse) =>
+        res.result.list,
     }),
-    popularCrypto: build.query<{ data: Asset.Crypto[] }, void>({
+
+    popularEtfs: build.query<Assets.Etf[], void>({
       query: () => ({
-        url: "https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest?limit=50&convert=USD&CMC_PRO_API_KEY=7a218076-f8f4-4a16-8516-302984384db9",
-        method: "GET"
+        url: "/assets/popular/etfs",
+        method: "GET",
       }),
-      extraOptions: { base: true },
+      transformResponse: (res: Assets.PopularEtfsResponse) => res.result.list,
+    }),
+
+    popularCrypto: build.query<Assets.Crypto[], void>({
+      query: () => ({
+        url: "/assets/popular/crypto",
+        method: "GET",
+      }),
+      transformResponse: (res: Assets.PopularCryptoResponse) => res.crypto,
+    }),
+
+    assetMetaData: build.query<object, Assets.AssetDataRequest>({
+      query: ({ symbol }) => ({
+        url: `/assets/quote/${symbol}?interval=1day`,
+        method: "GET",
+      }),
+      providesTags: (_res, _err, args) => [
+        { type: "asset-metadata", id: args.symbol },
+      ],
+    }),
+
+    assetTimeSeriesData: build.query<
+      Assets.TimeSeriesEntry[],
+      Assets.TimeSeriesRequest
+    >({
+      query: ({ symbol, interval }) => ({
+        url: `/assets/time-series/${symbol}?interval=${interval}`,
+        method: "GET",
+      }),
+      transformResponse: (res: Assets.TimeSeriesResponse) => {
+        const transformed: Assets.TimeSeriesEntry[] = [];
+        for (let i = res.values.length - 1; i >= 0; i--) {
+          const item = res.values[i];
+          transformed.push({
+            datetime: item.datetime,
+            open: parseFloat(item.open),
+            close: parseFloat(item.close),
+            high: parseFloat(item.high),
+            low: parseFloat(item.low),
+            volume: parseFloat(item.volume),
+          });
+        }
+
+        return transformed;
+      },
+    }),
+
+    assetLivePriceData: build.query<
+      (Assets.TimeSeriesEntry | Assets.PriceDataEntry)[],
+      Assets.TimeSeriesRequest
+    >({
+      query: ({ symbol, interval }) => ({
+        url: `/assets/time-series/${symbol}?interval=${interval}`,
+        method: "GET",
+      }),
+      transformResponse: (res: Assets.TimeSeriesResponse) => {
+        const transformed: Assets.TimeSeriesEntry[] = [];
+        for (let i = res.values.length - 1; i >= 0; i--) {
+          const item = res.values[i];
+          transformed.push({
+            datetime: item.datetime,
+            open: parseFloat(item.open),
+            close: parseFloat(item.close),
+            high: parseFloat(item.high),
+            low: parseFloat(item.low),
+            volume: parseFloat(item.volume),
+          });
+        }
+
+        return transformed;
+      },
+      onCacheEntryAdded: async (
+        arg,
+        { cacheDataLoaded, cacheEntryRemoved, updateCachedData },
+      ) => {
+        await cacheDataLoaded;
+
+        const ws = createWebSocket({
+          url: `/prices`,
+        });
+
+        try {
+          const listener = (e: MessageEvent) => {
+            const data = JSON.parse(e.data);
+
+            if (typeof data !== "object") return;
+            if (typeof data["symbol"] !== "string") return;
+            if (data["symbol"] !== arg.symbol) return;
+            if (typeof data["datetime"] !== "string") return;
+            if (typeof data["price"] !== "number") return;
+
+            updateCachedData((draft) => {
+              const lastEnteredDataTime = convertToUnixTimestamp(
+                draft[draft.length - 1].datetime,
+              ) as number;
+
+              const newTime = convertToUnixTimestamp(
+                data["datetime"],
+              ) as number;
+
+              if (intervalSecs(arg.interval) <= newTime - lastEnteredDataTime) {
+                draft.push(data);
+              }
+            });
+          };
+
+          ws.onopen = () => {
+            ws.send(JSON.stringify({ symbol: arg.symbol }));
+          };
+
+          ws.onmessage = listener;
+        } catch {
+          /* empty */
+        }
+
+        await cacheEntryRemoved;
+        ws.close();
+      },
     }),
   }),
 });
 
 export const {
-  useAssetSetQuery,
+  useLazyAssetsSearchQuery,
+  useAssetsSearchQuery,
+  useLazyAssetsListQuery,
+  useAssetMetaDataQuery,
+  useAssetTimeSeriesDataQuery,
+  useAssetLivePriceDataQuery,
   usePopularStocksQuery,
   usePopularMutualFundsQuery,
-  usePopularETFSQuery,
-  usePopularCryptoQuery
+  usePopularEtfsQuery,
+  usePopularCryptoQuery,
 } = assetsApi;

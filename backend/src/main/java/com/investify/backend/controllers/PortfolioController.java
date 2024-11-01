@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
 import java.util.UUID;
 
 @RequiredArgsConstructor
@@ -81,6 +82,14 @@ public class PortfolioController {
         Portfolio portfolio =  portfolioService.findPortfolio(clientId);
         RiskAssessmentResponse response = portfolioService.calculateRiskScoreWithAssets(clientId, "medium");
         return ResponseEntity.ok(response);
+
+    @GetMapping("/{clientId}/sector-valuations")
+    public ResponseEntity<Map<String, Double>> getSectorValuations(
+            @PathVariable String clientId) {
+
+        Map<String, Double> sectorValuations = portfolioService.calculateSectorValuations(clientId);
+        return ResponseEntity.ok(sectorValuations);
+
     }
 
 }

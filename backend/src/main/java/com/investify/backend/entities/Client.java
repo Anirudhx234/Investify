@@ -1,4 +1,5 @@
 package com.investify.backend.entities;
+import com.investify.backend.enums.InvestmentRisk;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
@@ -54,4 +55,19 @@ public class Client {
 
     @Column(name = "verification_token")
     private String verificationToken;
+
+    @Column(name = "short_term_goal", columnDefinition = "TEXT")
+    private String shortTermGoal;
+
+    @Column(name = "long_term_goal", columnDefinition = "TEXT")
+    private String longTermGoal;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "investment_risk")
+    private InvestmentRisk investmentRisk;
+
+    @Column(name = "userSavings")
+    private Integer userSavings;
+
+
 }

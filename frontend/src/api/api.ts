@@ -1,9 +1,11 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
 import baseQuery from "./baseQuery";
 
-/* API service */
-export const api = createApi({
+/* API */
+const api = createApi({
   baseQuery,
-  tagTypes: ["Profile"],
+  tagTypes: ["clients", "asset-metadata", "portfolios"],
   endpoints: () => ({}),
 });
+
+export default api;

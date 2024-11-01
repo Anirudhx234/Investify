@@ -120,6 +120,26 @@ public class ClientService {
             client.setFinancialGoals(updateProfileDto.getFinancialGoals());
         }
 
+        if (updateProfileDto.getShortTermGoal() != null){
+            client.setShortTermGoal(updateProfileDto.getShortTermGoal());
+        }
+
+        if (updateProfileDto.getLongTermGoal() != null){
+            client.setLongTermGoal(updateProfileDto.getLongTermGoal());
+        }
+
+        if (updateProfileDto.getInvestmentRisk() != null){
+            client.setInvestmentRisk(updateProfileDto.getInvestmentRisk());
+        }
+
+        if (updateProfileDto.getUserSavings() != null){
+            client.setUserSavings(updateProfileDto.getUserSavings());
+        }
+
+
+
+
+
         Client updatedClient = clientRepository.save(client);
         return clientMapper.toClientDto(updatedClient);
     }

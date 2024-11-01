@@ -1,11 +1,11 @@
 import type { UseFormReturn, Path } from "react-hook-form";
 
-import emailRegex from "../utils/emailRegex";
-import FormTextInput from "./FormTextInput";
+import emailRegex from "../util/emailRegex";
+import FormInput from "./FormInput";
 
 export interface FormEmailInputProps<T extends { email: string }> {
-  required?: boolean | undefined;
   form: UseFormReturn<T>;
+  required?: boolean | undefined;
   disabled?: boolean;
 }
 
@@ -20,7 +20,7 @@ export default function FormEmailInput<T extends { email: string }>({
   });
 
   return (
-    <FormTextInput
+    <FormInput
       name="email"
       labelText="Email"
       registerInputProps={registerInputProps}

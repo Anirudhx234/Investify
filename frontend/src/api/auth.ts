@@ -1,54 +1,52 @@
-import { type LoginRequest, type SignUpRequest, type VerifyArgs } from "../types/Auth";
-import { api } from "./api";
+import type Auth from "../types/Auth";
+import api from "./api";
 
-export const authApi = api.injectEndpoints({
+const authApi = api.injectEndpoints({
   endpoints: (build) => ({
-    signup: build.mutation<void, SignUpRequest>({
+    signUp: build.mutation<Auth.SignUpResponse, Auth.SignUpRequest>({
       query: ({ ...args }) => ({
         url: "/auth/signup",
         method: "POST",
         body: args,
       }),
-      extraOptions: { base: false },
     }),
-    login: build.mutation<void, LoginRequest>({
+    login: build.mutation<Auth.LoginResponse, Auth.LoginRequest>({
       query: ({ ...args }) => ({
         url: "/auth/login",
         method: "POST",
         body: args,
       }),
-      extraOptions: { base: false },
     }),
     logout: build.mutation<void, void>({
       query: () => ({
         url: "/auth/logout",
         method: "POST",
       }),
-      invalidatesTags: ["Profile"],
-      extraOptions: { base: false },
-    }),
-    verify: build.query<void, VerifyArgs>({
-      query: ({ searchParams }) => ({
-        url: "/auth/verify-email?" + searchParams,
-        method: "GET",
-      }),
-      extraOptions: { base: false },
     }),
     forgotPassword: build.mutation<void, { email: string }>({
       query: ({ ...args }) => ({
-        url: "/auth/reset-password",
+        url: "/auth/forgot-password",
         method: "POST",
         body: args,
       }),
-      extraOptions: { base: false },
+    }),
+    resetPassword: build.mutation<
+      void,
+      { searchParams?: string | undefined; newPassword: string }
+    >({
+      query: ({ newPassword, searchParams }) => ({
+        url: "/auth/reset-password?" + (searchParams ?? ""),
+        method: "PATCH",
+        body: { newPassword },
+      }),
     }),
   }),
 });
 
 export const {
-  useSignupMutation,
+  useSignUpMutation,
   useLoginMutation,
   useLogoutMutation,
-  useVerifyQuery,
-  useForgotPasswordMutation
+  useForgotPasswordMutation,
+  useResetPasswordMutation,
 } = authApi;
