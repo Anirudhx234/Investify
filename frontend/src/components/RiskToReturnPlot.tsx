@@ -15,10 +15,10 @@ interface RiskToReturnPlotProps {
 // Function to assign colors based on type
 const getColorByType = (type: string) => {
     switch(type) {
-        case 'stock': return '#015701'; // Green for stocks
+        case 'stock': return "#14af14"; // Green for stocks
         case 'crypto': return '#a1860a'; // Gold for crypto
-        case 'etf': return '#800080'; // Purple for ETFs
-        case 'mutual fund': return '#0204e7'; // Purple for ETFs
+        case 'etf': return '#ad00e8'; // Purple for ETFs
+        case 'mutual fund': return '#1a1cea'; // Purple for ETFs
         default: return '#8884d8'; // Default color
     }
 };
@@ -64,6 +64,7 @@ const RiskToReturnPlot = ({ data }: RiskToReturnPlotProps) => {
                         <Scatter
                             key={`scatter-${index}`}
                             data={[entry]}
+                            shape="square"
                             fill={getColorByType(entry.name)}
                         />
                     ))}
