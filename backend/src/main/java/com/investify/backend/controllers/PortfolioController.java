@@ -82,6 +82,7 @@ public class PortfolioController {
         Portfolio portfolio =  portfolioService.findPortfolio(clientId);
         RiskAssessmentResponse response = portfolioService.calculateRiskScoreWithAssets(clientId, "medium");
         return ResponseEntity.ok(response);
+    }
 
     @GetMapping("/{clientId}/sector-valuations")
     public ResponseEntity<Map<String, Double>> getSectorValuations(

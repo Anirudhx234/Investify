@@ -1,24 +1,15 @@
 import { ScatterChart, Scatter, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-
-// Define the type for each data point
-interface RiskPoint {
-    name: string;
-    risk: number; // X-axis (risk level)
-    return: number; // Y-axis (return level)
-}
-
-// Define the component props
-interface RiskToReturnPlotProps {
-    data: RiskPoint[];
-}
+import useAppSelector from "../hooks/useAppSelector.ts";
+import type {RootState} from "../app/store.ts";
+import {useFetchRiskReturnQuery} from "../api/riskPlot.ts";
 
 // Function to assign colors based on type
 const getColorByType = (type: string) => {
     switch(type) {
-        case 'stock': return "#14af14"; // Green for stocks
+        case 'stocks': return "#14af14"; // Green for stocks
         case 'crypto': return '#a1860a'; // Gold for crypto
-        case 'etf': return '#ad00e8'; // Purple for ETFs
-        case 'mutual fund': return '#1a1cea'; // Purple for ETFs
+        case 'etfs': return '#ad00e8'; // Purple for ETFs
+        case 'mutual-funds': return '#1a1cea'; // Purple for ETFs
         default: return '#8884d8'; // Default color
     }
 };
@@ -38,7 +29,21 @@ const CustomTooltip = ({ active, payload }: any) => {
     return null;
 };
 
-const RiskToReturnPlot = ({ data }: RiskToReturnPlotProps) => {
+const RiskToReturnPlot = () => {
+    const clientId = useAppSelector((state: RootState) => state.client.id) || "me";
+
+    const { data: riskReturn, error, isLoading } = useFetchRiskReturnQuery(clientId);
+
+    if (isLoading) {
+        return <div>Loading...</div>;
+    }
+    if (error) {
+        return <div>Error fetching data</div>;
+    }
+    if (!riskReturn || riskReturn.length === 0) {
+        return <div>No data available</div>;
+    }
+
     return (
         <div>
             <h1>Risk To Return Plot (risk proportional to portfolio holdings)</h1>
@@ -60,7 +65,7 @@ const RiskToReturnPlot = ({ data }: RiskToReturnPlotProps) => {
                         label={{ value: 'Return (%)', angle: -90, position: 'insideLeft' }}
                     />
                     <Tooltip content={<CustomTooltip />} />
-                    {data.map((entry, index) => (
+                    {riskReturn.map((entry, index) => (
                         <Scatter
                             key={`scatter-${index}`}
                             data={[entry]}
