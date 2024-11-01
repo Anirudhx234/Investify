@@ -1,7 +1,7 @@
 import type Assets from "../types/Assets";
 
 import { useParams } from "wouter";
-import { useAssetMetaDataQuery } from "../api/assets";
+import {useAssetMetaDataQuery, useScraperQuery} from "../api/assets";
 import { MdErrorOutline } from "react-icons/md";
 import DataTable from "../components/DataTable";
 import AssetPageChart from "../scenes/AssetPageChart";
@@ -58,6 +58,20 @@ export default function AssetPage() {
         >
           <AssetPagePortfolio />
         </div>
+
+        <input
+            type="radio"
+            name="asset-page-tablist"
+            role="tab"
+            className="tab"
+            aria-label="News"
+        />
+        <div
+            role="tabpanel"
+            className="tab-content w-full border-t-2 border-t-primary ~p-2/4"
+        >
+          <AssetPageNews />
+        </div>
       </div>
     </div>
   );
@@ -91,4 +105,65 @@ function AssetPageGeneral() {
 
 function AssetPagePortfolio() {
   return <>Add to portfolio</>;
+}
+
+function AssetPageNews() {
+  const params = useParams() as { symbol: string };
+  const { data: articles, error, isLoading } = useScraperQuery(params);
+
+  const styles = {
+    list: {
+      listStyleType: 'none',
+      padding: 0,
+      margin: '20px 0',
+    },
+    listItem: {
+      marginBottom: '10px',
+    },
+    link: {
+      textDecoration: 'none',
+      color: '#00aeff',
+      fontWeight: 'bold',
+      transition: 'color 0.3s',
+    },
+    linkHover: {
+      color: '#0056b3',
+      textDecoration: 'underline',
+    },
+  };
+
+  const handleMouseOver = (e) => {
+    e.currentTarget.style.color = styles.linkHover.color;
+    e.currentTarget.style.textDecoration = styles.linkHover.textDecoration;
+  };
+
+  const handleMouseOut = (e) => {
+    e.currentTarget.style.color = styles.link.color;
+    e.currentTarget.style.textDecoration = styles.link.textDecoration;
+  };
+
+  if (isLoading) return <div>Loading...</div>;
+  if (error) return <div>Error fetching articles</div>;
+
+  return (
+      <div>
+        <h1>News surrounding the {params.symbol} stock:</h1>
+        <ul style={styles.list}>
+          {articles.map(([title, url], index) => (
+              <li key={index} style={styles.listItem}>
+                <a
+                    href={url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={styles.link}
+                    onMouseOver={handleMouseOver}
+                    onMouseOut={handleMouseOut}
+                >
+                  {title}
+                </a>
+              </li>
+          ))}
+        </ul>
+      </div>
+  );
 }

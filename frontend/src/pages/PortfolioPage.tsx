@@ -43,6 +43,34 @@ export default function PortfolioPage() {
     );
   }
 
+    const renderHeatMap = () => {
+        if (!data?.portfolioAssets || data.portfolioAssets.length === 0) {
+            return <p>No assets available for the heat map.</p>;
+        }
+
+        return (
+            <div className="flex flex-wrap items-center justify-center gap-8">
+                {data.portfolioAssets.map((item) => {
+                    const changePercentage =
+                        ((item.currentPrice - item.initialPrice) / item.initialPrice) * 100;
+                    const color = changePercentage > 0 ? "bg-green-500" : "bg-red-500";
+
+                    return (
+                        <div
+                            key={item.asset.id}
+                            className={`flex flex-col items-center justify-center p-4 rounded ${color}`}
+                            style={{ width: '100px', height: '100px' }}
+                        >
+                            <h3 className="text-white">{item.asset.symbol}</h3>
+                            <p className="text-white">Price: ${item.currentPrice.toFixed(2)}</p>
+                            <p className="text-white">{changePercentage.toFixed(2)}%</p>
+                        </div>
+                    );
+                })}
+            </div>
+        );
+    };
+
   return (
     <div className="mt-12 grid w-full">
       <h1 className="mb-4 w-full text-center font-bold ~text-lg/xl">
@@ -159,6 +187,8 @@ export default function PortfolioPage() {
             : modifyPortfolioState.error.message}
         </p>
       </Modal>
+        <h2 className="mt-8 text-center font-bold">Portfolio Heat Map</h2>
+        {renderHeatMap()}
     </div>
   );
 }

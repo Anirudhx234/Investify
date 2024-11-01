@@ -5,6 +5,7 @@ import ProfileAccountForm from "../forms/ProfileAccountForm";
 import ProfileGeneralForm from "../forms/ProfileGeneralForm";
 import ProfilePersonalForm from "../forms/ProfilePersonalForm";
 import ProfileFinancialForm from "../forms/ProfileFinancialForm";
+import InvestmentAdvice from "../scenes/InvestmentAdvice";
 
 export default function ClientsPage() {
   const params = useParams() as { id: string };
@@ -33,6 +34,7 @@ export default function ClientsPage() {
           <>
           <Route path="/personal" component={ProfilePersonalForm} />
           <Route path="/financial goals" component={ProfileFinancialForm} />
+          <Route path="/investment advice" component={InvestmentAdvice} />
           </>
         )}
         <Route path="*" component={() => <Redirect to="/account" replace />} />

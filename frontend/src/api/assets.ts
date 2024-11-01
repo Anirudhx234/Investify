@@ -187,6 +187,16 @@ export const assetsApi = api.injectEndpoints({
         ws.close();
       },
     }),
+    scraper: build.query<string[][], { symbol: string }>({
+      query: ({ symbol }) => ({
+        url: `/assets/scraper/${symbol}`,
+        method: "GET",
+      }),
+      transformResponse: (res: any) => {
+        // List<List<String>> as an array of arrays
+        return res; // directly return the response since it's already in the right format
+      },
+    }),
   }),
 });
 
@@ -201,4 +211,5 @@ export const {
   usePopularMutualFundsQuery,
   usePopularEtfsQuery,
   usePopularCryptoQuery,
+  useScraperQuery,
 } = assetsApi;
