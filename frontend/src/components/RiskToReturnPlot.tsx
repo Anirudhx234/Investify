@@ -60,15 +60,13 @@ const RiskToReturnPlot = ({ data }: RiskToReturnPlotProps) => {
                         label={{ value: 'Return (%)', angle: -90, position: 'insideLeft' }}
                     />
                     <Tooltip content={<CustomTooltip />} />
-                    <Scatter name="Investments" data={data} fill="#8884d8">
-                        {data.map((entry, index) => (
-                            <Scatter
-                                key={`scatter-${index}`}
-                                data={[entry]}
-                                fill={getColorByType(entry.name)}
-                            />
-                        ))}
-                    </Scatter>
+                    {data.map((entry, index) => (
+                        <Scatter
+                            key={`scatter-${index}`}
+                            data={[entry]}
+                            fill={getColorByType(entry.name)}
+                        />
+                    ))}
                 </ScatterChart>
             </ResponsiveContainer>
         </div>
