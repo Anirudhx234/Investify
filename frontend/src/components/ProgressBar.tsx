@@ -4,9 +4,9 @@ import {useState} from "react";
 export default function ProgressBar<T extends FieldValues>({ form, name, savingsGoal, savings } : { form: UseFormReturn<T>, name: string, savingsGoal: number, savings: number }) {
     const [currentSavings, setCurrentSavings] = useState(`${savings}`);
 
+    console.log(savingsGoal);
+
     const registerInputProps = form.register(name as Path<T>, {
-        min: 0,
-        max: savingsGoal,
         valueAsNumber: true,
         onChange: (e) => setCurrentSavings(e.target.value),
     });
@@ -24,6 +24,8 @@ export default function ProgressBar<T extends FieldValues>({ form, name, savings
                     <input
                         type="range"
                         className={`range ${isGoalMet ? "range-success" : "range-primary"}`}
+                        min={0}
+                        max={savingsGoal}
                         {...registerInputProps}
                     />
                     <div className="text-sm mt-2">
