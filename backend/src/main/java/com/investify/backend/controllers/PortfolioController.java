@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
 import java.util.UUID;
 
 @RequiredArgsConstructor
@@ -69,6 +70,15 @@ public class PortfolioController {
         PortfolioAsset portfolioAsset = portfolioService.deletePortfolioAsset(portfolio, assetId);
 
         return ResponseEntity.ok(portfolioAsset);
+    }
+
+    @GetMapping("/{clientId}/sector-valuations")
+    public ResponseEntity<Map<String, Double>> getSectorValuations(
+            @PathVariable String clientId) {
+        System.out.println("Hi");
+
+        Map<String, Double> sectorValuations = portfolioService.calculateSectorValuations(clientId);
+        return ResponseEntity.ok(sectorValuations);
     }
 
 }

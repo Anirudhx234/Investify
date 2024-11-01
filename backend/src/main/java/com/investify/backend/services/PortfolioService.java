@@ -109,4 +109,22 @@ public class PortfolioService {
     private Portfolio createPortfolioForClient(Client client) {
         return portfolioRepository.save(new Portfolio(client));
     }
+
+    public Map<String, Double> calculateSectorValuations(String clientId) {
+        Portfolio portfolio = findOrCreatePortfolio(clientId);
+
+        // Retrieve PortfolioAssets and collect as a List
+        List<PortfolioAsset> assets = portfolioAssetRepository.findByPortfolio(portfolio)
+                .stream()
+                .toList();
+
+        // Group by asset type and calculate valuations based on initial price and quantity
+        return assets.stream()
+                .collect(Collectors.groupingBy(
+                        asset -> asset.getAsset().getType(),
+                        Collectors.summingDouble(asset ->
+                                asset.getInitialPrice() * asset.getQuantity()
+                        )
+                ));
+    }
 }

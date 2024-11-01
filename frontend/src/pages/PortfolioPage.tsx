@@ -6,6 +6,7 @@ import {
 } from "../api/portfolio";
 import { useEffect, useRef, useState } from "react";
 import Modal from "../components/Modal";
+import PieChartExample from '../components/PieChart'; 
 
 export default function PortfolioPage() {
   const { data, isLoading, isError, error } = usePortfolioAssetsQuery({});
@@ -148,6 +149,11 @@ export default function PortfolioPage() {
           ))}
         </tbody>
       </table>
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '100vh' }}>
+      <h1>Sector Distribution</h1>
+      <PieChartExample />
+    </div>
+
       <Modal
         ref={modalRef}
         onExit={() => modalRef.current?.close()}
@@ -160,5 +166,6 @@ export default function PortfolioPage() {
         </p>
       </Modal>
     </div>
+    
   );
 }

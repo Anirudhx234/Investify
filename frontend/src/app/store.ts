@@ -6,6 +6,7 @@ import themeReducer from "../features/themeSlice";
 import appRouteReducer from "../features/appRouteSlice";
 import clientReducer from "../features/clientSlice";
 import searchReducer from "../features/searchSlice";
+// import sectorValuationsReducer from "../features/sectorValuationsSlice";
 
 import api from "../api/api";
 
@@ -22,6 +23,7 @@ const persistedReducer = persistCombineReducers(persistConfig, {
   appRoute: appRouteReducer,
   client: clientReducer,
   search: searchReducer,
+  // sectorValuations: sectorValuationsReducer,
   [api.reducerPath]: api.reducer,
 });
 

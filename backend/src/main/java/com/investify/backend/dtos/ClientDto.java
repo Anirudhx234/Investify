@@ -21,4 +21,5 @@ public class ClientDto {
     private String shortTermGoal;
     private String longTermGoal;
     private InvestmentRisk investmentRisk;
+    private Integer userSavings;
 }

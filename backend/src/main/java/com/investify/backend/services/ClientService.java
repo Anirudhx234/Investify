@@ -132,6 +132,12 @@ public class ClientService {
             client.setInvestmentRisk(updateProfileDto.getInvestmentRisk());
         }
 
+        if (updateProfileDto.getUserSavings() != null){
+            client.setUserSavings(updateProfileDto.getUserSavings());
+        }
+
+
+
 
 
         Client updatedClient = clientRepository.save(client);

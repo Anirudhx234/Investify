@@ -7,6 +7,7 @@ import { SubmitHandler, useForm } from "react-hook-form";
 import Clients from "../types/Clients";
 import Modal from "../components/Modal";
 import FormTextInput from "../components/FormTextInput";
+import FormNumberInput from "../components/FormNumberInput";
 import FormSelectInput from "../components/FormSelectInput";
 import { InvestmentRisk } from "../enums/InvestmentRisk";
 
@@ -23,6 +24,7 @@ export default function ProfileFinancialForm() {
         longTermGoal: clientProfileState.data.longTermGoal ?? "",
         investmentRisk:
           clientProfileState.data.investmentRisk ?? InvestmentRisk.LOW,
+        userSavings: clientProfileState.data.userSavings ?? 0,
       });
     }
   }, [financialForm, clientProfileState]);
@@ -48,6 +50,10 @@ export default function ProfileFinancialForm() {
 
     if (data.investmentRisk !== clientProfileState.data?.investmentRisk) {
       formData.set("investmentRisk", `${data.investmentRisk}`);
+    }
+
+    if (data.userSavings !== clientProfileState.data?.userSavings) {
+      formData.set("userSavings", `${data.userSavings}`);
     }
 
     console.log(data.investmentRisk, clientProfileState.data?.investmentRisk);
@@ -101,6 +107,14 @@ export default function ProfileFinancialForm() {
             { value: InvestmentRisk.HIGH, label: "High" },
           ]}
           disabled={isBuffering}
+        />
+
+<FormNumberInput
+          name="userSavings"
+          labelText="User Savings"
+          form={financialForm}
+          disabled={isBuffering}
+          min={0}
         />
 
         <div>

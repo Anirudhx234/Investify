@@ -65,4 +65,9 @@ public class Client {
     @Enumerated(EnumType.STRING)
     @Column(name = "investment_risk")
     private InvestmentRisk investmentRisk;
+
+    @Column(name = "userSavings")
+    private Integer userSavings;
+
+
 }
