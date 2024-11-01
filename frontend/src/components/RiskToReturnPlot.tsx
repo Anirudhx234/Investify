@@ -2,7 +2,6 @@ import { ScatterChart, Scatter, XAxis, YAxis, CartesianGrid, Tooltip, Responsive
 import useAppSelector from "../hooks/useAppSelector.ts";
 import type {RootState} from "../app/store.ts";
 import {useFetchRiskReturnQuery} from "../api/riskPlot.ts";
-import RiskPoint = Risk.RiskPoint;
 
 // Function to assign colors based on type
 const getColorByType = (type: string) => {
@@ -33,7 +32,7 @@ const CustomTooltip = ({ active, payload }: any) => {
 const RiskToReturnPlot = () => {
     const clientId = useAppSelector((state: RootState) => state.client.id) || "me";
 
-    const { data: riskReturn, error, isLoading } = useFetchRiskReturnQuery(clientId);
+    const { data: data, error, isLoading } = useFetchRiskReturnQuery(clientId);
 
     if (isLoading) {
         return <div>Loading...</div>;
@@ -41,9 +40,15 @@ const RiskToReturnPlot = () => {
     if (error) {
         return <div>Error fetching data</div>;
     }
-    if (!riskReturn || riskReturn.length === 0) {
+    if (!data || data.length === 0) {
         return <div>No data available</div>;
     }
+
+    const riskReturn = data.map((d) => ({
+        ...d,
+        risk: (d.risk * 100).toFixed(2),
+        return: (d.return * 100).toFixed(2)
+    }))
 
     return (
         <div>

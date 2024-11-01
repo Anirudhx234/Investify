@@ -10,9 +10,16 @@ import { useEffect, useRef, useState } from "react";
 import Modal from "../components/Modal";
 import PieChartExample from '../components/PieChart';
 import RiskToReturnPlot from "../components/RiskToReturnPlot.tsx";
+import DataTable from "../components/DataTable.tsx";
+import {useFetchRiskScoreQuery} from "../api/riskPlot.ts";
+import useAppSelector from "../hooks/useAppSelector.ts";
+import type {RootState} from "../app/store.ts";
 
 export default function PortfolioPage() {
-  const { data, isLoading, isError, error } = usePortfolioAssetsQuery({});
+    const clientId = useAppSelector((state: RootState) => state.client.id) || "me";
+
+    const { data, isLoading, isError, error } = usePortfolioAssetsQuery({});
+  const { data: riskData } = useFetchRiskScoreQuery(clientId);
   const [deletePortfolioAsset] = useDeletePortfolioAssetMutation();
   const { data: totalPortfolioValue } = useTotalPortfolioValueQuery({});
   const { data: roi } = useRoiQuery({});
@@ -163,9 +170,15 @@ export default function PortfolioPage() {
         </tbody>
       </table>
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '100vh' }}>
-      <h1>Sector Distribution</h1>
-      <PieChartExample />
-      <RiskToReturnPlot />
+          <div className={"grid grid-cols-2 w-full pt-10"}>
+              <div className={"flex flex-col"}>
+                  <h1>Sector Distribution</h1>
+                  <PieChartExample/>
+              </div>
+              <RiskToReturnPlot/>
+          </div>
+
+          {riskData && <DataTable data={riskData} />}
     </div>
 
       <Modal
