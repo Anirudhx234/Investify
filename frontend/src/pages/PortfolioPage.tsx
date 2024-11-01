@@ -8,7 +8,8 @@ import {
 } from "../api/portfolio";
 import { useEffect, useRef, useState } from "react";
 import Modal from "../components/Modal";
-import PieChartExample from '../components/PieChart'; 
+import PieChartExample from '../components/PieChart';
+import RiskToReturnPlot from "../components/RiskToReturnPlot.tsx";
 
 export default function PortfolioPage() {
   const { data, isLoading, isError, error } = usePortfolioAssetsQuery({});
@@ -164,6 +165,7 @@ export default function PortfolioPage() {
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '100vh' }}>
       <h1>Sector Distribution</h1>
       <PieChartExample />
+      <RiskToReturnPlot />
     </div>
 
       <Modal

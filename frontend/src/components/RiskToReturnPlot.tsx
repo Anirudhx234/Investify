@@ -1,10 +1,8 @@
 import { ScatterChart, Scatter, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import useAppSelector from "../hooks/useAppSelector.ts";
+import type {RootState} from "../app/store.ts";
+import {useFetchRiskReturnQuery} from "../api/riskPlot.ts";
 import RiskPoint = Risk.RiskPoint;
-
-// Define the component props
-interface RiskToReturnPlotProps {
-    data: RiskPoint[];
-}
 
 // Function to assign colors based on type
 const getColorByType = (type: string) => {
@@ -32,7 +30,21 @@ const CustomTooltip = ({ active, payload }: any) => {
     return null;
 };
 
-const RiskToReturnPlot = ({ data }: RiskToReturnPlotProps) => {
+const RiskToReturnPlot = () => {
+    const clientId = useAppSelector((state: RootState) => state.client.id) || "me";
+
+    const { data: riskReturn, error, isLoading } = useFetchRiskReturnQuery(clientId);
+
+    if (isLoading) {
+        return <div>Loading...</div>;
+    }
+    if (error) {
+        return <div>Error fetching data</div>;
+    }
+    if (!riskReturn || riskReturn.length === 0) {
+        return <div>No data available</div>;
+    }
+
     return (
         <div>
             <h1>Risk To Return Plot (risk proportional to portfolio holdings)</h1>
@@ -54,7 +66,7 @@ const RiskToReturnPlot = ({ data }: RiskToReturnPlotProps) => {
                         label={{ value: 'Return (%)', angle: -90, position: 'insideLeft' }}
                     />
                     <Tooltip content={<CustomTooltip />} />
-                    {data.map((entry, index) => (
+                    {riskReturn.map((entry, index) => (
                         <Scatter
                             key={`scatter-${index}`}
                             data={[entry]}
