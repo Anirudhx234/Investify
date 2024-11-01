@@ -8,6 +8,7 @@ import twMerge from "../util/twMerge.ts";
 export interface MarketMoverListProps<T extends object> {
   title: string;
   data: T[] | undefined;
+  errorMssg?: string | undefined;
   getKey: (item: T) => string;
   getDataHeading1: (item: T) => ReactNode;
   getDataHeading2: (item: T) => ReactNode;
@@ -18,6 +19,7 @@ export interface MarketMoverListProps<T extends object> {
 export function MarketMoverList<T extends object>({
   title,
   data,
+  errorMssg,
   getKey,
   getDataHeading1,
   getDataHeading2,
@@ -28,8 +30,9 @@ export function MarketMoverList<T extends object>({
     <div className="flex h-[25rem] w-[20rem] flex-col gap-4 overflow-hidden rounded-md bg-base-200 shadow-sm">
       <h2 className="p-4 text-center text-lg font-semibold">{title}</h2>
       {!data && (
-        <div className="flex h-full w-full items-center justify-center">
+        <div className="flex flex-col gap-4 h-full w-full items-center justify-center">
           <span className="loading loading-bars"></span>
+          {errorMssg && <p className="text-error text-center">{errorMssg}</p>}
         </div>
       )}
       {data && (
@@ -75,14 +78,17 @@ export function MarketMoverList<T extends object>({
 export function StocksList({
   title,
   stocks,
+  errorMssg
 }: {
   title: string;
   stocks: Assets.Stock[] | undefined;
+  errorMssg?: string | undefined;
 }) {
   return (
     <MarketMoverList
       title={title}
       data={stocks}
+      errorMssg={errorMssg}
       getKey={(item) => item.ticker}
       getDataHeading1={() => "Volume"}
       getDataContent1={(item) => formatVolume(item.volume)}
@@ -103,14 +109,17 @@ export function StocksList({
 export function MutualFundsList({
   title,
   mutualFunds,
+  errorMssg
 }: {
   title: string;
   mutualFunds: Assets.MutualFund[] | undefined;
+  errorMssg?: string | undefined;
 }) {
   return (
     <MarketMoverList
       title={title}
       data={mutualFunds}
+      errorMssg={errorMssg}
       getKey={(mf) => mf.symbol}
       getDataHeading1={() => "Perform"}
       getDataContent1={(mf) => (
@@ -127,14 +136,17 @@ export function MutualFundsList({
 export function EtfList({
   title,
   etfs,
+  errorMssg
 }: {
   title: string;
   etfs: Assets.Etf[] | undefined;
+  errorMssg?: string | undefined;
 }) {
   return (
     <MarketMoverList
       title={title}
       data={etfs}
+      errorMssg={errorMssg}
       getKey={(etf) => etf.symbol}
       getDataHeading1={(etf) => etf.fund_type}
       getDataContent1={() => <></>}
@@ -147,14 +159,17 @@ export function EtfList({
 export function CryptoList({
   title,
   crypto,
+  errorMssg
 }: {
   title: string;
   crypto: Assets.Crypto[] | undefined;
+  errorMssg?: string | undefined;
 }) {
   return (
     <MarketMoverList
       title={title}
       data={crypto}
+      errorMssg={errorMssg}
       getKey={(item) => item.symbol}
       getDataHeading1={() => "Volume 24h"}
       getDataContent1={(item) => formatVolume(item.volume_24h)}

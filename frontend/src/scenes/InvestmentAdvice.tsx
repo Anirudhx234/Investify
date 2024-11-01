@@ -29,7 +29,8 @@ const InvestmentAdvice: React.FC = () => {
                 "Since you are under 30...",
                 "Start investing early to take advantage of compound interest.",
                 "Consider aggressive growth stocks and ETFs for higher returns.",
-                "Build a budget and focus on saving a portion of your income."
+                "Build a budget and focus on saving a portion of your income.",
+                <a href="https://www.investopedia.com/terms/e/etf.asp" className="link">More info about ETFs</a>
             ];
         } else if (age >= 30 && age < 50) {
             indexOne = 1;
@@ -37,7 +38,8 @@ const InvestmentAdvice: React.FC = () => {
                 "Since you are between 30 and 50...",
                 "Diversify your portfolio to balance risk and returns.",
                 "Focus on retirement accounts like 401(k)s or IRAs.",
-                "Keep an eye on your financial goals and adjust your strategy accordingly."
+                "Keep an eye on your financial goals and adjust your strategy accordingly.",
+                <a href="https://www.schwab.com/learn/story/how-do-401ks-work-frequently-asked-questions" className="link">More info about 401ks</a>
             ];
         } else if (age >= 50) {
             indexOne = 2;

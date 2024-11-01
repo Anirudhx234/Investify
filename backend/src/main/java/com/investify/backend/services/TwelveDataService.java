@@ -6,6 +6,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -21,6 +23,9 @@ public class TwelveDataService {
 
     @Value("${twelveData.api.key}")
     private String twelveDataApiKey;
+
+    @Value("${twelveData.demoapi.key}")
+    private String twelveDataDemoApiKey;
 
     private final WebClient webClient;
 
@@ -119,6 +124,7 @@ public class TwelveDataService {
     // https://api.twelvedata.com/time_series?symbol=AAPL&interval=1min&apikey=your_api_key
 
     // Valid intervals: 1min, 5min, 15min, 30min, 45min, 1h, 2h, 4h, 1day, 1week, 1month
+    @Cacheable(value = "timeSeriesCache", key = "#ticker + '-' + #interval")
     public Mono<Map> getAssetTimeSeries(String ticker, String interval) {
         return webClient.get()
                 .uri(uriBuilder -> uriBuilder
@@ -147,6 +153,7 @@ public class TwelveDataService {
     }
 
     // Get current price of an asset
+    @Cacheable(value = "assetPriceCache", key = "#symbol")
     public double getLivePrice(String symbol) {
         ObjectMapper objectMapper = new ObjectMapper();
 
@@ -175,7 +182,7 @@ public class TwelveDataService {
                 .uri(uriBuilder -> uriBuilder
                         .path("/mutual_funds/list")
                         .queryParam("outputsize", 50) // Number of data points to get back
-                        .queryParam("apikey", twelveDataApiKey)
+                        .queryParam("apikey", twelveDataDemoApiKey)
                         .build())
                 .retrieve()
                 .bodyToMono(Map.class);
@@ -187,7 +194,7 @@ public class TwelveDataService {
                 .uri(uriBuilder -> uriBuilder
                         .path("/etfs/list")
                         .queryParam("outputsize", 50) // Number of data points to get back
-                        .queryParam("apikey", twelveDataApiKey)
+                        .queryParam("apikey", twelveDataDemoApiKey)
                         .build())
                 .retrieve()
                 .bodyToMono(Map.class);

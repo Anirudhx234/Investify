@@ -149,7 +149,8 @@ function AssetPageNews() {
       <div>
         <h1>News surrounding the {params.symbol} stock:</h1>
         <ul style={styles.list}>
-          {articles.map(([title, url], index) => (
+          {!articles && <div>No recent news available for this asset</div>}
+          {articles?.map(([title, url], index) => (
               <li key={index} style={styles.listItem}>
                 <a
                     href={url}

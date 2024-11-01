@@ -49,5 +49,5 @@ const baseQuery: CustomBaseQuery.CustomBaseQueryFn = async (
   };
 };
 
-const baseQueryWithRetries = retry(baseQuery, { maxRetries: 3 });
+const baseQueryWithRetries = retry(baseQuery, { maxRetries: 0 });
 export default baseQueryWithRetries;

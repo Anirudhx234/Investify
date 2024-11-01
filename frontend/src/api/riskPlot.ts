@@ -10,6 +10,7 @@ const riskPlotApi = api.injectEndpoints({
                 url: `/portfolios/${clientId}/risk-chart`,
                 method: "GET",
             }),
+            providesTags: ["risk-chart"],
         }),
         fetchRiskScore: build.query<RiskScore[], string>({
             // Set default to "me" if clientId is not provided
@@ -17,6 +18,7 @@ const riskPlotApi = api.injectEndpoints({
                 url: `/portfolios/${clientId}/risk-assessment`,
                 method: "GET",
             }),
+            providesTags: ["risk-assessment"],
         }),
     }),
 });

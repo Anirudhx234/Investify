@@ -1,4 +1,4 @@
-import { MdErrorOutline } from "react-icons/md";
+import { MdErrorOutline, MdOutlineError } from "react-icons/md";
 import {
   useDeletePortfolioAssetMutation,
   useModifyPortfolioAssetMutation,
@@ -8,17 +8,18 @@ import {
 } from "../api/portfolio";
 import { useEffect, useRef, useState } from "react";
 import Modal from "../components/Modal";
-import PieChartExample from '../components/PieChart';
+import PieChartExample from "../components/PieChart";
 import RiskToReturnPlot from "../components/RiskToReturnPlot.tsx";
 import DataTable from "../components/DataTable.tsx";
-import {useFetchRiskScoreQuery} from "../api/riskPlot.ts";
+import { useFetchRiskScoreQuery } from "../api/riskPlot.ts";
 import useAppSelector from "../hooks/useAppSelector.ts";
-import type {RootState} from "../app/store.ts";
+import type { RootState } from "../app/store.ts";
 
 export default function PortfolioPage() {
-    const clientId = useAppSelector((state: RootState) => state.client.id) || "me";
+  const clientId =
+    useAppSelector((state: RootState) => state.client.id) || "me";
 
-    const { data, isLoading, isError, error } = usePortfolioAssetsQuery({});
+  const { data, isLoading, isError, error } = usePortfolioAssetsQuery({});
   const { data: riskData } = useFetchRiskScoreQuery(clientId);
   const [deletePortfolioAsset] = useDeletePortfolioAssetMutation();
   const { data: totalPortfolioValue } = useTotalPortfolioValueQuery({});
@@ -56,44 +57,46 @@ export default function PortfolioPage() {
     );
   }
 
-    const renderHeatMap = () => {
-        if (!data?.portfolioAssets || data.portfolioAssets.length === 0) {
-            return <p>No assets available for the heat map.</p>;
-        }
+  const renderHeatMap = () => {
+    if (!data?.portfolioAssets || data.portfolioAssets.length === 0) {
+      return <p>No assets available for the heat map.</p>;
+    }
 
-        return (
-            <div className="flex flex-wrap items-center justify-center gap-8">
-                {data.portfolioAssets.map((item) => {
-                    const changePercentage =
-                        ((item.currentPrice - item.initialPrice) / item.initialPrice) * 100;
-                    const color = changePercentage > 0 ? "bg-green-500" : "bg-red-500";
+    return (
+      <div className="flex flex-wrap items-center justify-center gap-8">
+        {data.portfolioAssets.map((item) => {
+          const changePercentage =
+            ((item.currentPrice - item.initialPrice) / item.initialPrice) * 100;
+          const color = changePercentage > 0 ? "bg-green-500" : "bg-red-500";
 
-                    return (
-                        <div
-                            key={item.asset.id}
-                            className={`flex flex-col items-center justify-center p-4 rounded ${color}`}
-                            style={{ width: '100px', height: '100px' }}
-                        >
-                            <h3 className="text-white">{item.asset.symbol}</h3>
-                            <p className="text-white">Price: ${item.currentPrice.toFixed(2)}</p>
-                            <p className="text-white">{changePercentage.toFixed(2)}%</p>
-                        </div>
-                    );
-                })}
+          return (
+            <div
+              key={item.asset.id}
+              className={`flex flex-col items-center justify-center rounded p-4 ${color}`}
+              style={{ width: "100px", height: "100px" }}
+            >
+              <h3 className="text-white">{item.asset.symbol}</h3>
+              <p className="text-white">
+                Price: ${item.currentPrice.toFixed(2)}
+              </p>
+              <p className="text-white">{changePercentage.toFixed(2)}%</p>
             </div>
-        );
-    };
+          );
+        })}
+      </div>
+    );
+  };
 
   return (
     <div className="mt-12 grid w-full">
       <h1 className="mb-4 w-full text-center font-bold ~text-lg/xl">
         Your Portfolio
       </h1>
-      <div className="text-center mb-6">
-        <p className="font-semibold text-lg">
+      <div className="mb-6 text-center">
+        <p className="text-lg font-semibold">
           Total Portfolio Value: ${totalPortfolioValue?.toFixed(2) ?? "0.00"}
         </p>
-        <p className="font-semibold text-lg">
+        <p className="text-lg font-semibold">
           Return on Investment (ROI): {roi?.toFixed(2) ?? "0.00"}
         </p>
       </div>
@@ -197,17 +200,33 @@ export default function PortfolioPage() {
           ))}
         </tbody>
       </table>
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '100vh' }}>
-          <div className={"grid grid-cols-2 w-full pt-10"}>
-              <div className={"flex flex-col"}>
-                  <h1>Sector Distribution</h1>
-                  <PieChartExample/>
-              </div>
-              <RiskToReturnPlot/>
+      {data?.portfolioAssets?.length ? (
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <div className={"grid w-full grid-cols-2 pt-10"}>
+            <div className={"flex flex-col"}>
+              <h1>Sector Distribution</h1>
+              <PieChartExample />
+            </div>
+            <RiskToReturnPlot />
           </div>
 
           {riskData && <DataTable data={riskData} />}
-    </div>
+          <h2 className="mt-8 text-center font-bold">Portfolio Heat Map</h2>
+          {renderHeatMap()}
+        </div>
+      ) : (
+        <div className="flex items-center gap-1 text-error justify-center w-full mt-8">
+          <MdOutlineError />
+          <p>No portfolio data available for Pie chart, Risk to return chart, Risk assessment, and Heatmap</p>
+        </div>
+      )}
 
       <Modal
         ref={modalRef}
@@ -220,9 +239,6 @@ export default function PortfolioPage() {
             : modifyPortfolioState.error.message}
         </p>
       </Modal>
-        <h2 className="mt-8 text-center font-bold">Portfolio Heat Map</h2>
-        {renderHeatMap()}
     </div>
-    
   );
 }

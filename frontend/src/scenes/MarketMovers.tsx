@@ -22,21 +22,25 @@ export default function MarketMovers() {
       <StocksList
         title="Most Popular Stocks"
         stocks={stocksData.data?.most_actively_traded}
+        errorMssg={stocksData.error?.message}
       />
       <StocksList
         title="Top Gainer Stocks"
         stocks={stocksData.data?.top_gainers}
+        errorMssg={stocksData.error?.message}
       />
       <StocksList
         title="Top Loser Stocks"
         stocks={stocksData.data?.top_losers}
+        errorMssg={stocksData.error?.message}
       />
       <MutualFundsList
         title="Popular Mutual Funds"
         mutualFunds={mutualFundsData.data}
+        errorMssg={mutualFundsData.error?.message}
       />
-      <EtfList title="Popular ETFs" etfs={etfsData.data} />
-      <CryptoList title="Popular Crypto" crypto={cryptoData.data} />
+      <EtfList title="Popular ETFs" etfs={etfsData.data} errorMssg={etfsData.error?.message} />
+      <CryptoList title="Popular Crypto" crypto={cryptoData.data} errorMssg={cryptoData.error?.message} />
     </div>
   );
 }

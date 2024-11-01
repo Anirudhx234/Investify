@@ -26,7 +26,7 @@ export const portfolioApi = api.injectEndpoints({
         body: remainingArgs,
       }),
       invalidatesTags: (res, _err, args) =>
-        res ? [{ type: "portfolios", id: args.id ?? "me" }, "roi", "portfolio-value", "pie-chart"] : ["roi", "portfolio-value", "pie-chart"],
+        res ? [{ type: "portfolios", id: args.id ?? "me" }, "roi", "portfolio-value", "pie-chart", "risk-chart", "risk-assessment"] : ["roi", "portfolio-value", "pie-chart", "risk-chart", "risk-assessment"],
     }),
 
     modifyPortfolioAsset: build.mutation<
@@ -39,7 +39,7 @@ export const portfolioApi = api.injectEndpoints({
         body: remainingArgs,
       }),
       invalidatesTags: (res, _err, args) =>
-        res ? [{ type: "portfolios", id: args.clientId ?? "me" }, "roi", "portfolio-value", "pie-chart"] : ["roi", "portfolio-value", "pie-chart"],
+        res ? [{ type: "portfolios", id: args.clientId ?? "me" }, "roi", "portfolio-value", "pie-chart", "risk-chart", "risk-assessment"] : ["roi", "portfolio-value", "pie-chart", "risk-chart", "risk-assessment"],
     }),
 
     deletePortfolioAsset: build.mutation<
@@ -51,7 +51,7 @@ export const portfolioApi = api.injectEndpoints({
         method: "DELETE",
       }),
       invalidatesTags: (res, _err, args) =>
-        res ? [{ type: "portfolios", id: args.clientId ?? "me" }, "roi", "portfolio-value", "pie-chart"] : ["roi", "portfolio-value", "pie-chart"],
+        res ? [{ type: "portfolios", id: args.clientId ?? "me" }, "roi", "portfolio-value", "pie-chart", "risk-chart", "risk-assessment"] : ["roi", "portfolio-value", "pie-chart", "risk-chart", "risk-assessment"],
     }),
 
     totalPortfolioValue: build.query<number, Clients.IdRequest>({
