@@ -2,6 +2,7 @@ package com.investify.backend.services;
 
 import com.investify.backend.dtos.*;
 import com.investify.backend.entities.Client;
+import com.investify.backend.enums.InvestmentRisk;
 import com.investify.backend.exceptions.RestException;
 import com.investify.backend.mappers.ClientMapper;
 import com.investify.backend.repositories.ClientRepository;
@@ -59,6 +60,7 @@ public class ClientService {
 
         Client client = clientMapper.signUpToClient(clientDto);
         client.setPassword(passwordEncoder.encode(CharBuffer.wrap(clientDto.getPassword())));
+        client.setInvestmentRisk(InvestmentRisk.LOW);
 
         Client savedClient = clientRepository.save(client);
 

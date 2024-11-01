@@ -6,11 +6,13 @@ import com.investify.backend.dtos.RiskAssessmentResponse;
 import com.investify.backend.dtos.UpdatePortfolioAssetRequest;
 import com.investify.backend.entities.*;
 import com.investify.backend.services.AssetService;
+import com.investify.backend.services.ClientService;
 import com.investify.backend.services.PortfolioService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -20,6 +22,7 @@ import java.util.UUID;
 public class PortfolioController {
     private final AssetService assetService;
     private final PortfolioService portfolioService;
+    private final ClientService clientService;
 
 
     @GetMapping("/{clientId}")
@@ -79,19 +82,32 @@ public class PortfolioController {
     public ResponseEntity<RiskAssessmentResponse> getRiskAssessment(
             @PathVariable String clientId) {
 
+        Client client = clientService.findById(clientId);
         Portfolio portfolio = portfolioService.findPortfolio(clientId);
-        RiskAssessmentResponse response = portfolioService.calculateRiskScoreWithAssets(clientId, "medium");
+        RiskAssessmentResponse response = portfolioService.calculateRiskScoreWithAssets(portfolio, client.getInvestmentRisk().toString()
+        );
         return ResponseEntity.ok(response);
     }
 
-        @GetMapping("/{clientId}/sector-valuations")
-        public ResponseEntity<Map<String, Double>> getSectorValuations(
-                @PathVariable String clientId) {
-            Map<String, Double> sectorValuations = portfolioService.calculateSectorValuations(clientId);
-            System.out.println(sectorValuations.toString());
-            return ResponseEntity.ok(sectorValuations);
-        }
+    @GetMapping("/{clientId}/risk-chart")
+    public ResponseEntity<List<Map<String, Object>>> getAverageROIAndRiskByAssetType(
+            @PathVariable String clientId) {
 
+        Client client = clientService.findById(clientId);
+        Portfolio portfolio = portfolioService.findPortfolio(clientId);
+        List<Map<String, Object>> roiRiskByType = portfolioService.calculateAverageROIAndRiskByAssetType(portfolio, client.getInvestmentRisk().toString());
+
+        return ResponseEntity.ok(roiRiskByType);
+    }
+
+    @GetMapping("/{clientId}/sector-valuations")
+    public ResponseEntity<Map<String, Double>> getSectorValuations(
+            @PathVariable String clientId) {
+
+        Map<String, Double> sectorValuations = portfolioService.calculateSectorValuations(clientId);
+        return ResponseEntity.ok(sectorValuations);
+    }
+    
     @GetMapping("/{clientId}/total-portfolio-value")
     public ResponseEntity<Double> getTotalPortfolioValue(@PathVariable String clientId) {
         double totalValue = portfolioService.getTotalPortfolioValue(clientId);
@@ -103,8 +119,4 @@ public class PortfolioController {
         double roi = portfolioService.getReturnOnInvestment(clientId);
         return ResponseEntity.ok(roi);
     }
-
-
-
-
 }
