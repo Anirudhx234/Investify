@@ -1,7 +1,7 @@
 import { FaSearch } from "react-icons/fa";
 import LinksMenu from "../components/LinksMenu";
 import useAppSelector from "../hooks/useAppSelector";
-import { useAssetsSetQuery } from "../api/assets";
+import { useAssetsSearchQuery } from "../api/assets";
 import assetsIcons from "../components/assetsIcons";
 
 export default function AssetsSidebar() {
@@ -23,7 +23,7 @@ export default function AssetsSidebar() {
 }
 
 function AssetsSidebarSearchResults({ searchValue }: { searchValue: string }) {
-  const { data } = useAssetsSetQuery({ symbol: searchValue });
+  const { data } = useAssetsSearchQuery({ symbol: searchValue });
 
   if (!data) {
     return <></>;

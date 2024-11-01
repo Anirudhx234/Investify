@@ -1,6 +1,6 @@
 import { ChangeEvent, KeyboardEvent, useState } from "react";
 import { FaSearch } from "react-icons/fa";
-import { useLazyAssetsSetQuery } from "../api/assets";
+import { useLazyAssetsSearchQuery } from "../api/assets";
 import { MdErrorOutline } from "react-icons/md";
 import LinksMenu from "../components/LinksMenu";
 import assetsIcons from "../components/assetsIcons";
@@ -15,7 +15,7 @@ export default function SearchBar() {
   const [, navigate] = useLocation();
   const [searchValue, setSearchValue] = useState(storeSearchValue);
   const [trigger, { data, isError, error, isFetching }] =
-    useLazyAssetsSetQuery();
+    useLazyAssetsSearchQuery();
   const isExpanded = searchValue.length >= 3;
 
   const errorMssg = error?.message;

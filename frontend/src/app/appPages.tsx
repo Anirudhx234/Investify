@@ -6,6 +6,7 @@ import NotFoundPage from "../pages/NotFoundPage";
 import ClientsPage from "../pages/ClientsPage";
 import AssetsPage from "../pages/AssetsPage";
 import HomePage from "../pages/HomePage";
+import PortfolioPage from "../pages/PortfolioPage";
 
 /* list of top-level routes for the app */
 export const appPages: AppPage[] = [
@@ -51,6 +52,15 @@ export const appPages: AppPage[] = [
     nest: true,
     drawerMode: "open",
     navbar: true,
+  },
+  {
+    path: "/portfolio",
+    component: <PortfolioPage />,
+    routeArgs: { type: "page" },
+    label: "Portfolio",
+    drawerMode: "open",
+    navbar: true,
+    protection: "signed-in",
   },
   {
     path: "/",

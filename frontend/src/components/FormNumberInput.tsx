@@ -14,6 +14,7 @@ export interface FormNumberInputProps<T extends FieldValues = FieldValues> {
   min?: number | undefined;
   max?: number | undefined;
   decimal?: boolean | undefined;
+  className?: string | undefined;
 }
 
 export default function FormNumberInput<T extends FieldValues>({
@@ -26,6 +27,7 @@ export default function FormNumberInput<T extends FieldValues>({
   min,
   max,
   decimal,
+  className
 }: FormNumberInputProps<T>) {
   const label = labelText ?? toTitleCase(name);
 
@@ -52,6 +54,7 @@ export default function FormNumberInput<T extends FieldValues>({
       autoComplete={autoComplete}
       disabled={disabled}
       step="any"
+      className={className}
     />
   );
 }

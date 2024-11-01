@@ -4,7 +4,7 @@ import baseQuery from "./baseQuery";
 /* API */
 const api = createApi({
   baseQuery,
-  tagTypes: ["clients", "asset-metadata"],
+  tagTypes: ["clients", "asset-metadata", "portfolios"],
   endpoints: () => ({}),
 });
 

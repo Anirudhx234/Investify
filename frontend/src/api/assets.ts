@@ -7,7 +7,7 @@ import { createWebSocket } from "./websocket";
 
 export const assetsApi = api.injectEndpoints({
   endpoints: (build) => ({
-    assetsSet: build.query<Assets.SearchMenuItems, { symbol: string }>({
+    assetsSearch: build.query<Assets.SearchMenuItems, { symbol: string }>({
       query: ({ symbol }) => ({
         url: "/assets?symbol=" + symbol,
         method: "GET",
@@ -25,6 +25,25 @@ export const assetsApi = api.injectEndpoints({
         });
 
         return transformedData;
+      },
+    }),
+
+    assetsList: build.query<Assets.Asset[], { symbol: string }>({
+      query: ({ symbol }) => ({
+        url: "/assets?symbol=" + symbol,
+        method: "GET",
+      }),
+      transformResponse: (res: Assets.Set) => {
+        const result: Assets.Asset[] = [];
+
+        Object.entries(res).forEach(([type, list]) => {
+          list.forEach((item) => {
+            const assetType = type as Assets.Type;
+            result.push({ type: assetType, ...item });
+          });
+        });
+
+        return result;
       },
     }),
 
@@ -172,8 +191,9 @@ export const assetsApi = api.injectEndpoints({
 });
 
 export const {
-  useLazyAssetsSetQuery,
-  useAssetsSetQuery,
+  useLazyAssetsSearchQuery,
+  useAssetsSearchQuery,
+  useLazyAssetsListQuery,
   useAssetMetaDataQuery,
   useAssetTimeSeriesDataQuery,
   useAssetLivePriceDataQuery,
