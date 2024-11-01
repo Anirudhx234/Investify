@@ -6,7 +6,7 @@ const riskPlotApi = api.injectEndpoints({
         fetchRiskReturn: build.query<RiskPoint[], string>({
             // Set default to "me" if clientId is not provided
             query: (clientId = "me") => ({
-                url: `/api/portfolios/${clientId}/risk-chart`,
+                url: `/portfolios/${clientId}/risk-chart`,
                 method: "GET",
             }),
         }),
