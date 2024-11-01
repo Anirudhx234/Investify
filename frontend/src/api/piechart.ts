@@ -1,4 +1,4 @@
-import type { SectorValuation } from "../types/SectorValuation"; 
+import type { SectorValuation } from "../types/SectorValuation";
 import api from "./api";
 
 const pieChartApi = api.injectEndpoints({
@@ -9,6 +9,7 @@ const pieChartApi = api.injectEndpoints({
         url: `/portfolios/${clientId}/sector-valuations`,
         method: "GET",
       }),
+      providesTags: ["pie-chart"],
     }),
   }),
 });

@@ -25,6 +25,7 @@ export default function ProfileFinancialForm() {
         investmentRisk:
           clientProfileState.data.investmentRisk ?? InvestmentRisk.LOW,
         userSavings: clientProfileState.data.userSavings ?? 0,
+        currentSavings: clientProfileState.data.currentSavings ?? 0,
       });
     }
   }, [financialForm, clientProfileState]);
@@ -54,6 +55,10 @@ export default function ProfileFinancialForm() {
 
     if (data.userSavings !== clientProfileState.data?.userSavings) {
       formData.set("userSavings", `${data.userSavings}`);
+    }
+
+    if (data.currentSavings !== clientProfileState.data?.currentSavings) {
+      formData.set("currentSavings", `${data.currentSavings}`);
     }
 
     console.log(data.investmentRisk, clientProfileState.data?.investmentRisk);
@@ -112,6 +117,14 @@ export default function ProfileFinancialForm() {
 <FormNumberInput
           name="userSavings"
           labelText="User Savings"
+          form={financialForm}
+          disabled={isBuffering}
+          min={0}
+        />
+
+<FormNumberInput
+          name="currentSavings"
+          labelText="Current Savings"
           form={financialForm}
           disabled={isBuffering}
           min={0}

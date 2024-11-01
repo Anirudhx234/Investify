@@ -68,7 +68,7 @@ const PieChartExample: React.FC = () => {
     return <div>No data available</div>;
   }
 
-  console.log(sectorValuations);
+  console.log("Hello", sectorValuations);
 
 
   const data = Object.entries(sectorValuations).map(([name, value]) => ({ name, value }));

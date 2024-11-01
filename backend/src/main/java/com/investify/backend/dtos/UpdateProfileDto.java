@@ -23,4 +23,5 @@ public class UpdateProfileDto {
     private String longTermGoal;
     private InvestmentRisk investmentRisk;
     private Integer userSavings;
+    private Integer currentSavings;
 }

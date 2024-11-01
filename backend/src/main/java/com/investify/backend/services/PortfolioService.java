@@ -104,9 +104,25 @@ public class PortfolioService {
         return (currentValue - initialInvestment) / initialInvestment;
     }
 
-    public RiskAssessmentResponse calculateRiskScoreWithAssets(String clientId, String riskPreference) {
-        Portfolio portfolio = findPortfolio(clientId);
+    private double scaleRisk(double riskScore, String riskPreference) {
+        // Adjust overall risk score based on user preference
+        switch (riskPreference) {
+            case "LOW":
+                riskScore /= 1;
+                break;
+            case "MEDIUM":
+                riskScore /= 1.1;
+                break;
+            case "HIGH":
+                riskScore /= 1.3;
+                break;
+            default:
+                throw new IllegalArgumentException("Invalid risk preference");
+        }
+        return riskScore;
+    }
 
+    public RiskAssessmentResponse calculateRiskScoreWithAssets(Portfolio portfolio, String riskPreference) {
         // Risk multipliers for asset types
         double STOCK_MULTIPLIER = 3;
         double MUTUAL_FUND_MULTIPLIER = 2;
@@ -143,29 +159,90 @@ public class PortfolioService {
             ));
         }
 
-        // Adjust overall risk score based on user preference
-        switch (riskPreference.toLowerCase()) {
-            case "low":
-                overallRiskScore /= 1;
-                break;
-            case "medium":
-                overallRiskScore /= 1.1;
-                break;
-            case "high":
-                overallRiskScore /= 1.3;
-                break;
-            default:
-                throw new IllegalArgumentException("Invalid risk preference");
-        }
-
         // Normalize overall risk score to be between 0 and 1
         overallRiskScore = Math.min(Math.max(overallRiskScore, 0), 1);
+
+        overallRiskScore = scaleRisk(overallRiskScore, riskPreference);
 
         // Sort assets by their individual risk scores in descending order
         assetRiskDetails.sort((a, b) -> Double.compare(b.getRiskScore(), a.getRiskScore()));
 
         // Create and return response
         return new RiskAssessmentResponse(overallRiskScore, assetRiskDetails);
+    }
+
+    public List<Map<String, Object>> calculateAverageROIAndRiskByAssetType(Portfolio portfolio, String riskPreference) {
+        // Risk multipliers for each asset type
+        double STOCK_MULTIPLIER = 3;
+        double MUTUAL_FUND_MULTIPLIER = 2;
+        double ETF_MULTIPLIER = 2;
+        double CRYPTO_MULTIPLIER = 5;
+
+        // Temporary variables to accumulate ROI and risk values for each type
+        double stockROI = 0, stockRisk = 0, stockCount = 0;
+        double mutualFundROI = 0, mutualFundRisk = 0, mutualFundCount = 0;
+        double etfROI = 0, etfRisk = 0, etfCount = 0;
+        double cryptoROI = 0, cryptoRisk = 0, cryptoCount = 0;
+
+        // Loop through each asset and calculate ROI and risk
+        for (PortfolioAsset asset : portfolioAssetRepository.findByPortfolio(portfolio)) {
+            double roi = getROI(asset);
+            double returnPercentage = Math.abs(roi);
+            double risk = 0;
+
+            if (asset.getAsset() instanceof Stock) {
+                risk = returnPercentage * STOCK_MULTIPLIER;
+                stockROI += roi;
+                stockRisk += risk;
+                stockCount++;
+            } else if (asset.getAsset() instanceof MutualFund) {
+                risk = returnPercentage * MUTUAL_FUND_MULTIPLIER;
+                mutualFundROI += roi;
+                mutualFundRisk += risk;
+                mutualFundCount++;
+            } else if (asset.getAsset() instanceof ETF) {
+                risk = returnPercentage * ETF_MULTIPLIER;
+                etfROI += roi;
+                etfRisk += risk;
+                etfCount++;
+            } else if (asset.getAsset() instanceof Cryptocurrency) {
+                risk = returnPercentage * CRYPTO_MULTIPLIER;
+                cryptoROI += roi;
+                cryptoRisk += risk;
+                cryptoCount++;
+            }
+        }
+
+        // Create the response list in the desired format
+        List<Map<String, Object>> assetSummary = new ArrayList<>();
+
+        assetSummary.add(Map.of(
+                "name", "stocks",
+                "risk", scaleRisk(calculateAverage(stockRisk, stockCount), riskPreference),
+                "return", calculateAverage(stockROI, stockCount)
+        ));
+        assetSummary.add(Map.of(
+                "name", "etfs",
+                "risk", scaleRisk(calculateAverage(etfRisk, etfCount), riskPreference),
+                "return", calculateAverage(etfROI, etfCount)
+        ));
+        assetSummary.add(Map.of(
+                "name", "crypto",
+                "risk", scaleRisk(calculateAverage(cryptoRisk, cryptoCount), riskPreference),
+                "return", calculateAverage(cryptoROI, cryptoCount)
+        ));
+        assetSummary.add(Map.of(
+                "name", "mutual-funds",
+                "risk", scaleRisk(calculateAverage(mutualFundRisk, mutualFundCount), riskPreference),
+                "return", calculateAverage(mutualFundROI, mutualFundCount)
+        ));
+
+        return assetSummary;
+    }
+
+    // Helper method to calculate the average safely
+    double calculateAverage(double total, double count) {
+        return count == 0 ? 0 : total / count;
     }
 
     public Portfolio findPortfolio(String clientId) {
@@ -193,13 +270,48 @@ public class PortfolioService {
                 .stream()
                 .toList();
 
-        // Group by asset type and calculate valuations based on initial price and quantity
+        // Group by asset type and calculate valuations based on live price and quantity
         return assets.stream()
                 .collect(Collectors.groupingBy(
                         asset -> asset.getAsset().getType(),
-                        Collectors.summingDouble(asset ->
-                                asset.getInitialPrice() * asset.getQuantity()
-                        )
+                        Collectors.summingDouble(asset -> {
+                            double livePrice = twelveDataService.getLivePrice(asset.getAsset().getSymbol());
+                            return livePrice * asset.getQuantity();
+                        })
                 ));
     }
+
+    public double getTotalPortfolioValue(String clientId) {
+        // Find or create portfolio for the client
+        Portfolio portfolio = findOrCreatePortfolio(clientId);
+
+        // Retrieve portfolio assets and calculate total value
+        return portfolioAssetRepository.findByPortfolio(portfolio)
+                .stream()
+                .mapToDouble(asset -> {
+                    double currentPrice = twelveDataService.getLivePrice(asset.getAsset().getSymbol());
+                    return asset.getQuantity() * currentPrice;
+                })
+                .sum();
+    }
+
+    public double getReturnOnInvestment(String clientId) {
+        // Find or create portfolio for the client
+        Portfolio portfolio = findOrCreatePortfolio(clientId);
+
+        // Retrieve portfolio assets and calculate total current value and initial investment
+        double totalCurrentValue = 0;
+        double initialInvestmentValue = 0;
+
+        for (PortfolioAsset asset : portfolioAssetRepository.findByPortfolio(portfolio)) {
+            double currentPrice = twelveDataService.getLivePrice(asset.getAsset().getSymbol());
+            totalCurrentValue += asset.getQuantity() * currentPrice;
+            initialInvestmentValue += asset.getQuantity() * asset.getInitialPrice();
+        }
+
+        // Calculate and return ROI
+        return totalCurrentValue - initialInvestmentValue;
+    }
+
+
 }

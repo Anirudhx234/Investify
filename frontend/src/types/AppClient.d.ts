@@ -13,6 +13,7 @@ interface AppClient {
   longTermGoal?: string;
   investmentRisk?: InvestmentRisk;
   userSavings?:number | undefined | null;
+  currentSavings?:number | undefined | null;
 }
 
 export default AppClient;
