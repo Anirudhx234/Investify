@@ -5,6 +5,12 @@ import {InvestmentRisk} from "../enums/InvestmentRisk";
 const InvestmentAdvice: React.FC = () => {
     const params = useParams() as { id: string };
     const clientProfileState = useClientProfileQuery({ id: params.id });
+    const stocks = [[["NVDA", "LUXH", "SQQQ"], ["PLBY", "BFRI", "SOXL"], ["SMCI", "PTON", "DJT"]],
+        [["EFSH", "INTC", "SVMH"], ["LAZR", "SNAP", "LCID"], ["TQQQ", "AMZN", "TSLA"]],
+        [["MNTB", "MDJH", "KWESW"], ["NUKKW", "TCBPW", "HOFVW"], ["ELAB", "LIFWW", "ICCT"]]];
+    let indexOne = -1;
+    let indexTwo = -1;
+    let indexThree = -1;
 
     const generalAdvice = [
         "Diversify your portfolio to reduce risk.",
@@ -18,6 +24,7 @@ const InvestmentAdvice: React.FC = () => {
         const age = clientProfileState.data?.age;
 
         if (age < 30) {
+            indexOne = 0;
             return [
                 "Since you are under 30...",
                 "Start investing early to take advantage of compound interest.",
@@ -25,6 +32,7 @@ const InvestmentAdvice: React.FC = () => {
                 "Build a budget and focus on saving a portion of your income."
             ];
         } else if (age >= 30 && age < 50) {
+            indexOne = 1;
             return [
                 "Since you are between 30 and 50...",
                 "Diversify your portfolio to balance risk and returns.",
@@ -32,6 +40,7 @@ const InvestmentAdvice: React.FC = () => {
                 "Keep an eye on your financial goals and adjust your strategy accordingly."
             ];
         } else if (age >= 50) {
+            indexOne = 2;
             return [
                 "Since you are over 50...",
                 "Shift to more conservative investments to preserve capital.",
@@ -47,6 +56,7 @@ const InvestmentAdvice: React.FC = () => {
         const income = clientProfileState.data?.income;
 
         if (income && income < 50000) {
+            indexTwo = 0;
             return [
                 "Since your income is below 50000, you should...",
                 "Focus on building an emergency fund.",
@@ -54,6 +64,7 @@ const InvestmentAdvice: React.FC = () => {
                 "Avoid high-fee investment products."
             ];
         } else if (income >= 50000 && income < 100000) {
+            indexTwo = 1;
             return [
                 "Since your income is between 50000 and 100000, you should...",
                 "Start investing in a mix of stocks and bonds.",
@@ -61,6 +72,7 @@ const InvestmentAdvice: React.FC = () => {
                 "Consider automated investing platforms."
             ];
         } else if (income >= 100000) {
+            indexTwo = 2;
             return [
                 "Since your income is above 100000, you should...",
                 "Maximize contributions to retirement accounts.",
@@ -77,6 +89,7 @@ const InvestmentAdvice: React.FC = () => {
 
         switch (riskTolerance) {
             case InvestmentRisk.LOW:
+                indexThree = 0;
                 return [
                     "Since your risk tolerance is low...",
                     "Consider conservative investments like bonds and stable dividend stocks.",
@@ -84,6 +97,7 @@ const InvestmentAdvice: React.FC = () => {
                     "Avoid high-volatility assets."
                 ];
             case InvestmentRisk.MEDIUM:
+                indexThree = 1;
                 return [
                     "Since your risk tolerance is medium...",
                     "Balance your portfolio with a mix of stocks and bonds.",
@@ -91,6 +105,7 @@ const InvestmentAdvice: React.FC = () => {
                     "Stay informed about market conditions."
                 ];
             case InvestmentRisk.HIGH:
+                indexThree = 2;
                 return [
                     "Since your risk tolerance is high...",
                     "Invest in high-growth stocks and emerging markets.",
@@ -162,6 +177,24 @@ const InvestmentAdvice: React.FC = () => {
                     {/*</ul>*/}
                 </div>
             }
+
+            <br /><br />
+
+            {(indexOne !== -1 && indexTwo !== -1 && indexThree !== -1) && (
+                <div>
+                    <h1>According to our analysis, we handpick this stock for you:</h1>
+                    <a
+                        href={`http://localhost:5173/assets/stocks/${stocks[indexOne][indexTwo][indexThree]}`}
+                        style={{
+                            color: "lightblue",
+                            textDecoration: "underline",
+                            fontSize: "1.2em"
+                        }}
+                    >
+                        {stocks[indexOne][indexTwo][indexThree]}
+                    </a>
+                </div>
+            )}
         </div>
     );
 };
