@@ -1,11 +1,5 @@
 import { ScatterChart, Scatter, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-
-// Define the type for each data point
-interface RiskPoint {
-    name: string;
-    risk: number; // X-axis (risk level)
-    return: number; // Y-axis (return level)
-}
+import RiskPoint = Risk.RiskPoint;
 
 // Define the component props
 interface RiskToReturnPlotProps {
@@ -15,10 +9,10 @@ interface RiskToReturnPlotProps {
 // Function to assign colors based on type
 const getColorByType = (type: string) => {
     switch(type) {
-        case 'stock': return "#14af14"; // Green for stocks
+        case 'stocks': return "#14af14"; // Green for stocks
         case 'crypto': return '#a1860a'; // Gold for crypto
-        case 'etf': return '#ad00e8'; // Purple for ETFs
-        case 'mutual fund': return '#1a1cea'; // Purple for ETFs
+        case 'etfs': return '#ad00e8'; // Purple for ETFs
+        case 'mutual-funds': return '#1a1cea'; // Purple for ETFs
         default: return '#8884d8'; // Default color
     }
 };
