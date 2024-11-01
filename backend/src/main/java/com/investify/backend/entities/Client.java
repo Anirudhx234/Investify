@@ -69,5 +69,8 @@ public class Client {
     @Column(name = "userSavings")
     private Integer userSavings;
 
+    @Column(name = "currentSavings")
+    private Integer currentSavings;
+
 
 }

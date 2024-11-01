@@ -193,13 +193,48 @@ public class PortfolioService {
                 .stream()
                 .toList();
 
-        // Group by asset type and calculate valuations based on initial price and quantity
+        // Group by asset type and calculate valuations based on live price and quantity
         return assets.stream()
                 .collect(Collectors.groupingBy(
                         asset -> asset.getAsset().getType(),
-                        Collectors.summingDouble(asset ->
-                                asset.getInitialPrice() * asset.getQuantity()
-                        )
+                        Collectors.summingDouble(asset -> {
+                            double livePrice = twelveDataService.getLivePrice(asset.getAsset().getSymbol());
+                            return livePrice * asset.getQuantity();
+                        })
                 ));
     }
+
+    public double getTotalPortfolioValue(String clientId) {
+        // Find or create portfolio for the client
+        Portfolio portfolio = findOrCreatePortfolio(clientId);
+
+        // Retrieve portfolio assets and calculate total value
+        return portfolioAssetRepository.findByPortfolio(portfolio)
+                .stream()
+                .mapToDouble(asset -> {
+                    double currentPrice = twelveDataService.getLivePrice(asset.getAsset().getSymbol());
+                    return asset.getQuantity() * currentPrice;
+                })
+                .sum();
+    }
+
+    public double getReturnOnInvestment(String clientId) {
+        // Find or create portfolio for the client
+        Portfolio portfolio = findOrCreatePortfolio(clientId);
+
+        // Retrieve portfolio assets and calculate total current value and initial investment
+        double totalCurrentValue = 0;
+        double initialInvestmentValue = 0;
+
+        for (PortfolioAsset asset : portfolioAssetRepository.findByPortfolio(portfolio)) {
+            double currentPrice = twelveDataService.getLivePrice(asset.getAsset().getSymbol());
+            totalCurrentValue += asset.getQuantity() * currentPrice;
+            initialInvestmentValue += asset.getQuantity() * asset.getInitialPrice();
+        }
+
+        // Calculate and return ROI
+        return totalCurrentValue - initialInvestmentValue;
+    }
+
+
 }

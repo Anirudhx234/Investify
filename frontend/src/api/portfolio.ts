@@ -26,7 +26,7 @@ export const portfolioApi = api.injectEndpoints({
         body: remainingArgs,
       }),
       invalidatesTags: (res, _err, args) =>
-        res ? [{ type: "portfolios", id: args.id ?? "me" }] : [],
+        res ? [{ type: "portfolios", id: args.id ?? "me" }, "roi", "portfolio-value", "pie-chart"] : ["roi", "portfolio-value", "pie-chart"],
     }),
 
     modifyPortfolioAsset: build.mutation<
@@ -39,7 +39,7 @@ export const portfolioApi = api.injectEndpoints({
         body: remainingArgs,
       }),
       invalidatesTags: (res, _err, args) =>
-        res ? [{ type: "portfolios", id: args.clientId ?? "me" }] : [],
+        res ? [{ type: "portfolios", id: args.clientId ?? "me" }, "roi", "portfolio-value", "pie-chart"] : ["roi", "portfolio-value", "pie-chart"],
     }),
 
     deletePortfolioAsset: build.mutation<
@@ -48,10 +48,26 @@ export const portfolioApi = api.injectEndpoints({
     >({
       query: ({ clientId = "me", assetId }) => ({
         url: `/portfolios/${clientId}/assets/${assetId}`,
-        method: "DElETE",
+        method: "DELETE",
       }),
       invalidatesTags: (res, _err, args) =>
-        res ? [{ type: "portfolios", id: args.clientId ?? "me" }] : [],
+        res ? [{ type: "portfolios", id: args.clientId ?? "me" }, "roi", "portfolio-value", "pie-chart"] : ["roi", "portfolio-value", "pie-chart"],
+    }),
+
+    totalPortfolioValue: build.query<number, Clients.IdRequest>({
+      query: ({ id = "me" }) => ({
+        url: `/portfolios/${id}/total-portfolio-value`,
+        method: "GET",
+      }),
+      providesTags: ["portfolio-value"]
+    }),
+
+    roi: build.query<number, Clients.IdRequest>({
+      query: ({ id = "me" }) => ({
+        url: `/portfolios/${id}/roi`,
+        method: "GET",
+      }),
+      providesTags: ["roi"],
     }),
   }),
 });
@@ -61,4 +77,6 @@ export const {
   useDeletePortfolioAssetMutation,
   useModifyPortfolioAssetMutation,
   usePortfolioAssetsQuery,
+  useTotalPortfolioValueQuery, // New hook for total portfolio value
+  useRoiQuery,                // New hook for ROI
 } = portfolioApi;

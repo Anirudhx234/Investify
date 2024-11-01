@@ -136,6 +136,10 @@ public class ClientService {
             client.setUserSavings(updateProfileDto.getUserSavings());
         }
 
+        if (updateProfileDto.getCurrentSavings() != null){
+            client.setCurrentSavings(updateProfileDto.getCurrentSavings());
+        }
+
 
 
 

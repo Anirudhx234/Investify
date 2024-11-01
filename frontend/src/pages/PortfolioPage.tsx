@@ -3,6 +3,8 @@ import {
   useDeletePortfolioAssetMutation,
   useModifyPortfolioAssetMutation,
   usePortfolioAssetsQuery,
+  useTotalPortfolioValueQuery,
+  useRoiQuery,
 } from "../api/portfolio";
 import { useEffect, useRef, useState } from "react";
 import Modal from "../components/Modal";
@@ -11,6 +13,8 @@ import PieChartExample from '../components/PieChart';
 export default function PortfolioPage() {
   const { data, isLoading, isError, error } = usePortfolioAssetsQuery({});
   const [deletePortfolioAsset] = useDeletePortfolioAssetMutation();
+  const { data: totalPortfolioValue } = useTotalPortfolioValueQuery({});
+  const { data: roi } = useRoiQuery({});
   const [modifyPortfolio, modifyPortfolioState] =
     useModifyPortfolioAssetMutation();
   const modalRef = useRef<HTMLDialogElement>(null);
@@ -49,6 +53,14 @@ export default function PortfolioPage() {
       <h1 className="mb-4 w-full text-center font-bold ~text-lg/xl">
         Your Portfolio
       </h1>
+      <div className="text-center mb-6">
+        <p className="font-semibold text-lg">
+          Total Portfolio Value: ${totalPortfolioValue?.toFixed(2) ?? "0.00"}
+        </p>
+        <p className="font-semibold text-lg">
+          Return on Investment (ROI): {roi?.toFixed(2) ?? "0.00"}
+        </p>
+      </div>
       <table className="table">
         <thead>
           <tr>

@@ -79,17 +79,32 @@ public class PortfolioController {
     public ResponseEntity<RiskAssessmentResponse> getRiskAssessment(
             @PathVariable String clientId) {
 
-        Portfolio portfolio =  portfolioService.findPortfolio(clientId);
+        Portfolio portfolio = portfolioService.findPortfolio(clientId);
         RiskAssessmentResponse response = portfolioService.calculateRiskScoreWithAssets(clientId, "medium");
         return ResponseEntity.ok(response);
-
-    @GetMapping("/{clientId}/sector-valuations")
-    public ResponseEntity<Map<String, Double>> getSectorValuations(
-            @PathVariable String clientId) {
-
-        Map<String, Double> sectorValuations = portfolioService.calculateSectorValuations(clientId);
-        return ResponseEntity.ok(sectorValuations);
-
     }
+
+        @GetMapping("/{clientId}/sector-valuations")
+        public ResponseEntity<Map<String, Double>> getSectorValuations(
+                @PathVariable String clientId) {
+            Map<String, Double> sectorValuations = portfolioService.calculateSectorValuations(clientId);
+            System.out.println(sectorValuations.toString());
+            return ResponseEntity.ok(sectorValuations);
+        }
+
+    @GetMapping("/{clientId}/total-portfolio-value")
+    public ResponseEntity<Double> getTotalPortfolioValue(@PathVariable String clientId) {
+        double totalValue = portfolioService.getTotalPortfolioValue(clientId);
+        return ResponseEntity.ok(totalValue);
+    }
+
+    @GetMapping("/{clientId}/roi")
+    public ResponseEntity<Double> getReturnOnInvestment(@PathVariable String clientId) {
+        double roi = portfolioService.getReturnOnInvestment(clientId);
+        return ResponseEntity.ok(roi);
+    }
+
+
+
 
 }
