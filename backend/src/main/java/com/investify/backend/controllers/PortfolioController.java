@@ -2,6 +2,7 @@ package com.investify.backend.controllers;
 
 import com.investify.backend.dtos.AddPortfolioAssetRequest;
 import com.investify.backend.dtos.PortfolioResponse;
+import com.investify.backend.dtos.RiskAssessmentResponse;
 import com.investify.backend.dtos.UpdatePortfolioAssetRequest;
 import com.investify.backend.entities.*;
 import com.investify.backend.services.AssetService;
@@ -25,7 +26,9 @@ public class PortfolioController {
     public ResponseEntity<PortfolioResponse> getPortfolioAssets(
             @PathVariable String clientId) {
 
-        PortfolioResponse portfolioAssets = portfolioService.getPortfolioAssets(clientId);
+        Portfolio portfolio = portfolioService.findOrCreatePortfolio(clientId);
+
+        PortfolioResponse portfolioAssets = portfolioService.getPortfolioAssets(portfolio);
 
         return ResponseEntity.ok(portfolioAssets);
     }
@@ -72,13 +75,21 @@ public class PortfolioController {
         return ResponseEntity.ok(portfolioAsset);
     }
 
+    @GetMapping("/{clientId}/risk-assessment")
+    public ResponseEntity<RiskAssessmentResponse> getRiskAssessment(
+            @PathVariable String clientId) {
+
+        Portfolio portfolio =  portfolioService.findPortfolio(clientId);
+        RiskAssessmentResponse response = portfolioService.calculateRiskScoreWithAssets(clientId, "medium");
+        return ResponseEntity.ok(response);
+
     @GetMapping("/{clientId}/sector-valuations")
     public ResponseEntity<Map<String, Double>> getSectorValuations(
             @PathVariable String clientId) {
-        System.out.println("Hi");
 
         Map<String, Double> sectorValuations = portfolioService.calculateSectorValuations(clientId);
         return ResponseEntity.ok(sectorValuations);
+
     }
 
 }

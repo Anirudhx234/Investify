@@ -34,9 +34,9 @@ public class ClientService {
         Client client = findByEmail(credentialsDto.getEmail());
 
         if (passwordEncoder.matches(CharBuffer.wrap(credentialsDto.getPassword()), client.getPassword())) {
-            if (!client.isVerified()) {
-                throw new RestException("Email not verified. Please check your email for verification.", HttpStatus.FORBIDDEN);
-            }
+            //if (!client.isVerified()) {
+            //    throw new RestException("Email not verified. Please check your email for verification.", HttpStatus.FORBIDDEN);
+            //}
             return clientMapper.toClientDto(client);
         }
 
