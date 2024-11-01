@@ -9,6 +9,7 @@ import Modal from "../components/Modal";
 import FormTextInput from "../components/FormTextInput";
 import FormNumberInput from "../components/FormNumberInput";
 import FormSelectInput from "../components/FormSelectInput";
+import ProgressBar from "../components/ProgressBar.tsx";
 import { InvestmentRisk } from "../enums/InvestmentRisk";
 
 export default function ProfileFinancialForm() {
@@ -60,6 +61,9 @@ export default function ProfileFinancialForm() {
     if (data.currentSavings !== clientProfileState.data?.currentSavings) {
       formData.set("currentSavings", `${data.currentSavings}`);
     }
+    console.log(data.currentSavings);
+
+    console.log(data.userSavings);
 
     console.log(data.investmentRisk, clientProfileState.data?.investmentRisk);
 
@@ -114,20 +118,19 @@ export default function ProfileFinancialForm() {
           disabled={isBuffering}
         />
 
-<FormNumberInput
+        <FormNumberInput
           name="userSavings"
-          labelText="User Savings"
+          labelText="Savings goal"
           form={financialForm}
           disabled={isBuffering}
           min={0}
         />
 
-<FormNumberInput
+        <ProgressBar
           name="currentSavings"
-          labelText="Current Savings"
           form={financialForm}
-          disabled={isBuffering}
-          min={0}
+          savingsGoal={clientProfileState.data?.userSavings ?? 100}
+          savings={clientProfileState.data?.currentSavings ?? 0}
         />
 
         <div>

@@ -2,6 +2,7 @@ import { ScatterChart, Scatter, XAxis, YAxis, CartesianGrid, Tooltip, Responsive
 import useAppSelector from "../hooks/useAppSelector.ts";
 import type {RootState} from "../app/store.ts";
 import {useFetchRiskReturnQuery} from "../api/riskPlot.ts";
+import RiskPoint = Risk.RiskPoint;
 
 // Function to assign colors based on type
 const getColorByType = (type: string) => {
