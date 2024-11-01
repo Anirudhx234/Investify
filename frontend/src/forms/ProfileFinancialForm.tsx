@@ -9,6 +9,7 @@ import Modal from "../components/Modal";
 import FormTextInput from "../components/FormTextInput";
 import FormNumberInput from "../components/FormNumberInput";
 import FormSelectInput from "../components/FormSelectInput";
+import ProgressBar from "../components/ProgressBar.tsx"
 import { InvestmentRisk } from "../enums/InvestmentRisk";
 
 export default function ProfileFinancialForm() {
@@ -25,6 +26,7 @@ export default function ProfileFinancialForm() {
         investmentRisk:
           clientProfileState.data.investmentRisk ?? InvestmentRisk.LOW,
         userSavings: clientProfileState.data.userSavings ?? 0,
+        currentSavings: clientProfileState.data.currentSavings ?? 0
       });
     }
   }, [financialForm, clientProfileState]);
@@ -55,6 +57,13 @@ export default function ProfileFinancialForm() {
     if (data.userSavings !== clientProfileState.data?.userSavings) {
       formData.set("userSavings", `${data.userSavings}`);
     }
+
+    if (data.currentSavings !== clientProfileState.data?.currentSavings) {
+      formData.set("currentSavings", `${data.currentSavings}`);
+    }
+    console.log(data.currentSavings);
+
+    console.log(data.userSavings);
 
     console.log(data.investmentRisk, clientProfileState.data?.investmentRisk);
 
@@ -109,13 +118,15 @@ export default function ProfileFinancialForm() {
           disabled={isBuffering}
         />
 
-<FormNumberInput
+        <FormNumberInput
           name="userSavings"
-          labelText="User Savings"
+          labelText="Savings goal"
           form={financialForm}
           disabled={isBuffering}
           min={0}
         />
+
+        <ProgressBar name="currentSavings" form={financialForm} savingsGoal={clientProfileState.data?.userSavings ?? 100} savings={clientProfileState.data?.currentSavings ?? 0} />
 
         <div>
           <button className="btn btn-primary" disabled={isBuffering}>
