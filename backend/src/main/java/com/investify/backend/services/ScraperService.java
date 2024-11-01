@@ -25,6 +25,11 @@ public class ScraperService {
 
     public List<List<String>> getNewsSources(String ticker) {
         List<List<String>> results = new ArrayList<>();
+        List<List<String>> errorResult = new ArrayList<>();
+        ArrayList<String> errorMsg = new ArrayList<>();
+        errorMsg.add("ERROR: Unable to fetching articles.");
+        errorMsg.add("");
+        errorResult.add(errorMsg);
         try {
             String encodedSearchTerm = URLEncoder.encode(ticker, "UTF-8");
             String searchURL = DUCK_DUCK_GO_SEARCH_URL + "?q=" + encodedSearchTerm + "%20stock%20news";
@@ -70,15 +75,18 @@ public class ScraperService {
                 if (resultCount == 0) {
 
                     System.out.println("No results found. Check the regex pattern or HTML structure.");
+                    return errorResult;
                 }
 
             } else {
                 System.out.println("Failed to connect. HTTP response code: " + responseCode);
+                return errorResult;
             }
 
         } catch (Exception e) {
             System.out.println("Error fetching results: " + e.getMessage());
             e.printStackTrace();
+            return errorResult;
         }
         return results;
     }
