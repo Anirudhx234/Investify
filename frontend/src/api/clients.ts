@@ -12,6 +12,13 @@ const clientsApi = api.injectEndpoints({
       }),
       providesTags: (res) => [{ type: "clients", id: res?.id }],
     }),
+    userProfile: build.query<AppClient, Clients.IdRequest>({
+      query: ({ id = "me" }) => ({
+        url: "/clients/" + id,
+        method: "GET",
+      }),
+      providesTags: (res) => [{ type: "clients", id: res?.id }],
+    }),
     modifyEmail: build.mutation<
       AppClient,
       Clients.IdRequest & { newEmail: string }
@@ -45,6 +52,7 @@ const clientsApi = api.injectEndpoints({
 
 export const {
   useClientProfileQuery,
+  useUserProfileQuery,
   useModifyEmailMutation,
   useModifyProfileMutation,
   useDeleteClientMutation,
