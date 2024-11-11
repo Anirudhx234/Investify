@@ -7,7 +7,6 @@ import ClientsPage from "../pages/ClientsPage";
 import AssetsPage from "../pages/AssetsPage";
 import HomePage from "../pages/HomePage";
 import PortfolioPage from "../pages/PortfolioPage";
-import UserPage from "../pages/UserPage.tsx";
 
 /* list of top-level routes for the app */
 export const appPages: AppPage[] = [
@@ -30,21 +29,24 @@ export const appPages: AppPage[] = [
     protection: "signed-out",
   },
   {
+    path: "/clients/:id",
+
+    component: <ClientsPage />,
+    routeArgs: { type: "form" },
+    label: "Users",
+    nest: true,
+    drawerMode: "open",
+    protection: "none",
+  },
+  {
     path: "/clients/me",
+
     component: <ClientsPage />,
     routeArgs: { type: "form" },
     label: "Clients",
     nest: true,
     drawerMode: "open",
     protection: "signed-in",
-  },
-  {
-    path: "/clients/:id",
-    component: <UserPage />,
-    routeArgs: { type: "form" },
-    label: "Users",
-    nest: true,
-    drawerMode: "open",
   },
   {
     path: "/home",
