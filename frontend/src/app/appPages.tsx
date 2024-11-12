@@ -30,6 +30,17 @@ export const appPages: AppPage[] = [
   },
   {
     path: "/clients/:id",
+
+    component: <ClientsPage />,
+    routeArgs: { type: "form" },
+    label: "Users",
+    nest: true,
+    drawerMode: "open",
+    protection: "none",
+  },
+  {
+    path: "/clients/me",
+
     component: <ClientsPage />,
     routeArgs: { type: "form" },
     label: "Clients",
