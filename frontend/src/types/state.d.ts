@@ -24,7 +24,7 @@ export interface AssetsSearch {
 
 /* alerts and toast */
 export interface Alert {
-  id: number;
+  id: string;
   type: "success" | "loading" | "error";
   caption?: string | undefined;
 }

@@ -34,15 +34,26 @@ function Page({ ...page }: routerTypes.Page) {
 function PageComponent({ ...page }: routerTypes.Page) {
   const dispatch = useAppDispatch();
   const isLoggedIn = useAppSelector(selectIsLoggedIn);
+  const toast = useToast();
 
   useEffect(() => {
     const route = { ...page, component: undefined };
     dispatch(setRouteAttributes(route));
-
     return () => {
       dispatch(setRouteAttributes(null));
     };
-  }, [dispatch, page]);
+  }, [page, dispatch]);
+
+  useEffect(() => {
+    if (page.protection === "signed-in" && !isLoggedIn) {
+      toast.createErrorAlert({
+        caption: "Please login to visit this page",
+      });
+    }
+    if (page.protection === "signed-out" && isLoggedIn) {
+      toast.createErrorAlert({ caption: "You are logged in" });
+    }
+  }, [page, isLoggedIn, toast]);
 
   if (page.protection === "signed-in" && !isLoggedIn)
     return <Redirect to="~/" replace />;

@@ -13,7 +13,7 @@ const toastSlice = createSlice({
       state.alerts.push(action.payload);
     },
 
-    removeAlert: (state, action: PayloadAction<number>) => {
+    removeAlert: (state, action: PayloadAction<string>) => {
       const idx = state.alerts.findIndex((elem) => elem.id === action.payload);
       if (idx !== -1) state.alerts.splice(idx, 1);
     },

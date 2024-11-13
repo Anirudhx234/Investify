@@ -21,7 +21,7 @@ export default function Alert({ type, caption, onDismiss }: AlertAttributes) {
     alertCaption = "An error occurred.";
   }
 
-  const iconStyles = "h-6 w-6 shrink-0 stroke-current";
+  const iconStyles = "h-6 w-6 shrink-0 stroke-current hidden lg:block";
 
   return (
     <div
@@ -44,7 +44,7 @@ export default function Alert({ type, caption, onDismiss }: AlertAttributes) {
       <span>{alertCaption}</span>
 
       {onDismiss !== undefined && (
-        <div>
+        <div className="hidden lg:flex items-center">
           <button onClick={onDismiss}>
             <RxCrossCircled className={iconStyles} />
           </button>

@@ -73,7 +73,7 @@ function ThemeSwitcher() {
 
   return (
     <button
-      className="btn btn-square btn-ghost ~text-lg/xl"
+      className="btn btn-square btn-ghost hidden ~text-lg/xl lg:block"
       onClick={() => dispatch(toggleTheme())}
     >
       {themeMode === "light" ? <FaMoon /> : <FaSun />}
@@ -82,7 +82,7 @@ function ThemeSwitcher() {
 }
 
 function MobileDropdown() {
-  const label = useAppSelector((state) => state.route.attributes?.drawerMode);
+  const label = useAppSelector((state) => state.route.attributes?.label);
 
   return (
     <div className="dropdown dropdown-end lg:hidden">

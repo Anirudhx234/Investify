@@ -17,6 +17,7 @@ const clientsApi = api.injectEndpoints({
         url: "/clients/me",
         method: "GET",
       }),
+      providesTags: ["logged-in-client"],
     }),
   }),
 });

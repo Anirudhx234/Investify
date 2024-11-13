@@ -8,7 +8,7 @@ export default function Toast() {
   const dispatch = useAppDispatch();
 
   return (
-    <div className="toast">
+    <div className="toast max-h-[75vh] overflow-auto">
       {alerts.map((alert) => (
         <Alert
           key={alert.id}

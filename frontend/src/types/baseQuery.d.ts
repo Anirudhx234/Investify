@@ -9,7 +9,7 @@ export interface Args {
   url: string;
   method: "GET" | "POST" | "PATCH" | "DELETE";
   body?: object;
-  search?: Record<string, unknown>;
+  search?: string | object | undefined;
 }
 
 /* result sent by the server */
