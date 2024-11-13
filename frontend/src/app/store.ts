@@ -15,6 +15,7 @@ import themeReducer from "../features/themeSlice";
 import routeReducer from "../features/routeSlice";
 import clientReducer from "../features/clientSlice";
 import assetsSearchReducer from "../features/assetsSearchSlice";
+import toastReducer from "../features/toastSlice";
 
 import api from "../api/api";
 
@@ -31,6 +32,7 @@ const persistedReducer = persistCombineReducers(persistConfig, {
   route: routeReducer,
   client: clientReducer,
   assetsSearch: assetsSearchReducer,
+  toast: toastReducer,
   [api.reducerPath]: api.reducer,
 });
 

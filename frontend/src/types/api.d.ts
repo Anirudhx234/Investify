@@ -1,3 +1,3 @@
-/* types for the api endpoints */
+/* types for the complicated api endpoints */
 
 export {};

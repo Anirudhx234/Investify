@@ -21,3 +21,14 @@ export interface Client {
 export interface AssetsSearch {
   value: string;
 }
+
+/* alerts and toast */
+export interface Alert {
+  id: number;
+  type: "success" | "loading" | "error";
+  caption?: string | undefined;
+}
+
+export interface Toast {
+  alerts: Alert[];
+}

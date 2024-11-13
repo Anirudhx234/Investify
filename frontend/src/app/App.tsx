@@ -1,10 +1,13 @@
 import AppSidebar from "./AppSidebar";
 import AppRouter from "./AppRouter";
 import Navbar from "../scenes/Navbar";
+import Toast from "../scenes/Toast";
+import useThemeEffect from "../hooks/useThemeEffect";
 import useAppSelector from "../hooks/useAppSelector";
 import { twMerge } from "tailwind-merge";
 
 export default function App() {
+  useThemeEffect();
   const drawerMode = useAppSelector(
     (state) => state.route.attributes?.drawerMode,
   );
@@ -32,6 +35,7 @@ export default function App() {
         ></label>
         <AppSidebar />
       </div>
+      <Toast />
     </div>
   );
 }

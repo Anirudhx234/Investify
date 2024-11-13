@@ -45,10 +45,7 @@ export default function Alert({ type, caption, onDismiss }: AlertAttributes) {
 
       {onDismiss !== undefined && (
         <div>
-          <button
-            className="btn btn-square btn-warning btn-sm"
-            onClick={onDismiss}
-          >
+          <button onClick={onDismiss}>
             <RxCrossCircled className={iconStyles} />
           </button>
         </div>
