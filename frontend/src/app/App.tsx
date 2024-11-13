@@ -1,3 +1,5 @@
+import Alert from "../components/Alert";
+
 export default function App() {
-  return <>Hello World</>;
+  return <Alert type="loading" caption="Hello" />;
 }
