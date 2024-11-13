@@ -1,6 +1,7 @@
 import { FaCheck } from "react-icons/fa";
 import { MdError } from "react-icons/md";
 import { RxCrossCircled } from "react-icons/rx";
+import { twMerge } from "tailwind-merge";
 
 export interface AlertAttributes {
   type: "success" | "loading" | "error";
@@ -9,8 +10,6 @@ export interface AlertAttributes {
 }
 
 export default function Alert({ type, caption, onDismiss }: AlertAttributes) {
-  const alertModifier = type === "loading" ? "warning" : type;
-
   let alertCaption: string;
   if (caption) {
     alertCaption = caption;
@@ -25,7 +24,15 @@ export default function Alert({ type, caption, onDismiss }: AlertAttributes) {
   const iconStyles = "h-6 w-6 shrink-0 stroke-current";
 
   return (
-    <div role="alert" className={`alert alert-${alertModifier}`}>
+    <div
+      role="alert"
+      className={twMerge(
+        "alert",
+        type === "success" && "alert-success",
+        type === "loading" && "alert-warning",
+        type === "error" && "alert-error",
+      )}
+    >
       {type === "success" && <FaCheck className={iconStyles} />}
 
       {type === "loading" && (

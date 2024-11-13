@@ -7,7 +7,7 @@ export default {
     files: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
     extract,
   },
-  safelist: ["alert-success", "alert-warning", "alert-error"],
+  safelist: [],
   theme: {
     extend: {
       fontFamily: {

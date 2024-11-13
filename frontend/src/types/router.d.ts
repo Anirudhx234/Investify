@@ -47,5 +47,5 @@ export interface Route<T extends FieldValues = FieldValues> {
 }
 
 export interface Page extends Route {
-  component?: ReactNode | undefined;
+  component?: ReactNode;
 }
