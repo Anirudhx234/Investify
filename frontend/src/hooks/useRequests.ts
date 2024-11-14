@@ -2,32 +2,29 @@
 import type { SerializedError } from "@reduxjs/toolkit";
 import type { baseQueryTypes } from "../types";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo } from "react";
 import useToast from "./useToast";
 
-export type UseRequestsAttributes = Record<
-  string,
-  {
-    isLoading: boolean;
-    isFetching?: boolean | undefined;
-    isError: boolean;
-    error: baseQueryTypes.Error | SerializedError | undefined;
-    isSuccess: boolean;
-  }
->;
+export interface UseRequestsAttributes {
+  requests: Record<
+    string,
+    {
+      isLoading: boolean;
+      isFetching?: boolean | undefined;
+      isError: boolean;
+      error: baseQueryTypes.Error | SerializedError | undefined;
+      isSuccess: boolean;
+    }
+  >;
 
-export default function useRequests(requests: UseRequestsAttributes) {
+  successMssg?: string | undefined;
+}
+
+export default function useRequests({
+  requests,
+  successMssg,
+}: UseRequestsAttributes) {
   const toast = useToast();
-  const [alertId, setAlertId] = useState<string | null>(null);
-
-  useEffect(() => {
-    const id = toast.createLoadingAlert({ caption: "Loading..." });
-    setAlertId(id);
-    return () => {
-      toast.deleteAlert(id);
-      setAlertId(null);
-    };
-  }, [toast]);
 
   const { isLoading, error, isSuccess } = useMemo(() => {
     let isLoading: string | undefined;
@@ -49,25 +46,24 @@ export default function useRequests(requests: UseRequestsAttributes) {
   }, [requests]);
 
   useEffect(() => {
-    if (alertId) {
-      let type: "success" | "error" | "loading";
-      let caption: string;
+    let id: string | null = null;
 
-      if (isSuccess) {
-        type = "success";
-        caption = "Request Successful";
-      } else if (error) {
-        type = "error";
-        caption = error;
-      } else {
-        type = "loading";
-        if (isLoading) caption = isLoading;
-        else caption = "Loading...";
-      }
-
-      toast.updateAlert({ id: alertId, type, caption });
+    if (isSuccess) {
+      id = toast.createSuccessAlert({
+        caption: successMssg ?? "Request Successful",
+      });
+    } else if (error) {
+      id = toast.createErrorAlert({ caption: error });
+    } else {
+      id = toast.createLoadingAlert({
+        caption: isLoading ? isLoading : "Loading...",
+      });
     }
-  }, [toast, alertId, isLoading, error, isSuccess]);
+
+    return () => {
+      if (id) toast.deleteAlert(id);
+    };
+  }, [toast, isLoading, error, isSuccess, successMssg]);
 
   return { isLoading, error, isSuccess };
 }

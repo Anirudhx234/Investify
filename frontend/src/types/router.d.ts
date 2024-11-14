@@ -13,7 +13,7 @@ export interface VerificationArgs<T extends FieldValues = FieldValues> {
   type: "verification";
   url: string;
   method: "GET" | "PATCH";
-  form?: formTypes.Form<T> | undefined;
+  fields?: formTypes.Field<T>[] | undefined;
 }
 
 export interface RedirectionArgs {

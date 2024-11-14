@@ -73,7 +73,7 @@ function ThemeSwitcher() {
 
   return (
     <button
-      className="btn btn-square btn-ghost hidden ~text-lg/xl lg:block"
+      className="btn btn-square btn-ghost hidden ~text-lg/xl lg:inline-flex"
       onClick={() => dispatch(toggleTheme())}
     >
       {themeMode === "light" ? <FaMoon /> : <FaSun />}
