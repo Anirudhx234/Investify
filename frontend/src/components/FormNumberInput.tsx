@@ -10,7 +10,7 @@ export default function FormNumberInput<T extends FieldValues>({
   max,
   decimal,
   ...props
-}: formTypes.Input<T> & formTypes.NumberField) {
+}: formTypes.Input<T> & formTypes.NumberFieldArgs) {
   return (
     <FormInput
       registerOptions={{

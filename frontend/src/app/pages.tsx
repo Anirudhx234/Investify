@@ -2,10 +2,12 @@ import type { routerTypes } from "../types";
 
 import SignUpForm from "../forms/SignUpForm";
 import LoginForm from "../forms/LoginForm";
+import ForgotPasswordForm from "../forms/ForgotPasswordForm";
 import ClientPage from "../pages/ClientPage";
 import HomePage from "../pages/HomePage";
 import PortfolioPage from "../pages/PortfolioPage";
 import NotFoundPage from "../pages/NotFoundPage";
+import ResetPasswordForm from "../forms/ResetPasswordForm";
 
 /* list of top-level routes for the app */
 const pages: routerTypes.Page[] = [
@@ -20,13 +22,26 @@ const pages: routerTypes.Page[] = [
     path: "/verify-email",
     args: {
       type: "verification",
-      method: "GET",
       url: "/auth/verify-email",
     },
   },
   {
     path: "/login",
     component: <LoginForm />,
+    args: { type: "form" },
+    label: "Login",
+    protection: "signed-out",
+  },
+  {
+    path: "/forgot-password",
+    component: <ForgotPasswordForm />,
+    args: { type: "form" },
+    label: "Login",
+    protection: "signed-out",
+  },
+  {
+    path: "/reset-password",
+    component: <ResetPasswordForm />,
     args: { type: "form" },
     label: "Login",
     protection: "signed-out",

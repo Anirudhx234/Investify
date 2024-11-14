@@ -6,24 +6,17 @@ import type {
   RegisterOptions,
   UseFormReturn,
 } from "react-hook-form";
-
-export type FieldType = "email" | "password" | "confirmPassword" | "number";
-
-/* stuff defined by the domain and not the implementation */
-export interface Field<T extends FieldValues = FieldValues> {
-  name: Path<T>;
-  label: string;
-}
-
-export interface NumberField<T extends FieldValues = FieldValues>
-  extends Field<T> {
+export interface NumberFieldArgs {
   min?: number | undefined;
   max?: number | undefined;
   decimal?: boolean | undefined;
 }
 
 /* stuff defined by the implementation and not the domain */
-export interface Input<T extends FieldValues = FieldValues> extends Field<T> {
+export interface Input<T extends FieldValues = FieldValues> {
+  name: Path<T>;
+  label: string;
+
   isBuffering?: boolean | undefined;
   required?: boolean | undefined;
 

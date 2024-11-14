@@ -3,7 +3,7 @@ import type { stateTypes } from "../types";
 import { useDispatch } from "react-redux";
 import { addAlert, modifyAlert, removeAlert } from "../features/toastSlice";
 import { v4 as uuidv4 } from "uuid";
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
 
 export interface AlertInfo {
   args:
@@ -84,12 +84,24 @@ export default function useToast() {
     [createAlert],
   );
 
-  return {
-    createAlert,
-    deleteAlert,
-    updateAlert,
-    createSuccessAlert,
-    createLoadingAlert,
-    createErrorAlert,
-  };
+  const toast = useMemo(
+    () => ({
+      createAlert,
+      deleteAlert,
+      updateAlert,
+      createSuccessAlert,
+      createLoadingAlert,
+      createErrorAlert,
+    }),
+    [
+      createAlert,
+      deleteAlert,
+      updateAlert,
+      createSuccessAlert,
+      createLoadingAlert,
+      createErrorAlert,
+    ],
+  );
+
+  return toast;
 }

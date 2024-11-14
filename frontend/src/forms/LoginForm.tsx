@@ -3,12 +3,13 @@ import type { SubmitHandler } from "react-hook-form";
 import { useForm } from "react-hook-form";
 import { useLoginMutation } from "../api/auth";
 import useRequests from "../hooks/useRequests";
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
 import FormEmailInput from "../components/FormEmailInput";
 import FormPasswordInput from "../components/FormPasswordInput";
 import FormSubmit from "../components/FormSubmit";
 import useAppDispatch from "../hooks/useAppDispatch";
 import { setClientId } from "../features/clientSlice";
+import { useCallback } from "react";
 
 export interface LoginFormShape {
   email: string;
@@ -17,19 +18,23 @@ export interface LoginFormShape {
 
 export default function LoginForm() {
   const dispatch = useAppDispatch();
+  const [, navigate] = useLocation();
   const form = useForm<LoginFormShape>();
   const [login, loginState] = useLoginMutation();
 
+  const onSuccess = useCallback(() => {
+    dispatch(setClientId(loginState.data!.id));
+    navigate("/");
+  }, [dispatch, loginState.data, navigate]);
+
   const { isLoading } = useRequests({
     requests: { Login: loginState },
+    onSuccess,
+    successMssg: "Logged in!",
   });
 
   const onSubmit: SubmitHandler<LoginFormShape> = (data) => {
-    login(data)
-      .unwrap()
-      .then((res) => {
-        dispatch(setClientId(res.id));
-      });
+    login(data).unwrap();
   };
 
   return (

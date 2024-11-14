@@ -1,5 +1,3 @@
-import type { FieldValues } from "react-hook-form";
-import type * as formTypes from "./form";
 import type { ReactNode } from "react";
 
 /* fields representing a top-level route in the app */
@@ -9,11 +7,9 @@ export interface PageArgs {
 }
 
 /* form attributes given here for convenience */
-export interface VerificationArgs<T extends FieldValues = FieldValues> {
+export interface VerificationArgs {
   type: "verification";
   url: string;
-  method: "GET" | "PATCH";
-  fields?: formTypes.Field<T>[] | undefined;
 }
 
 export interface RedirectionArgs {
@@ -36,9 +32,9 @@ export interface FormArgs {
  */
 export type DrawerMode = "disabled" | "enabled" | "open";
 
-export interface Route<T extends FieldValues = FieldValues> {
+export interface Route {
   path: string;
-  args: PageArgs | VerificationArgs<T> | RedirectionArgs | FormArgs;
+  args: PageArgs | VerificationArgs | RedirectionArgs | FormArgs;
   protection?: "signed-in" | "signed-out" | "none" | undefined;
   label?: string | undefined; // human-readable route label
   nest?: boolean | undefined; // has sub-routes?

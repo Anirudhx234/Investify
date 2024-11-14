@@ -24,13 +24,12 @@ export default function SignUpForm() {
 
   const { isLoading } = useRequests({
     requests: { "Sign Up": signUpState },
+    onSuccess: () => navigate("/login"),
     successMssg: "Verification email sent!",
   });
 
   const onSubmit: SubmitHandler<SignUpFormShape> = (data) => {
-    signUp(data)
-      .unwrap()
-      .then(() => navigate("/login"));
+    signUp(data).unwrap();
   };
 
   return (

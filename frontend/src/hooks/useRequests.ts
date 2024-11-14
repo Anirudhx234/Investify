@@ -18,11 +18,13 @@ export interface UseRequestsAttributes {
     }
   >;
 
+  onSuccess?: (() => void) | undefined;
   successMssg?: string | undefined;
 }
 
 export default function useRequests({
   requests,
+  onSuccess,
   successMssg,
 }: UseRequestsAttributes) {
   const toast = useToast();
@@ -55,11 +57,13 @@ export default function useRequests({
     let id: string | null = null;
 
     if (isSuccess) {
-      id = toast.createSuccessAlert({
+      toast.createSuccessAlert({
         caption: message ?? successMssg ?? "Request Successful",
       });
+
+      if (onSuccess !== undefined) onSuccess();
     } else if (error) {
-      id = toast.createErrorAlert({ caption: error });
+      toast.createErrorAlert({ caption: error });
     } else if (isLoading) {
       id = toast.createLoadingAlert({
         caption: isLoading ? isLoading : "Loading...",
@@ -69,7 +73,7 @@ export default function useRequests({
     return () => {
       if (id) toast.deleteAlert(id);
     };
-  }, [toast, isLoading, error, isSuccess, message, successMssg]);
+  }, [toast, isLoading, error, isSuccess, message, onSuccess, successMssg]);
 
   return { isLoading: !!isLoading, error, isSuccess };
 }
