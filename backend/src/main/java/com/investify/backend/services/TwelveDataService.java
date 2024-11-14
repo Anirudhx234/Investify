@@ -113,7 +113,7 @@ public class TwelveDataService {
         // Return the final structured JSON response
         return Map.of(
                 "stocks", stocks,
-                "mutual-funds", mutualFunds,
+                "mutual_funds", mutualFunds,
                 "etfs", etfs,
                 "crypto", cryptocurrencies
         );
@@ -124,7 +124,7 @@ public class TwelveDataService {
     // https://api.twelvedata.com/time_series?symbol=AAPL&interval=1min&apikey=your_api_key
 
     // Valid intervals: 1min, 5min, 15min, 30min, 45min, 1h, 2h, 4h, 1day, 1week, 1month
-    @Cacheable(value = "timeSeriesCache", key = "#ticker + '-' + #interval")
+    // @Cacheable(value = "timeSeriesCache", key = "#ticker + '-' + #interval")
     public Mono<Map> getAssetTimeSeries(String ticker, String interval) {
         return webClient.get()
                 .uri(uriBuilder -> uriBuilder
@@ -153,7 +153,7 @@ public class TwelveDataService {
     }
 
     // Get current price of an asset
-    @Cacheable(value = "assetPriceCache", key = "#symbol")
+    // @Cacheable(value = "assetPriceCache", key = "#symbol")
     public double getLivePrice(String symbol) {
         ObjectMapper objectMapper = new ObjectMapper();
 

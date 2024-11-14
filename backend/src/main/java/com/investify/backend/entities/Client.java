@@ -1,4 +1,5 @@
 package com.investify.backend.entities;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.investify.backend.enums.InvestmentRisk;
 
 import jakarta.persistence.*;
@@ -10,6 +11,8 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @AllArgsConstructor
@@ -72,5 +75,11 @@ public class Client {
     @Column(name = "currentSavings")
     private Integer currentSavings;
 
+    @OneToMany(mappedBy = "client", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
+    private List<Portfolio> realPortfolios;
 
+    @OneToMany(mappedBy = "client", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
+    private List<PaperPortfolio> paperPortfolios;
 }

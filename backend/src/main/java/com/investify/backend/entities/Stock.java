@@ -14,6 +14,6 @@ public class Stock extends Asset {
 
     @Override
     public String getType() {
-        return "stocks";
+        return "STOCKS";
     }
 }

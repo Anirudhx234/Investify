@@ -15,8 +15,8 @@ import org.springframework.stereotype.Service;
 public class AuthService {
     private final ClientAuthenticationProvider clientAuthenticationProvider;
 
-    public Client getLoggedInClient() {
-        return (Client) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    public ClientDto getLoggedInClient() {
+        return (ClientDto) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     }
 
     public Cookie generateJWTCookie(ClientDto client, String cookieName) {

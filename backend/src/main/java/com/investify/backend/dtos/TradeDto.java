@@ -1,11 +1,11 @@
 package com.investify.backend.dtos;
 
-import com.investify.backend.enums.AssetType;
+import com.investify.backend.enums.TradeType;
 import lombok.Data;
 
 @Data
-public class AddPortfolioAssetRequest {
+public class TradeDto {
     private AssetDto asset;
-    private double averageCost;
+    private TradeType type;
     private double quantity;
 }
