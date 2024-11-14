@@ -5,6 +5,9 @@ import ProfileAccountForm from "../forms/ProfileAccountForm";
 import useAppSelector from "../hooks/useAppSelector";
 import { useMemo } from "react";
 import ProfileGeneralForm from "../forms/ProfileGeneralForm";
+import ProfilePersonalForm from "../forms/ProfilePersonalForm";
+import ProfileFinancialForm from "../forms/ProfileFinancialForm";
+import InvestmentAdvice from "../scenes/InvestmentAdvice";
 
 export default function ClientPage() {
   const params = useParams() as { id?: string | undefined };
@@ -39,9 +42,9 @@ function ClientProfilePage() {
         {isLoggedInClient && (
           <>
             <Route path="/account" component={ProfileAccountForm} />
-            {/* <Route path="/personal" component={ProfilePersonalForm} />
+            <Route path="/personal" component={ProfilePersonalForm} />
             <Route path="/financial-goals" component={ProfileFinancialForm} />
-            <Route path="/investment-advice" component={InvestmentAdvice} /> */}
+            <Route path="/investment-advice" component={InvestmentAdvice} />
           </>
         )}
         <Route path="*" component={() => <Redirect to="/general" replace />} />

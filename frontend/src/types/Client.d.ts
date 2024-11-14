@@ -13,8 +13,8 @@ export interface LoggedInClient extends Client {
   email: string;
   age?: number | undefined | null;
   income?: number | undefined | null;
-  shortTermGoal?: string;
-  longTermGoal?: string;
+  shortTermGoal?: string | undefined | null;
+  longTermGoal?: string | undefined | null;
   investmentRisk?: "LOW" | "MEDIUM" | "HIGH";
   userSavings?: number | undefined | null;
   currentSavings?: number | undefined | null;

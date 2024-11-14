@@ -97,7 +97,7 @@ function ProfileGeneralFormEdit() {
         aria-label="form"
         aria-disabled={isLoading}
       >
-        <div className="mb-8 flex flex-col items-center gap-4">
+        <div className="mb-8 flex flex-col items-center gap-8">
           <ProfilePicture src={uploadedImgURL} className="~h-20/40 ~w-20/40" />
           <label
             htmlFor="profilePicture"

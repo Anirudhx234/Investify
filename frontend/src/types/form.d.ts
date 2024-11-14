@@ -1,15 +1,25 @@
 /* types relating to forms in the app */
-import type { InputHTMLAttributes } from "react";
+import type { InputHTMLAttributes, SelectHTMLAttributes } from "react";
 import type {
   FieldValues,
   Path,
   RegisterOptions,
   UseFormReturn,
 } from "react-hook-form";
+
 export interface NumberFieldArgs {
   min?: number | undefined;
   max?: number | undefined;
   decimal?: boolean | undefined;
+}
+
+export interface SelectFieldArgs {
+  options: {
+    label: string;
+    value: string;
+  }[];
+
+  selectAttributes?: SelectHTMLAttributes<HTMLSelectElement>;
 }
 
 /* stuff defined by the implementation and not the domain */

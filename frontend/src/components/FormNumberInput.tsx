@@ -18,12 +18,13 @@ export default function FormNumberInput<T extends FieldValues>({
         min,
         max,
         validate: (value) => {
+          console.log(decimal);
           if (!decimal && `${value}`.includes(".")) {
             return "Decimal values are not allowed";
           }
         },
       }}
-      inputAttributes={{ ...inputAttributes, type: "number" }}
+      inputAttributes={{ ...inputAttributes, type: "number", step: "any" }}
       {...props}
     />
   );
