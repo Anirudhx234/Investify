@@ -1,12 +1,7 @@
 package com.investify.backend.controllers;
 
-import com.investify.backend.dtos.AddPortfolioAssetRequest;
-import com.investify.backend.dtos.PortfolioResponse;
-import com.investify.backend.dtos.RiskAssessmentResponse;
-import com.investify.backend.dtos.UpdatePortfolioAssetRequest;
+import com.investify.backend.dtos.*;
 import com.investify.backend.entities.*;
-import com.investify.backend.services.AssetService;
-import com.investify.backend.services.ClientService;
 import com.investify.backend.services.PortfolioService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -20,103 +15,132 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/portfolios")
 public class PortfolioController {
-    private final AssetService assetService;
     private final PortfolioService portfolioService;
-    private final ClientService clientService;
 
+    @PostMapping("/clients/{clientId}/real")
+    public ResponseEntity<RealPortfolio> createRealPortfolio(@PathVariable String clientId, @RequestBody CreateRealPortfolioDto request) {
 
-    @GetMapping("/{clientId}")
-    public ResponseEntity<PortfolioResponse> getPortfolioAssets(
-            @PathVariable String clientId) {
+        RealPortfolio portfolio = portfolioService.createRealPortfolio(clientId, request);
 
-        Portfolio portfolio = portfolioService.findOrCreatePortfolio(clientId);
-
-        PortfolioResponse portfolioAssets = portfolioService.getPortfolioAssets(portfolio);
-
-        return ResponseEntity.ok(portfolioAssets);
+        return ResponseEntity.ok(portfolio);
     }
 
-    // Add a Portfolio Asset to a Client's Portfolio
-    @PostMapping("/{clientId}/assets")
+    @PostMapping("/clients/{clientId}/paper")
+    public ResponseEntity<PaperPortfolio> createPaperPortfolio(@PathVariable String clientId, @RequestBody CreatePaperPortfolioDto request) {
+
+        PaperPortfolio portfolio = portfolioService.createPaperPortfolio(clientId, request);
+
+        return ResponseEntity.ok(portfolio);
+    }
+
+    @GetMapping("/clients/{clientId}")
+    public ResponseEntity getAllPortfolios(@PathVariable String clientId) {
+
+        return ResponseEntity.ok(portfolioService.getAllPortfolios(clientId));
+    }
+
+    @GetMapping("/{portfolioId}")
+    public ResponseEntity<Object> getPortfolio(@PathVariable UUID portfolioId) {
+
+        Object portfolio = portfolioService.getPortfolio(portfolioId);
+
+        return ResponseEntity.ok(portfolio);
+    }
+
+    @PatchMapping("/{portfolioId}")
+    public ResponseEntity<Portfolio> updatePortfolio(@PathVariable UUID portfolioId, @RequestBody UpdatePortfolioDto request) {
+
+        Portfolio portfolio = portfolioService.updatePortfolio(portfolioId, request);
+
+        return ResponseEntity.ok(portfolio);
+    }
+
+    @DeleteMapping("/{portfolioId}")
+    public ResponseEntity<MessageDto> deletePortfolio(@PathVariable UUID portfolioId) {
+
+        portfolioService.deletePortfolio(portfolioId);
+
+        return ResponseEntity.ok(new MessageDto("Portfolio deleted"));
+    }
+
+    @PostMapping("/{realPortfolioId}/assets")
     public ResponseEntity addPortfolioAsset(
-            @PathVariable String clientId,
+            @PathVariable UUID realPortfolioId,
             @RequestBody AddPortfolioAssetRequest request) {
 
-        Asset asset = assetService.findOrCreateAsset(request.getSymbol(), request.getName(), request.getAssetType());
-
-        Portfolio portfolio = portfolioService.findOrCreatePortfolio(clientId);
-
-        PortfolioAsset portfolioAsset = portfolioService.addAssetToPortfolio(portfolio, asset, request.getInitialPrice(), request.getQuantity());
+        PortfolioAsset portfolioAsset = portfolioService.addAssetToPortfolio(realPortfolioId, request);
 
         return ResponseEntity.ok(portfolioAsset);
     }
 
-    // Update a Portfolio Asset for a Client
-    @PatchMapping("/{clientId}/assets/{assetId}")
+    @PatchMapping("/{realPortfolioId}/assets/{assetId}")
     public ResponseEntity updatePortfolioAsset(
-            @PathVariable String clientId,
+            @PathVariable UUID realPortfolioId,
             @PathVariable UUID assetId,
             @RequestBody UpdatePortfolioAssetRequest request) {
 
-        Portfolio portfolio = portfolioService.findPortfolio(clientId);
-
-        PortfolioAsset portfolioAsset = portfolioService.updatePortfolioAsset(portfolio, assetId, request.getInitialPrice(), request.getQuantity());
+        PortfolioAsset portfolioAsset = portfolioService.updatePortfolioAsset(realPortfolioId, assetId, request.getAverageCost(), request.getQuantity());
 
         return ResponseEntity.ok(portfolioAsset);
     }
 
-    // Delete a Portfolio Asset for a Client
-    @DeleteMapping("/{clientId}/assets/{assetId}")
+    @DeleteMapping("/{realPortfolioId}/assets/{assetId}")
     public ResponseEntity deletePortfolioAsset(
-            @PathVariable String clientId,
+            @PathVariable UUID realPortfolioId,
             @PathVariable UUID assetId) {
 
-        Portfolio portfolio = portfolioService.findPortfolio(clientId);
-
-        PortfolioAsset portfolioAsset = portfolioService.deletePortfolioAsset(portfolio, assetId);
+        PortfolioAsset portfolioAsset = portfolioService.deletePortfolioAsset(realPortfolioId, assetId);
 
         return ResponseEntity.ok(portfolioAsset);
     }
 
-    @GetMapping("/{clientId}/risk-assessment")
+    @GetMapping("/{portfolioId}/risk-assessment")
     public ResponseEntity<RiskAssessmentResponse> getRiskAssessment(
-            @PathVariable String clientId) {
+            @PathVariable UUID portfolioId) {
 
-        Client client = clientService.findById(clientId);
-        Portfolio portfolio = portfolioService.findPortfolio(clientId);
-        RiskAssessmentResponse response = portfolioService.calculateRiskScoreWithAssets(portfolio, client.getInvestmentRisk().toString()
-        );
+        RiskAssessmentResponse response = portfolioService.calculateRiskScoreWithAssets(portfolioId);
+
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/{clientId}/risk-chart")
+    @GetMapping("/{portfolioId}/risk-chart")
     public ResponseEntity<List<Map<String, Object>>> getAverageROIAndRiskByAssetType(
-            @PathVariable String clientId) {
+            @PathVariable UUID portfolioId) {
 
-        Client client = clientService.findById(clientId);
-        Portfolio portfolio = portfolioService.findPortfolio(clientId);
-        List<Map<String, Object>> roiRiskByType = portfolioService.calculateAverageROIAndRiskByAssetType(portfolio, client.getInvestmentRisk().toString());
+        List<Map<String, Object>> roiRiskByType = portfolioService.calculateAverageROIAndRiskByAssetType(portfolioId);
 
         return ResponseEntity.ok(roiRiskByType);
     }
 
-    @GetMapping("/{clientId}/sector-valuations")
+    @GetMapping("/{portfolioId}/sector-valuations")
     public ResponseEntity<Map<String, Double>> getSectorValuations(
-            @PathVariable String clientId) {
+            @PathVariable UUID portfolioId) {
 
-        Map<String, Double> sectorValuations = portfolioService.calculateSectorValuations(clientId);
+        Map<String, Double> sectorValuations = portfolioService.calculateSectorValuations(portfolioId);
         return ResponseEntity.ok(sectorValuations);
     }
     
-    @GetMapping("/{clientId}/total-portfolio-value")
-    public ResponseEntity<Double> getTotalPortfolioValue(@PathVariable String clientId) {
-        double totalValue = portfolioService.getTotalPortfolioValue(clientId);
+    @GetMapping("/{portfolioId}/total-portfolio-value")
+    public ResponseEntity<Double> getTotalPortfolioValue(@PathVariable UUID portfolioId) {
+        double totalValue = portfolioService.getTotalPortfolioValue(portfolioId);
         return ResponseEntity.ok(totalValue);
     }
 
-    @GetMapping("/{clientId}/roi")
-    public ResponseEntity<Double> getReturnOnInvestment(@PathVariable String clientId) {
-        double roi = portfolioService.getReturnOnInvestment(clientId);
+    @GetMapping("/{portfolioId}/roi")
+    public ResponseEntity<Double> getPortfolioROI(@PathVariable UUID portfolioId) {
+        double roi = portfolioService.getPortfolioROI(portfolioId);
         return ResponseEntity.ok(roi);
+    }
+
+    @GetMapping("/{paperPortfolioId}/trades")
+    public ResponseEntity getTrades(@PathVariable UUID paperPortfolioId) {
+        List<Trade> trades = portfolioService.getTrades(paperPortfolioId);
+        return ResponseEntity.ok(trades);
+    }
+
+    @PostMapping("/{paperPortfolioId}/trades")
+    public ResponseEntity createTrade(@PathVariable UUID paperPortfolioId, @RequestBody TradeDto request) {
+        Trade trade = portfolioService.createTrade(paperPortfolioId, request);
+        return ResponseEntity.ok(trade);
     }
 }

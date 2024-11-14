@@ -1,8 +1,11 @@
 package com.investify.backend.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @Data
@@ -17,6 +20,10 @@ public abstract class Asset {
 
     private String symbol;
     private String name;
+
+    @OneToMany(mappedBy = "asset", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    private List<Trade> trades;
 
     public Asset(String symbol, String name) {
         this.symbol = symbol;

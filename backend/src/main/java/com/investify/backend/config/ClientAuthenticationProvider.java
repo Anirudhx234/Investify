@@ -8,9 +8,11 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import com.investify.backend.dtos.ClientDto;
 import com.investify.backend.entities.Client;
 import com.investify.backend.exceptions.RestException;
+import com.investify.backend.mappers.ClientMapper;
 import com.investify.backend.repositories.ClientRepository;
 
 import jakarta.annotation.PostConstruct;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -25,6 +27,9 @@ import java.util.*;
 public class ClientAuthenticationProvider {
 
     private final ClientRepository clientRepository;
+
+    private final ClientMapper clientMapper;
+
     @Value("${security.jwt.token.secret-key:secret-key}")
     private String secretKey;
 
@@ -47,6 +52,7 @@ public class ClientAuthenticationProvider {
                 .sign(algorithm);
     }
 
+    @Transactional
     public Authentication validateToken(String token) {
         Algorithm algorithm = Algorithm.HMAC256(secretKey);
 
@@ -55,8 +61,10 @@ public class ClientAuthenticationProvider {
 
         DecodedJWT decoded = verifier.verify(token);
 
-        Client client = clientRepository.findById(UUID.fromString(decoded.getSubject()))
+        Client entity = clientRepository.findById(UUID.fromString(decoded.getSubject()))
                 .orElseThrow(() -> new RestException("Unknown client", HttpStatus.NOT_FOUND));
+
+        ClientDto client = clientMapper.toClientDto(entity);
 
         return new UsernamePasswordAuthenticationToken(client, null, Collections.emptyList());
     }

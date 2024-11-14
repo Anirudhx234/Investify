@@ -5,11 +5,11 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-public class PortfolioResponse {
+public class RealPortfolioResponse {
     private List<PortfolioAssetResponse> portfolioAssets;
     private double totalPortfolioValue;
 
-    public PortfolioResponse(List<PortfolioAssetResponse> portfolioAssets, double totalPortfolioValue) {
+    public RealPortfolioResponse(List<PortfolioAssetResponse> portfolioAssets, double totalPortfolioValue) {
         this.portfolioAssets = portfolioAssets;
         this.totalPortfolioValue = totalPortfolioValue;
     }

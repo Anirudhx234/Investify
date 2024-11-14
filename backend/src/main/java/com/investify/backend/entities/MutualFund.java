@@ -15,6 +15,6 @@ public class MutualFund extends Asset {
 
     @Override
     public String getType() {
-        return "mutual-funds";
+        return "MUTUAL_FUNDS";
     }
 }

@@ -15,6 +15,6 @@ public class ETF extends Asset {
 
     @Override
     public String getType() {
-        return "etfs";
+        return "ETFS";
     }
 }

@@ -1,5 +1,6 @@
 package com.investify.backend.entities;
 
+import com.investify.backend.enums.AssetType;
 import jakarta.persistence.Entity;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -15,6 +16,6 @@ public class Cryptocurrency extends Asset {
 
     @Override
     public String getType() {
-        return "crypto";
+        return "STOCKS";
     }
 }
