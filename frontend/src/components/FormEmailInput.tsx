@@ -4,6 +4,7 @@ import FormInput from "./FormInput";
 
 export default function FormEmailInput<T extends { email: string }>({
   registerOptions,
+  inputAttributes,
   ...props
 }: formTypes.Input<T>) {
   return (
@@ -14,6 +15,7 @@ export default function FormEmailInput<T extends { email: string }>({
           return validateEmail(value) || "Invalid email address";
         },
       }}
+      inputAttributes={{ ...inputAttributes, autoComplete: "email" }}
       {...props}
     />
   );

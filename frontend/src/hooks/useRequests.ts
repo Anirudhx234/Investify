@@ -9,10 +9,11 @@ export interface UseRequestsAttributes {
   requests: Record<
     string,
     {
+      data?: unknown | undefined;
       isLoading: boolean;
       isFetching?: boolean | undefined;
       isError: boolean;
-      error: baseQueryTypes.Error | SerializedError | undefined;
+      error?: baseQueryTypes.Error | SerializedError | undefined;
       isSuccess: boolean;
     }
   >;
@@ -26,10 +27,11 @@ export default function useRequests({
 }: UseRequestsAttributes) {
   const toast = useToast();
 
-  const { isLoading, error, isSuccess } = useMemo(() => {
+  const { isLoading, error, isSuccess, message } = useMemo(() => {
     let isLoading: string | undefined;
     let error: string | undefined;
     let isSuccess: boolean = true;
+    let message: string | undefined;
 
     Object.entries(requests).forEach(([request, state]) => {
       if (state.isLoading || state.isFetching) {
@@ -40,9 +42,13 @@ export default function useRequests({
       if (state.isError && !error) error = `${request}: ${errorMssg}`;
 
       if (!state.isSuccess) isSuccess = false;
+
+      if (!message)
+        message = (state.data as undefined | { message?: string | undefined })
+          ?.message;
     });
 
-    return { isLoading, error, isSuccess };
+    return { isLoading, error, isSuccess, message };
   }, [requests]);
 
   useEffect(() => {
@@ -50,11 +56,11 @@ export default function useRequests({
 
     if (isSuccess) {
       id = toast.createSuccessAlert({
-        caption: successMssg ?? "Request Successful",
+        caption: message ?? successMssg ?? "Request Successful",
       });
     } else if (error) {
       id = toast.createErrorAlert({ caption: error });
-    } else {
+    } else if (isLoading) {
       id = toast.createLoadingAlert({
         caption: isLoading ? isLoading : "Loading...",
       });
@@ -63,7 +69,7 @@ export default function useRequests({
     return () => {
       if (id) toast.deleteAlert(id);
     };
-  }, [toast, isLoading, error, isSuccess, successMssg]);
+  }, [toast, isLoading, error, isSuccess, message, successMssg]);
 
-  return { isLoading, error, isSuccess };
+  return { isLoading: !!isLoading, error, isSuccess };
 }
