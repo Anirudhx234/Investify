@@ -9,6 +9,7 @@ import FormConfirmPasswordInput from "../components/FormConfirmPasswordInput";
 import { useSignUpMutation } from "../api/auth";
 import useRequests from "../hooks/useRequests";
 import FormSubmit from "../components/FormSubmit";
+import { useCallback, useMemo } from "react";
 
 export interface SignUpFormShape {
   email: string;
@@ -22,10 +23,17 @@ export default function SignUpForm() {
   const form = useForm<SignUpFormShape>();
   const [signUp, signUpState] = useSignUpMutation();
 
+  const onSuccess = useCallback(() => navigate("/login"), [navigate]);
+
+  const requestStates = useMemo(
+    () => ({ "Sign Up": signUpState }),
+    [signUpState],
+  );
+
   const { isLoading } = useRequests({
-    requests: { "Sign Up": signUpState },
-    onSuccess: () => navigate("/login"),
-    successMssg: "Verification email sent!",
+    requestStates,
+    onSuccess,
+    successMessage: "Verification email sent!",
   });
 
   const onSubmit: SubmitHandler<SignUpFormShape> = (data) => {

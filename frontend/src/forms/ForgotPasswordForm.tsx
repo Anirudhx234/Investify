@@ -6,6 +6,7 @@ import useRequests from "../hooks/useRequests";
 import { useLocation } from "wouter";
 import FormEmailInput from "../components/FormEmailInput";
 import FormSubmit from "../components/FormSubmit";
+import { useCallback, useMemo } from "react";
 
 export interface ForgotPasswordFormShape {
   email: string;
@@ -16,12 +17,19 @@ export default function ForgotPasswordForm() {
   const form = useForm<ForgotPasswordFormShape>();
   const [forgotPassword, forgotPasswordState] = useForgotPasswordMutation();
 
-  const { isLoading } = useRequests({
-    requests: {
+  const onSuccess = useCallback(() => navigate("/login"), [navigate]);
+
+  const requestStates = useMemo(
+    () => ({
       "Forgot Password": forgotPasswordState,
-    },
-    onSuccess: () => navigate("/login"),
-    successMssg: "Reset email sent!",
+    }),
+    [forgotPasswordState],
+  );
+
+  const { isLoading } = useRequests({
+    requestStates,
+    onSuccess,
+    successMessage: "Reset email sent!",
   });
 
   const onSubmit: SubmitHandler<ForgotPasswordFormShape> = (data) => {

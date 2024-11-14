@@ -2,16 +2,15 @@
 import type { SerializedError } from "@reduxjs/toolkit";
 import type { baseQueryTypes } from "../types";
 
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import useToast from "./useToast";
 
 export interface UseRequestsAttributes {
-  requests: Record<
+  requestStates: Record<
     string,
     {
       data?: unknown | undefined;
       isLoading: boolean;
-      isFetching?: boolean | undefined;
       isError: boolean;
       error?: baseQueryTypes.Error | SerializedError | undefined;
       isSuccess: boolean;
@@ -19,61 +18,77 @@ export interface UseRequestsAttributes {
   >;
 
   onSuccess?: (() => void) | undefined;
-  successMssg?: string | undefined;
+  successMessage?: string | undefined;
 }
 
 export default function useRequests({
-  requests,
+  requestStates,
   onSuccess,
-  successMssg,
+  successMessage,
 }: UseRequestsAttributes) {
   const toast = useToast();
+  const lastAlertRef = useRef<"success" | "loading" | "error" | undefined>();
 
-  const { isLoading, error, isSuccess, message } = useMemo(() => {
+  const { isLoading, error, serverMessage } = useMemo(() => {
     let isLoading: string | undefined;
     let error: string | undefined;
-    let isSuccess: boolean = true;
-    let message: string | undefined;
+    let serverMessage: string | undefined;
 
-    Object.entries(requests).forEach(([request, state]) => {
-      if (state.isLoading || state.isFetching) {
-        if (!isLoading) isLoading = `${request}: Loading...`;
-      }
+    Object.entries(requestStates).forEach(([request, state]) => {
+      if (state.isLoading && !isLoading) isLoading = `${request}: Loading...`;
 
       const errorMssg = state.error?.message || "An error occurred";
       if (state.isError && !error) error = `${request}: ${errorMssg}`;
 
-      if (!state.isSuccess) isSuccess = false;
-
-      if (!message)
-        message = (state.data as undefined | { message?: string | undefined })
-          ?.message;
+      if (!serverMessage)
+        serverMessage = (
+          state.data as undefined | { message?: string | undefined }
+        )?.message;
     });
 
-    return { isLoading, error, isSuccess, message };
-  }, [requests]);
+    return { isLoading, error, serverMessage };
+  }, [requestStates]);
 
   useEffect(() => {
     let id: string | null = null;
+    const wasLoading = lastAlertRef.current === "loading";
 
-    if (isSuccess) {
-      toast.createSuccessAlert({
-        caption: message ?? successMssg ?? "Request Successful",
-      });
+    if (isLoading) {
+      lastAlertRef.current = "loading";
 
-      if (onSuccess !== undefined) onSuccess();
-    } else if (error) {
-      toast.createErrorAlert({ caption: error });
-    } else if (isLoading) {
       id = toast.createLoadingAlert({
         caption: isLoading ? isLoading : "Loading...",
       });
     }
 
+    if (!isLoading && wasLoading && error) {
+      lastAlertRef.current = "error";
+      toast.createErrorAlert({ caption: error });
+    }
+
+    if (!isLoading && !error && wasLoading) {
+      lastAlertRef.current = "success";
+
+      toast.createSuccessAlert({
+        caption: serverMessage ?? successMessage ?? "Request Successful",
+      });
+
+      if (onSuccess) onSuccess();
+    }
+
     return () => {
       if (id) toast.deleteAlert(id);
     };
-  }, [toast, isLoading, error, isSuccess, message, onSuccess, successMssg]);
+  }, [toast, isLoading, error, serverMessage, onSuccess, successMessage]);
 
-  return { isLoading: !!isLoading, error, isSuccess };
+  const wasLoading = lastAlertRef.current === "loading";
+  const message =
+    isLoading ||
+    error ||
+    serverMessage ||
+    (!wasLoading && "Waiting...") ||
+    successMessage ||
+    "Request successful";
+
+  return { isLoading: !!isLoading, isError: !!error, message };
 }

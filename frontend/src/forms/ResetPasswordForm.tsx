@@ -7,6 +7,7 @@ import useRequests from "../hooks/useRequests";
 import FormSubmit from "../components/FormSubmit";
 import FormPasswordInput from "../components/FormPasswordInput";
 import FormConfirmPasswordInput from "../components/FormConfirmPasswordInput";
+import { useCallback, useMemo } from "react";
 
 export interface ResetPasswordFormShape {
   password: string;
@@ -19,12 +20,19 @@ export default function ResetPasswordForm() {
   const form = useForm<ResetPasswordFormShape>();
   const [resetPassword, resetPasswordState] = useResetPasswordMutation();
 
-  const { isLoading } = useRequests({
-    requests: {
+  const onSuccess = useCallback(() => navigate("/login"), [navigate]);
+
+  const requestStates = useMemo(
+    () => ({
       "Reset Password": resetPasswordState,
-    },
-    onSuccess: () => navigate("/login"),
-    successMssg: "Password reset!",
+    }),
+    [resetPasswordState],
+  );
+
+  const { isLoading } = useRequests({
+    requestStates,
+    onSuccess,
+    successMessage: "Password reset!",
   });
 
   const onSubmit: SubmitHandler<ResetPasswordFormShape> = (data) => {

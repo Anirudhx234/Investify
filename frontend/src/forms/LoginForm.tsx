@@ -9,7 +9,7 @@ import FormPasswordInput from "../components/FormPasswordInput";
 import FormSubmit from "../components/FormSubmit";
 import useAppDispatch from "../hooks/useAppDispatch";
 import { setClientId } from "../features/clientSlice";
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
 
 export interface LoginFormShape {
   email: string;
@@ -27,10 +27,12 @@ export default function LoginForm() {
     navigate("/");
   }, [dispatch, loginState.data, navigate]);
 
+  const requestStates = useMemo(() => ({ Login: loginState }), [loginState]);
+
   const { isLoading } = useRequests({
-    requests: { Login: loginState },
+    requestStates,
     onSuccess,
-    successMssg: "Logged in!",
+    successMessage: "Logged in!",
   });
 
   const onSubmit: SubmitHandler<LoginFormShape> = (data) => {

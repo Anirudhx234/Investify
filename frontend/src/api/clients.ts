@@ -1,4 +1,4 @@
-import { clientTypes } from "../types";
+import type { clientTypes } from "../types";
 
 import api from "./api";
 
@@ -9,7 +9,15 @@ const clientsApi = api.injectEndpoints({
         url: "/clients/" + id,
         method: "GET",
       }),
-      providesTags: (res) => [{ type: "clients", id: res?.id }],
+      providesTags: (res, _err, args) => {
+        if (args.id === "me") {
+          return ["logged-in-client"];
+        } else if (res) {
+          return [{ type: "clients", id: res.id }];
+        } else {
+          return [];
+        }
+      },
     }),
 
     loggedInClientProfile: build.query<clientTypes.LoggedInClient, void>({
@@ -19,8 +27,41 @@ const clientsApi = api.injectEndpoints({
       }),
       providesTags: ["logged-in-client"],
     }),
+
+    modifyEmail: build.mutation<
+      clientTypes.LoggedInClient,
+      { newEmail: string }
+    >({
+      query: ({ newEmail }) => ({
+        url: "/clients/me/email",
+        method: "PATCH",
+        body: { newEmail },
+      }),
+    }),
+
+    modifyProfile: build.mutation<clientTypes.LoggedInClient, FormData>({
+      query: (formData) => ({
+        url: "/clients/me",
+        method: "PATCH",
+        body: formData,
+      }),
+      invalidatesTags: ["logged-in-client"],
+    }),
+
+    deleteClient: build.mutation<clientTypes.LoggedInClient, void>({
+      query: () => ({
+        url: "/clients/me",
+        method: "DELETE",
+      }),
+      invalidatesTags: ["logged-in-client"],
+    }),
   }),
 });
 
-export const { useClientProfileQuery, useLoggedInClientProfileQuery } =
-  clientsApi;
+export const {
+  useClientProfileQuery,
+  useLoggedInClientProfileQuery,
+  useModifyEmailMutation,
+  useModifyProfileMutation,
+  useDeleteClientMutation,
+} = clientsApi;

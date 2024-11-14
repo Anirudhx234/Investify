@@ -5,6 +5,7 @@ import useAppSelector from "../hooks/useAppSelector";
 import { Route, Switch } from "wouter";
 
 const sidebarRoutes = [
+  { path: "/clients/me", component: ClientSidebar, nest: true },
   { path: "/clients/:id", component: ClientSidebar, nest: true },
   { path: "/assets", component: HomeSidebar, nest: true },
 ];
