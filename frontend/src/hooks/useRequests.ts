@@ -3,25 +3,46 @@ import type { SerializedError } from "@reduxjs/toolkit";
 import type { baseQueryTypes } from "../types";
 
 import { useEffect, useMemo, useRef } from "react";
-import useToast from "./useToast";
+import { useToast } from "./useToast";
 
-export interface UseRequestsAttributes {
-  requestStates: Record<
-    string,
-    {
-      data?: unknown | undefined;
-      isLoading: boolean;
-      isError: boolean;
-      error?: baseQueryTypes.Error | SerializedError | undefined;
-      isSuccess: boolean;
-    }
-  >;
+export interface RequestState {
+  data?: unknown | undefined;
+  isLoading: boolean;
+  isError: boolean;
+  error?: baseQueryTypes.Error | SerializedError | undefined;
+  isSuccess: boolean;
+}
 
+export interface UseRequestAttributes {
+  requestLabel: string;
+  requestState: RequestState;
   onSuccess?: (() => void) | undefined;
   successMessage?: string | undefined;
 }
 
-export default function useRequests({
+export function useRequest({
+  requestLabel,
+  requestState,
+  onSuccess,
+  successMessage,
+}: UseRequestAttributes) {
+  const requestStates = useMemo(
+    () => ({
+      [requestLabel]: requestState,
+    }),
+    [requestLabel, requestState],
+  );
+
+  return useRequests({ requestStates, onSuccess, successMessage });
+}
+
+export interface UseRequestsAttributes {
+  requestStates: Record<string, RequestState>;
+  onSuccess?: (() => void) | undefined;
+  successMessage?: string | undefined;
+}
+
+export function useRequests({
   requestStates,
   onSuccess,
   successMessage,

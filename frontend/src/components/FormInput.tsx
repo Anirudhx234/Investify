@@ -1,11 +1,11 @@
 import { FieldErrors, FieldValues } from "react-hook-form";
 import type { formTypes } from "../types";
 
-import twMerge from "../util/twMerge";
+import { twMerge } from "../util/twMerge";
 import { ErrorMessage } from "@hookform/error-message";
 import { MdErrorOutline } from "react-icons/md";
 
-export default function FormInput<T extends FieldValues = FieldValues>({
+export function FormInput<T extends FieldValues = FieldValues>({
   name,
   label,
   registerOptions,
@@ -19,7 +19,9 @@ export default function FormInput<T extends FieldValues = FieldValues>({
     required: required ? `${label} is required` : false,
   });
 
-  const { className, disabled, ...otherInputAttributes } = { ...inputAttributes };
+  const { className, disabled, ...otherInputAttributes } = {
+    ...inputAttributes,
+  };
 
   return (
     <label className="form-control">

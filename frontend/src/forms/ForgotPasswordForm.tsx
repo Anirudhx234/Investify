@@ -2,17 +2,17 @@ import type { SubmitHandler } from "react-hook-form";
 
 import { useForm } from "react-hook-form";
 import { useForgotPasswordMutation } from "../api/auth";
-import useRequests from "../hooks/useRequests";
+import { useRequests } from "../hooks/useRequests";
 import { useLocation } from "wouter";
-import FormEmailInput from "../components/FormEmailInput";
-import FormSubmit from "../components/FormSubmit";
+import { FormEmailInput } from "../components/FormEmailInput";
+import { FormSubmit } from "../components/FormSubmit";
 import { useCallback, useMemo } from "react";
 
 export interface ForgotPasswordFormShape {
   email: string;
 }
 
-export default function ForgotPasswordForm() {
+export function ForgotPasswordForm() {
   const [, navigate] = useLocation();
   const form = useForm<ForgotPasswordFormShape>();
   const [forgotPassword, forgotPasswordState] = useForgotPasswordMutation();

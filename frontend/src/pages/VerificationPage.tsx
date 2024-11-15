@@ -1,11 +1,11 @@
 import type { routerTypes } from "../types";
 
 import { useLocation, useSearch } from "wouter";
-import useRequests from "../hooks/useRequests";
+import { useRequests } from "../hooks/useRequests";
 import { useVerifyClientQuery } from "../api/auth";
 import { useCallback, useMemo } from "react";
 
-export default function VerificationPage({
+export function VerificationPage({
   url,
 }: routerTypes.VerificationArgs) {
   const search = useSearch();

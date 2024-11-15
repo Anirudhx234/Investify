@@ -1,11 +1,11 @@
 import { Link } from "wouter";
-import twMerge from "../util/twMerge";
+import { twMerge } from "../util/twMerge";
 import {
   useClientProfileQuery,
   useLoggedInClientProfileQuery,
 } from "../api/clients";
 
-export default function ProfilePicture({
+export function ProfilePicture({
   src,
   className,
   alt,
@@ -27,7 +27,7 @@ export default function ProfilePicture({
   }
 }
 
-function ProfilePictureStringSrc({
+export function ProfilePictureStringSrc({
   src,
   className,
   alt,
@@ -47,7 +47,7 @@ function ProfilePictureStringSrc({
   );
 }
 
-function ProfilePictureClientSrc({
+export function ProfilePictureClientSrc({
   src,
   className,
   alt,
@@ -69,7 +69,7 @@ function ProfilePictureClientSrc({
   );
 }
 
-function ProfilePictureLoggedInClient({
+export function ProfilePictureLoggedInClient({
   className,
   alt,
 }: {

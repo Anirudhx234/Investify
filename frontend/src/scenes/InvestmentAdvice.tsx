@@ -26,7 +26,7 @@ const generalAdvice = [
   "Have a clear investment strategy and stick to it.",
 ];
 
-export default function InvestmentAdvice() {
+export function InvestmentAdvice() {
   const clientProfileState = useLoggedInClientProfileQuery();
 
   let indexOne = -1;

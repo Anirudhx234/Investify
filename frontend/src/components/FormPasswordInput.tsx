@@ -1,8 +1,8 @@
 import type { formTypes } from "../types";
-import checkPasswordStrength from "../util/checkPasswordStrength";
-import FormInput from "./FormInput";
+import { checkPasswordStrength } from "../util/checkPasswordStrength";
+import { FormInput } from "./FormInput";
 
-export default function FormPasswordInput<T extends { password: string }>({
+export function FormPasswordInput<T extends { password: string }>({
   registerOptions,
   inputAttributes,
   ...props

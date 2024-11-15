@@ -1,7 +1,7 @@
 import { RiStockLine } from "react-icons/ri";
 import { Link } from "wouter";
 
-export default function Logo() {
+export function Logo() {
   return (
     <Link
       href="/"

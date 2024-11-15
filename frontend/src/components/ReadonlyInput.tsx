@@ -1,4 +1,4 @@
-import twMerge from "../util/twMerge";
+import { twMerge } from "../util/twMerge";
 
 type ReadonlyInputProps = {
   name: string;
@@ -7,7 +7,7 @@ type ReadonlyInputProps = {
   className?: string | undefined;
 };
 
-export default function ReadonlyInput({
+export function ReadonlyInput({
   name,
   label,
   value,

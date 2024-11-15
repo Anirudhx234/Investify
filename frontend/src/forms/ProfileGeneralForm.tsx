@@ -8,15 +8,15 @@ import {
   useModifyProfileMutation,
 } from "../api/clients";
 import { useMemo, useState } from "react";
-import useRequests from "../hooks/useRequests";
+import { useRequests } from "../hooks/useRequests";
 import { useForm } from "react-hook-form";
-import useFormReset from "../hooks/useFormReset";
-import ProfilePicture from "../components/ProfilePicture";
-import FormInput from "../components/FormInput";
-import FormSubmit from "../components/FormSubmit";
-import ReadonlyInput from "../components/ReadonlyInput";
+import { useFormReset } from "../hooks/useFormReset";
+import { ProfilePicture } from "../components/ProfilePicture";
+import { FormInput } from "../components/FormInput";
+import { FormSubmit } from "../components/FormSubmit";
+import { ReadonlyInput } from "../components/ReadonlyInput";
 
-export default function ProfileGeneralForm() {
+export function ProfileGeneralForm() {
   const params = useParams() as { id?: string | undefined };
   const clientId = params.id ?? "me";
 
@@ -29,7 +29,7 @@ export interface ProfileGeneralFormEditShape {
   profilePicture: FileList | undefined | null;
 }
 
-function ProfileGeneralFormEdit() {
+export function ProfileGeneralFormEdit() {
   const clientProfileState = useLoggedInClientProfileQuery();
   const [modifyProfile, modifyProfileState] = useModifyProfileMutation();
   const [uploadedImgURL, setUploadedImgURL] = useState<string | undefined>();
@@ -132,7 +132,7 @@ function ProfileGeneralFormEdit() {
   );
 }
 
-function ProfileGeneralFormView() {
+export function ProfileGeneralFormView() {
   const params = useParams() as { id: string };
   const clientProfileState = useClientProfileQuery({ id: params.id });
 

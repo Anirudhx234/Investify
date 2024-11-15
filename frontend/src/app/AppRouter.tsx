@@ -1,17 +1,17 @@
 import { routerTypes } from "../types";
 
 import { Redirect, Route, Switch } from "wouter";
-import pages from "./pages";
-import useAppDispatch from "../hooks/useAppDispatch";
-import useAppSelector from "../hooks/useAppSelector";
-import useToast from "../hooks/useToast";
+import { pages } from "./pages";
+import { useAppDispatch } from "../hooks/useAppDispatch";
+import { useAppSelector } from "../hooks/useAppSelector";
+import { useToast } from "../hooks/useToast";
 import { selectIsLoggedIn } from "../features/clientSlice";
 import { memo, useEffect } from "react";
 import { setRouteAttributes } from "../features/routeSlice";
-import VerificationPage from "../pages/VerificationPage";
+import { VerificationPage } from "../pages/VerificationPage";
 
 /* component for rendering top-level routes in the app */
-export default memo(function AppRouter() {
+export const AppRouter = memo(function AppRouter() {
   return (
     <Switch>
       {pages.map((page) => (
@@ -21,7 +21,7 @@ export default memo(function AppRouter() {
   );
 });
 
-function Page({ ...page }: routerTypes.Page) {
+export function Page({ ...page }: routerTypes.Page) {
   return (
     <Route
       path={page.path}
@@ -31,7 +31,7 @@ function Page({ ...page }: routerTypes.Page) {
   );
 }
 
-function PageComponent({ ...page }: routerTypes.Page) {
+export function PageComponent({ ...page }: routerTypes.Page) {
   const dispatch = useAppDispatch();
   const isLoggedIn = useAppSelector(selectIsLoggedIn);
   const toast = useToast();

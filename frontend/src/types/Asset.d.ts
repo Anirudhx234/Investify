@@ -1,6 +1,6 @@
 /* assets */
 
-export type Type = "stocks" | "mutual-funds" | "etfs" | "crypto";
+export type Type = "STOCKS" | "MUTUAL_FUNDS" | "ETFS" | "CRYPTO";
 
 export interface Asset {
   type: Type;

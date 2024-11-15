@@ -3,10 +3,10 @@ import type { SubmitHandler } from "react-hook-form";
 import { useForm } from "react-hook-form";
 import { useLocation, useSearch } from "wouter";
 import { useResetPasswordMutation } from "../api/auth";
-import useRequests from "../hooks/useRequests";
-import FormSubmit from "../components/FormSubmit";
-import FormPasswordInput from "../components/FormPasswordInput";
-import FormConfirmPasswordInput from "../components/FormConfirmPasswordInput";
+import { useRequests } from "../hooks/useRequests";
+import { FormSubmit } from "../components/FormSubmit";
+import { FormPasswordInput } from "../components/FormPasswordInput";
+import { FormConfirmPasswordInput } from "../components/FormConfirmPasswordInput";
 import { useCallback, useMemo } from "react";
 
 export interface ResetPasswordFormShape {
@@ -14,7 +14,7 @@ export interface ResetPasswordFormShape {
   confirmPassword: string;
 }
 
-export default function ResetPasswordForm() {
+export function ResetPasswordForm() {
   const search = useSearch();
   const [, navigate] = useLocation();
   const form = useForm<ResetPasswordFormShape>();

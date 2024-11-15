@@ -1,8 +1,8 @@
 import type { formTypes } from "../types";
-import validateEmail from "../util/validateEmail";
-import FormInput from "./FormInput";
+import { validateEmail } from "../util/validateEmail";
+import { FormInput } from "./FormInput";
 
-export default function FormEmailInput<T extends { email: string }>({
+export function FormEmailInput<T extends { email: string }>({
   registerOptions,
   inputAttributes,
   ...props

@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import twMerge from "../util/twMerge";
+import { twMerge } from "tailwind-merge";
 
 export interface MenuItems<T extends { key: string }> {
   i: Record<string, MenuItems<T>> | T[];
@@ -12,7 +12,19 @@ export interface RecursiveMenuProps<T extends { key: string }> {
   className?: string | undefined;
 }
 
-export default function RecursiveMenu<T extends { key: string }>({
+export function RecursiveMenu<T extends { key: string }>({
+  className,
+  ...props
+}: RecursiveMenuProps<T>) {
+  return (
+    <RecursiveMenuCreator
+      className={twMerge("menu w-full", className)}
+      {...props}
+    />
+  );
+}
+
+export function RecursiveMenuCreator<T extends { key: string }>({
   menuItems,
   renderItem,
   icons,
@@ -29,7 +41,7 @@ export default function RecursiveMenu<T extends { key: string }>({
   }
 
   return (
-    <ul className={twMerge("menu", className)}>
+    <ul className={className}>
       {Object.entries(menuItems.i).map(([key, item]) => (
         <li key={key}>
           <>
@@ -37,7 +49,7 @@ export default function RecursiveMenu<T extends { key: string }>({
               <span>{icons?.[key]}</span>
               {key}
             </div>
-            <RecursiveMenu
+            <RecursiveMenuCreator
               menuItems={item}
               renderItem={renderItem}
               icons={icons}

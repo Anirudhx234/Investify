@@ -1,15 +1,15 @@
 import { Redirect, Route, Switch, useParams } from "wouter";
 import { useClientProfileQuery } from "../api/clients";
-import useRequests from "../hooks/useRequests";
-import ProfileAccountForm from "../forms/ProfileAccountForm";
-import useAppSelector from "../hooks/useAppSelector";
+import { useRequests } from "../hooks/useRequests";
+import { ProfileAccountForm } from "../forms/ProfileAccountForm";
+import { useAppSelector } from "../hooks/useAppSelector";
 import { useMemo } from "react";
-import ProfileGeneralForm from "../forms/ProfileGeneralForm";
-import ProfilePersonalForm from "../forms/ProfilePersonalForm";
-import ProfileFinancialForm from "../forms/ProfileFinancialForm";
-import InvestmentAdvice from "../scenes/InvestmentAdvice";
+import { ProfileGeneralForm } from "../forms/ProfileGeneralForm";
+import { ProfilePersonalForm } from "../forms/ProfilePersonalForm";
+import { ProfileFinancialForm } from "../forms/ProfileFinancialForm";
+import { InvestmentAdvice } from "../scenes/InvestmentAdvice";
 
-export default function ClientPage() {
+export function ClientPage() {
   const params = useParams() as { id?: string | undefined };
   const loggedInClientId = useAppSelector((state) => state.client.id);
 
@@ -19,7 +19,7 @@ export default function ClientPage() {
   return <ClientProfilePage />;
 }
 
-function ClientProfilePage() {
+export function ClientProfilePage() {
   const params = useParams() as { id?: string | undefined };
   const clientId = params.id ?? "me";
   const clientState = useClientProfileQuery({ id: clientId });

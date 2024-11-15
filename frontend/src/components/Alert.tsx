@@ -1,7 +1,7 @@
 import { FaCheck } from "react-icons/fa";
 import { MdError } from "react-icons/md";
 import { RxCrossCircled } from "react-icons/rx";
-import { twMerge } from "tailwind-merge";
+import { twMerge } from "../util/twMerge";
 
 export interface AlertAttributes {
   type: "success" | "loading" | "error";
@@ -9,7 +9,7 @@ export interface AlertAttributes {
   onDismiss?: (() => void) | undefined;
 }
 
-export default function Alert({ type, caption, onDismiss }: AlertAttributes) {
+export function Alert({ type, caption, onDismiss }: AlertAttributes) {
   let alertCaption: string;
   if (caption) {
     alertCaption = caption;

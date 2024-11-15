@@ -13,7 +13,7 @@ export interface AlertInfo {
   caption?: string | undefined;
 }
 
-export default function useToast() {
+export function useToast() {
   const dispatch = useDispatch();
 
   const deleteAlert = useCallback(

@@ -5,15 +5,15 @@ import {
   useModifyEmailMutation,
   useModifyProfileMutation,
 } from "../api/clients";
-import useRequests from "../hooks/useRequests";
+import { useRequests } from "../hooks/useRequests";
 import { useForm } from "react-hook-form";
-import useFormReset from "../hooks/useFormReset";
+import { useFormReset } from "../hooks/useFormReset";
 import { useMemo } from "react";
-import FormEmailInput from "../components/FormEmailInput";
-import FormSubmit from "../components/FormSubmit";
-import FormPasswordInput from "../components/FormPasswordInput";
+import { FormEmailInput } from "../components/FormEmailInput";
+import { FormSubmit } from "../components/FormSubmit";
+import { FormPasswordInput } from "../components/FormPasswordInput";
 
-export default function ProfileAccountForm() {
+export function ProfileAccountForm() {
   const clientProfileState = useLoggedInClientProfileQuery();
   const [modifyEmail, modifyEmailState] = useModifyEmailMutation();
   const [modifyProfile, modifyProfileState] = useModifyProfileMutation();

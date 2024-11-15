@@ -1,9 +1,9 @@
 import type { formTypes } from "../types";
 
 import { FieldValues } from "react-hook-form";
-import FormInput from "./FormInput";
+import { FormInput } from "./FormInput";
 
-export default function FormNumberInput<T extends FieldValues>({
+export function FormNumberInput<T extends FieldValues>({
   registerOptions,
   inputAttributes,
   min,

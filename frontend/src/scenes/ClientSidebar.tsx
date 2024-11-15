@@ -1,12 +1,12 @@
 import { useLocation, useParams } from "wouter";
-import LinksList from "../components/LinksList";
+import { LinksList } from "../components/LinksList";
 import { useLogoutMutation } from "../api/auth";
 import { useDeleteClientMutation } from "../api/clients";
-import useRequests from "../hooks/useRequests";
+import { useRequests } from "../hooks/useRequests";
 import { useDispatch } from "react-redux";
 import { setClientId } from "../features/clientSlice";
 
-export default function ClientSidebar() {
+export function ClientSidebar() {
   const params = useParams() as { id?: string | undefined };
   const clientId = params.id ?? "me";
 
@@ -21,7 +21,7 @@ const editItems = [
   "/financial-goals",
   "/investment-advice",
 ];
-function ClientSidebarEdit() {
+export function ClientSidebarEdit() {
   const dispatch = useDispatch();
   const [, navigate] = useLocation();
   const [logout, logoutState] = useLogoutMutation();
@@ -77,6 +77,6 @@ function ClientSidebarEdit() {
 }
 
 const viewItems = ["/account", "/general"];
-function ClientSidebarView() {
+export function ClientSidebarView() {
   return <LinksList links={viewItems} />;
 }

@@ -1,7 +1,7 @@
 import type { baseQueryTypes } from "../types";
 
 import { fetchBaseQuery, retry } from "@reduxjs/toolkit/query";
-import buildUrl from "../util/buildUrl";
+import { buildUrl } from "../util/buildUrl";
 
 /* basic fetch wrapper */
 const rawBaseQuery = fetchBaseQuery({

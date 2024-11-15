@@ -2,18 +2,18 @@ import type { routerTypes } from "../types";
 
 import { twMerge } from "tailwind-merge";
 import { selectIsLoggedIn } from "../features/clientSlice";
-import useAppSelector from "../hooks/useAppSelector";
-import Logo from "../components/Logo";
+import { useAppSelector } from "../hooks/useAppSelector";
+import { Logo } from "../components/Logo";
 import { Link } from "wouter";
-import ProfilePicture from "../components/ProfilePicture";
+import { ProfilePicture } from "../components/ProfilePicture";
 import { GiHamburgerMenu } from "react-icons/gi";
-import useAppDispatch from "../hooks/useAppDispatch";
+import { useAppDispatch } from "../hooks/useAppDispatch";
 import { toggleTheme } from "../features/themeSlice";
 import { FaMoon, FaSun } from "react-icons/fa";
 import { IoMdArrowDropdown } from "react-icons/io";
-import pages from "../app/pages";
+import { pages } from "../app/pages";
 
-export default function Navbar() {
+export function Navbar() {
   const drawerMode = useAppSelector(
     (state) => state.route.attributes?.drawerMode,
   );
@@ -46,7 +46,7 @@ export default function Navbar() {
   );
 }
 
-function DrawerMenu() {
+export function DrawerMenu() {
   const drawerMode = useAppSelector(
     (state) => state.route.attributes?.drawerMode,
   );
@@ -67,7 +67,7 @@ function DrawerMenu() {
   );
 }
 
-function ThemeSwitcher() {
+export function ThemeSwitcher() {
   const themeMode = useAppSelector((state) => state.theme.mode);
   const dispatch = useAppDispatch();
 
@@ -81,7 +81,7 @@ function ThemeSwitcher() {
   );
 }
 
-function MobileDropdown() {
+export function MobileDropdown() {
   const label = useAppSelector((state) => state.route.attributes?.label);
 
   return (
@@ -104,7 +104,7 @@ function MobileDropdown() {
   );
 }
 
-function NavLinks() {
+export function NavLinks() {
   return (
     <>
       {pages
@@ -118,7 +118,7 @@ function NavLinks() {
   );
 }
 
-function NavLink({ ...route }: routerTypes.Route) {
+export function NavLink({ ...route }: routerTypes.Route) {
   const currentPath = useAppSelector((state) => state.route.attributes?.path);
   const label = route.label ?? route.path.split("/")[1];
 

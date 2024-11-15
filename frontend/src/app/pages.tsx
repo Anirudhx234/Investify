@@ -1,16 +1,16 @@
 import type { routerTypes } from "../types";
 
-import SignUpForm from "../forms/SignUpForm";
-import LoginForm from "../forms/LoginForm";
-import ForgotPasswordForm from "../forms/ForgotPasswordForm";
-import ClientPage from "../pages/ClientPage";
-import HomePage from "../pages/HomePage";
-import PortfolioPage from "../pages/PortfolioPage";
-import NotFoundPage from "../pages/NotFoundPage";
-import ResetPasswordForm from "../forms/ResetPasswordForm";
+import { SignUpForm } from "../forms/SignUpForm";
+import { LoginForm } from "../forms/LoginForm";
+import { ForgotPasswordForm } from "../forms/ForgotPasswordForm";
+import { ClientPage } from "../pages/ClientPage";
+import { HomePage } from "../pages/HomePage";
+import { PortfolioPage } from "../pages/PortfolioPage";
+import { NotFoundPage } from "../pages/NotFoundPage";
+import { ResetPasswordForm } from "../forms/ResetPasswordForm";
 
 /* list of top-level routes for the app */
-const pages: routerTypes.Page[] = [
+export const pages: routerTypes.Page[] = [
   {
     path: "/sign-up",
     component: <SignUpForm />,
@@ -69,8 +69,6 @@ const pages: routerTypes.Page[] = [
     component: <HomePage />,
     args: { type: "page" },
     label: "Home",
-    nest: true,
-    drawerMode: "open",
     navbar: true,
   },
   {
@@ -92,5 +90,3 @@ const pages: routerTypes.Page[] = [
     args: { type: "page" },
   },
 ];
-
-export default pages;

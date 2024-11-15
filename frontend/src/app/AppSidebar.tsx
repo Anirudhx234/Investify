@@ -1,16 +1,14 @@
-import ClientSidebar from "../scenes/ClientSidebar";
-import HomeSidebar from "../scenes/HomeSidebar";
-import Logo from "../components/Logo";
-import useAppSelector from "../hooks/useAppSelector";
+import { ClientSidebar } from "../scenes/ClientSidebar";
+import { Logo } from "../components/Logo";
+import { useAppSelector } from "../hooks/useAppSelector";
 import { Route, Switch } from "wouter";
 
 const sidebarRoutes = [
   { path: "/clients/me", component: ClientSidebar, nest: true },
   { path: "/clients/:id", component: ClientSidebar, nest: true },
-  { path: "/assets", component: HomeSidebar, nest: true },
 ];
 
-export default function AppSidebar() {
+export function AppSidebar() {
   const drawerMode = useAppSelector(
     (state) => state.route.attributes?.drawerMode,
   );

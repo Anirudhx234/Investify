@@ -1,7 +1,4 @@
-export default function buildUrl(
-  url: string,
-  search?: string | object | undefined,
-) {
+export function buildUrl(url: string, search?: string | object | undefined) {
   if (!search) return url;
 
   if (typeof search === "string") {

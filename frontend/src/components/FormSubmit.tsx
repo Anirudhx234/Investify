@@ -1,7 +1,7 @@
 import type { ButtonHTMLAttributes } from "react";
-import twMerge from "../util/twMerge";
+import { twMerge } from "../util/twMerge";
 
-export default function FormSubmit({
+export function FormSubmit({
   className,
   isBuffering,
   disabled,

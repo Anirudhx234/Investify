@@ -1,11 +1,11 @@
 import type { FieldErrors, FieldValues } from "react-hook-form";
 import type { formTypes } from "../types";
 
-import twMerge from "../util/twMerge";
+import { twMerge } from "../util/twMerge";
 import { ErrorMessage } from "@hookform/error-message";
 import { MdErrorOutline } from "react-icons/md";
 
-export default function FormSelectInput<T extends FieldValues>({
+export function FormSelectInput<T extends FieldValues>({
   name,
   label,
   registerOptions,
@@ -30,7 +30,7 @@ export default function FormSelectInput<T extends FieldValues>({
         <span>{label}</span>
       </div>
       <select
-        className={twMerge("select select-bordered", className)}
+        className={twMerge("select select-bordered text-base", className)}
         {...selectRegisterProps}
         {...otherSelectAttributes}
         disabled={disabled || isBuffering}

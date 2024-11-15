@@ -1,3 +1,3 @@
-export default function PortfolioPage() {
+export function PortfolioPage() {
   return <></>;
 }

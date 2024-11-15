@@ -2,13 +2,13 @@ import type { SubmitHandler } from "react-hook-form";
 
 import { useForm } from "react-hook-form";
 import { Link, useLocation } from "wouter";
-import FormEmailInput from "../components/FormEmailInput";
-import FormInput from "../components/FormInput";
-import FormPasswordInput from "../components/FormPasswordInput";
-import FormConfirmPasswordInput from "../components/FormConfirmPasswordInput";
+import { FormEmailInput } from "../components/FormEmailInput";
+import { FormInput } from "../components/FormInput";
+import { FormPasswordInput } from "../components/FormPasswordInput";
+import { FormConfirmPasswordInput } from "../components/FormConfirmPasswordInput";
 import { useSignUpMutation } from "../api/auth";
-import useRequests from "../hooks/useRequests";
-import FormSubmit from "../components/FormSubmit";
+import { useRequests } from "../hooks/useRequests";
+import { FormSubmit } from "../components/FormSubmit";
 import { useCallback, useMemo } from "react";
 
 export interface SignUpFormShape {
@@ -18,7 +18,7 @@ export interface SignUpFormShape {
   confirmPassword: string;
 }
 
-export default function SignUpForm() {
+export function SignUpForm() {
   const [, navigate] = useLocation();
   const form = useForm<SignUpFormShape>();
   const [signUp, signUpState] = useSignUpMutation();

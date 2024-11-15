@@ -1,8 +1,8 @@
 import { Path } from "react-hook-form";
 import type { formTypes } from "../types";
-import FormInput from "./FormInput";
+import { FormInput } from "./FormInput";
 
-export default function FormConfirmPasswordInput<
+export function FormConfirmPasswordInput<
   T extends { password: string; confirmPassword: string },
 >({
   form,

@@ -5,18 +5,18 @@ import {
   useLoggedInClientProfileQuery,
   useModifyProfileMutation,
 } from "../api/clients";
-import useRequests from "../hooks/useRequests";
+import { useRequests } from "../hooks/useRequests";
 import { useForm } from "react-hook-form";
-import useFormReset from "../hooks/useFormReset";
-import FormSubmit from "../components/FormSubmit";
-import FormNumberInput from "../components/FormNumberInput";
+import { useFormReset } from "../hooks/useFormReset";
+import { FormSubmit } from "../components/FormSubmit";
+import { FormNumberInput } from "../components/FormNumberInput";
 
 export interface ProfilePersonalFormShape {
   age: string;
   income: string;
 }
 
-export default function ProfilePersonalForm() {
+export function ProfilePersonalForm() {
   const clientProfileState = useLoggedInClientProfileQuery();
   const [modifyProfile, modifyProfileState] = useModifyProfileMutation();
 

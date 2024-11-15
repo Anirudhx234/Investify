@@ -2,12 +2,12 @@ import type { SubmitHandler } from "react-hook-form";
 
 import { useForm } from "react-hook-form";
 import { useLoginMutation } from "../api/auth";
-import useRequests from "../hooks/useRequests";
+import { useRequests } from "../hooks/useRequests";
 import { Link, useLocation } from "wouter";
-import FormEmailInput from "../components/FormEmailInput";
-import FormPasswordInput from "../components/FormPasswordInput";
-import FormSubmit from "../components/FormSubmit";
-import useAppDispatch from "../hooks/useAppDispatch";
+import { FormEmailInput } from "../components/FormEmailInput";
+import { FormPasswordInput } from "../components/FormPasswordInput";
+import { FormSubmit } from "../components/FormSubmit";
+import { useAppDispatch } from "../hooks/useAppDispatch";
 import { setClientId } from "../features/clientSlice";
 import { useCallback, useMemo } from "react";
 
@@ -16,7 +16,7 @@ export interface LoginFormShape {
   password: string;
 }
 
-export default function LoginForm() {
+export function LoginForm() {
   const dispatch = useAppDispatch();
   const [, navigate] = useLocation();
   const form = useForm<LoginFormShape>();

@@ -5,11 +5,11 @@ import {
   useLoggedInClientProfileQuery,
   useModifyProfileMutation,
 } from "../api/clients";
-import useRequests from "../hooks/useRequests";
-import useFormReset from "../hooks/useFormReset";
-import FormInput from "../components/FormInput";
-import FormSubmit from "../components/FormSubmit";
-import FormSelectInput from "../components/FormSelectInput";
+import { useRequests } from "../hooks/useRequests";
+import { useFormReset } from "../hooks/useFormReset";
+import { FormInput } from "../components/FormInput";
+import { FormSubmit } from "../components/FormSubmit";
+import { FormSelectInput } from "../components/FormSelectInput";
 
 export interface ProfileFinancialFormShape {
   shortTermGoal: string;
@@ -17,7 +17,7 @@ export interface ProfileFinancialFormShape {
   investmentRisk: "LOW" | "MEDIUM" | "HIGH";
 }
 
-export default function ProfileFinancialForm() {
+export function ProfileFinancialForm() {
   const clientProfileState = useLoggedInClientProfileQuery();
   const [modifyProfile, modifyProfileState] = useModifyProfileMutation();
 

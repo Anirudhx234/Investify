@@ -1,8 +1,8 @@
 import { Link } from "wouter";
-import convertToTitleCase from "../util/convertToTitleCase";
-import getLastPartOfUrl from "../util/getLastPartOfUrl";
-import RecursiveMenu from "./RecursiveMenu";
-import twMerge from "../util/twMerge";
+import { convertToTitleCase } from "../util/convertToTitleCase";
+import { getLastPartOfUrl } from "../util/getLastPartOfUrl";
+import { RecursiveMenu } from "./RecursiveMenu";
+import { twMerge } from "../util/twMerge";
 
 export interface MenuLink {
   key: string;
@@ -15,7 +15,7 @@ export interface LinksListProps {
   className?: string | undefined;
 }
 
-export default function LinksList({ links, className }: LinksListProps) {
+export function LinksList({ links, className }: LinksListProps) {
   const menuLinks = links.map((link) => ({
     key: link,
     link,
@@ -25,7 +25,7 @@ export default function LinksList({ links, className }: LinksListProps) {
   return (
     <RecursiveMenu
       menuItems={{ i: menuLinks }}
-      className={twMerge("menu w-full", className)}
+      className={className}
       renderItem={(link) => (
         <Link
           href={link.link}
