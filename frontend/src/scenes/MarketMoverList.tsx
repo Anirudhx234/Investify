@@ -23,8 +23,8 @@ export function MarketMoverList<T extends object>({
   return (
     <div
       className={twMerge(
-        "flex aspect-[4/5] flex-col gap-4 rounded-md bg-base-200 p-2 shadow-sm ~w-80/96",
-        !data && "skeleton",
+        data && "flex aspect-[4/5] flex-col gap-4 rounded-md bg-base-200 p-2 shadow-sm ~w-80/96",
+        !data && "skeleton aspect-[4/5] ~w-80/96",
       )}
     >
       <h2 className="p-4 text-center text-lg font-semibold">{title}</h2>

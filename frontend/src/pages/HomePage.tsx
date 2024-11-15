@@ -16,7 +16,7 @@ import {
 export function HomePage() {
   return (
     <div className="mt-6 flex w-full flex-col items-center gap-12">
-      <h1 className="text-3xl font-bold text-secondary">
+      <h1 className="text-3xl font-bold text-primary">
         Welcome to Investify!
       </h1>
       <AssetSearchBar />

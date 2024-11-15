@@ -5,6 +5,7 @@ import { useDeleteClientMutation } from "../api/clients";
 import { useRequests } from "../hooks/useRequests";
 import { useDispatch } from "react-redux";
 import { setClientId } from "../features/clientSlice";
+import { useCallback } from "react";
 
 export function ClientSidebar() {
   const params = useParams() as { id?: string | undefined };
@@ -27,33 +28,25 @@ export function ClientSidebarEdit() {
   const [logout, logoutState] = useLogoutMutation();
   const [deleteAccount, deleteAccountState] = useDeleteClientMutation();
 
+  const onSuccess = useCallback(() => {
+    navigate("~/");
+    dispatch(setClientId(null));
+  }, [navigate, dispatch]);
+
   useRequests({
     requestStates: {
       Logout: logoutState,
       "Delete Account": deleteAccountState,
     },
+    onSuccess,
   });
 
-  const onLogoutClick = async () => {
-    try {
-      await logout().unwrap();
-    } catch {
-      /* empty */
-    }
-
-    dispatch(setClientId(null));
-    navigate("/");
+  const onLogoutClick = () => {
+    logout().unwrap();
   };
 
-  const onDeleteClientClick = async () => {
-    try {
-      await deleteAccount().unwrap();
-    } catch {
-      /* empty */
-    }
-
-    dispatch(setClientId(null));
-    navigate("/");
+  const onDeleteClientClick = () => {
+    deleteAccount().unwrap();
   };
 
   return (
