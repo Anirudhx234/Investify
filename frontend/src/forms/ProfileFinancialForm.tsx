@@ -138,17 +138,6 @@ export function ProfileFinancialForm() {
           label="Savings goal"
           form={form}
           isBuffering={isLoading}
-          required
-          min={0}
-          decimal
-        />
-
-        <FormNumberInput
-          name="userSavings"
-          label="Savings goal"
-          form={form}
-          isBuffering={isLoading}
-          required
           min={0}
           decimal
         />
@@ -158,7 +147,6 @@ export function ProfileFinancialForm() {
           label="Current Savings"
           form={form}
           isBuffering={isLoading}
-          required
           registerOptions={{
             onChange: (e: ChangeEvent<HTMLInputElement>) =>
               setProgress(e.target.value),

@@ -1,5 +1,6 @@
 export * as clientTypes from "./Client";
 export * as assetTypes from "./Asset";
+export * as portfolioTypes from "./Portfolio";
 
 export * as apiTypes from "./api";
 export * as baseQueryTypes from "./baseQuery";

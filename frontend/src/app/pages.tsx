@@ -5,7 +5,7 @@ import { LoginForm } from "../forms/LoginForm";
 import { ForgotPasswordForm } from "../forms/ForgotPasswordForm";
 import { ClientPage } from "../pages/ClientPage";
 import { HomePage } from "../pages/HomePage";
-import { PortfolioPage } from "../pages/PortfolioPage";
+import { PortfoliosPage } from "../pages/PortfoliosPage";
 import { NotFoundPage } from "../pages/NotFoundPage";
 import { ResetPasswordForm } from "../forms/ResetPasswordForm";
 import { AssetPage } from "../pages/AssetPage";
@@ -81,13 +81,14 @@ export const pages: routerTypes.Page[] = [
     nest: true,
   },
   {
-    path: "/portfolio",
-    component: <PortfolioPage />,
+    path: "/portfolios",
+    component: <PortfoliosPage />,
     args: { type: "page" },
     label: "Portfolio",
     drawerMode: "open",
     navbar: true,
     protection: "signed-in",
+    nest: true,
   },
   {
     path: "/",

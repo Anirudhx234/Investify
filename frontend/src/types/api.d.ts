@@ -41,3 +41,20 @@ export interface TimeSeriesRes {
     volume: string;
   }[];
 }
+
+export interface ClientPortfoliosRes {
+  paperPortfolios: {
+    name: string;
+    id: string;
+  }[];
+
+  realPortfolios: {
+    name: string;
+    id: string;
+  }[];
+}
+
+export interface CreatePortfolioArgs {
+  name: string;
+  buyingPower?: number | undefined;
+}
