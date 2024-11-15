@@ -15,7 +15,10 @@ import {
 
 export function HomePage() {
   return (
-    <div className="mt-12 flex w-full flex-col items-center gap-12">
+    <div className="mt-6 flex w-full flex-col items-center gap-12">
+      <h1 className="text-3xl font-bold text-secondary">
+        Welcome to Investify!
+      </h1>
       <AssetSearchBar />
       <MarketMovers />
     </div>

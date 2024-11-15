@@ -2,6 +2,10 @@ export function convertAssetTypeToRoute(type: string) {
   return type.toLowerCase().replace("_", "-");
 }
 
+export function convertRouteToAssetType(route: string) {
+  return route.toUpperCase().replace("-", "_");
+}
+
 export function convertAssetTypeToLabel(type: string) {
   return convertAssetTypeToRoute(type).replace("-", " ");
 }

@@ -27,7 +27,7 @@ export function Alert({ type, caption, onDismiss }: AlertAttributes) {
     <div
       role="alert"
       className={twMerge(
-        "alert",
+        "alert z-[999]",
         type === "success" && "alert-success",
         type === "loading" && "alert-warning",
         type === "error" && "alert-error",
@@ -44,7 +44,7 @@ export function Alert({ type, caption, onDismiss }: AlertAttributes) {
       <span>{alertCaption}</span>
 
       {onDismiss !== undefined && (
-        <div className="hidden lg:flex items-center">
+        <div className="hidden items-center lg:flex">
           <button onClick={onDismiss}>
             <RxCrossCircled className={iconStyles} />
           </button>

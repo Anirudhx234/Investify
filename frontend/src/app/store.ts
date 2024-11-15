@@ -16,7 +16,7 @@ import routeReducer from "../features/routeSlice";
 import clientReducer from "../features/clientSlice";
 import toastReducer from "../features/toastSlice";
 
-import api from "../api/api";
+import { api } from "../api/api";
 
 /* local storage based persist config */
 const persistConfig = {

@@ -1,5 +1,21 @@
-import { apiTypes, assetTypes } from "../types";
-import api from "./api";
+import type { apiTypes, assetTypes } from "../types";
+import { convertIntervalToSecs } from "../util/convertIntervalToSecs";
+import { convertToUnixTimestamp } from "../util/convertToUnixTimestamp";
+import { api } from "./api";
+import { host } from "./server";
+
+export function timeSeriesResToEntries(res: apiTypes.TimeSeriesRes) {
+  return res.values
+    .map((entry) => ({
+      datetime: entry.datetime,
+      open: parseFloat(entry.open),
+      close: parseFloat(entry.close),
+      high: parseFloat(entry.high),
+      low: parseFloat(entry.low),
+      volume: parseFloat(entry.volume),
+    }))
+    .reverse();
+}
 
 export const assetsApi = api.injectEndpoints({
   endpoints: (build) => ({
@@ -43,6 +59,89 @@ export const assetsApi = api.injectEndpoints({
       }),
       transformResponse: (res: { crypto: assetTypes.Crypto[] }) => res.crypto,
     }),
+
+    assetOneDayQuote: build.query<object, { symbol: string }>({
+      query: ({ symbol }) => ({
+        url: `/assets/quote/${symbol}`,
+        search: { interval: "1day" },
+        method: "GET",
+      }),
+    }),
+
+    assetTimeSeries: build.query<
+      assetTypes.TimeSeriesEntry[],
+      apiTypes.TimeSeriesArgs
+    >({
+      query: ({ symbol, interval }) => ({
+        url: `/assets/time-series/${symbol}`,
+        search: { interval },
+        method: "GET",
+      }),
+      transformResponse: timeSeriesResToEntries,
+    }),
+
+    assetPriceHistory: build.query<
+      (assetTypes.TimeSeriesEntry | assetTypes.PriceHistoryEntry)[],
+      apiTypes.TimeSeriesArgs
+    >({
+      query: ({ symbol, interval }) => ({
+        url: `/assets/time-series/${symbol}`,
+        search: { interval },
+        method: "GET",
+      }),
+      transformResponse: timeSeriesResToEntries,
+      onCacheEntryAdded: async (args, api) => {
+        await api.cacheDataLoaded;
+        const ws = new WebSocket(`ws://${host}/prices`);
+
+        try {
+          const listener = (e: MessageEvent) => {
+            const data = JSON.parse(e.data);
+
+            if (typeof data !== "object") return;
+            if (typeof data["symbol"] !== "string") return;
+            if (data["symbol"] !== args.symbol) return;
+            if (typeof data["datetime"] !== "string") return;
+            if (typeof data["price"] !== "number") return;
+
+            api.updateCachedData((draft) => {
+              const lastEnteredDataTime = convertToUnixTimestamp(
+                draft[draft.length - 1].datetime,
+              ) as number;
+
+              const newTime = convertToUnixTimestamp(
+                data["datetime"],
+              ) as number;
+
+              if (
+                convertIntervalToSecs(args.interval) <=
+                newTime - lastEnteredDataTime
+              ) {
+                draft.push(data);
+              }
+            });
+          };
+
+          ws.onopen = () => {
+            ws.send(JSON.stringify({ symbol: args.symbol }));
+          };
+
+          ws.onmessage = listener;
+        } catch {
+          /* empty */
+        }
+
+        await api.cacheEntryRemoved;
+        ws.close();
+      },
+    }),
+
+    assetNews: build.query<string[][], { symbol: string }>({
+      query: ({ symbol }) => ({
+        url: `/assets/scraper/${symbol}`,
+        method: "GET",
+      }),
+    }),
   }),
 });
 
@@ -52,4 +151,8 @@ export const {
   usePopularMutualFundsQuery,
   usePopularEtfsQuery,
   usePopularCryptoQuery,
+  useAssetOneDayQuoteQuery,
+  useAssetTimeSeriesQuery,
+  useAssetPriceHistoryQuery,
+  useAssetNewsQuery
 } = assetsApi;

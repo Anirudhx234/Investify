@@ -2,7 +2,7 @@ import type { ChangeEvent, KeyboardEvent } from "react";
 
 import { useMemo, useState } from "react";
 import { useLazySearchAssetsQuery } from "../api/assets";
-import { FaChartPie, FaSearch } from "react-icons/fa";
+import { FaSearch } from "react-icons/fa";
 import { MdErrorOutline } from "react-icons/md";
 import { Link, useLocation } from "wouter";
 import { RecursiveMenu } from "../components/RecursiveMenu";
@@ -12,16 +12,7 @@ import {
   convertSymbolToRoute,
 } from "../util/convertAsset";
 import { twMerge } from "../util/twMerge";
-import { AiOutlineStock } from "react-icons/ai";
-import { RiExchange2Fill } from "react-icons/ri";
-import { TbCoinFilled } from "react-icons/tb";
-
-const assetIcons = {
-  stocks: <AiOutlineStock className="text-lg text-success" />,
-  "mutual funds": <FaChartPie className="text-lg text-warning" />,
-  etfs: <RiExchange2Fill className="text-lg text-info" />,
-  crypto: <TbCoinFilled className="text-lg text-error" />,
-};
+import { assetIcons } from "../components/assetIcons";
 
 export interface SearchItem {
   key: string;

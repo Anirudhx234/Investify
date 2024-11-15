@@ -1,6 +1,6 @@
 import type { clientTypes } from "../types";
 
-import api from "./api";
+import { api } from "./api";
 
 const clientsApi = api.injectEndpoints({
   endpoints: (build) => ({

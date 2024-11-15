@@ -8,6 +8,7 @@ import { HomePage } from "../pages/HomePage";
 import { PortfolioPage } from "../pages/PortfolioPage";
 import { NotFoundPage } from "../pages/NotFoundPage";
 import { ResetPasswordForm } from "../forms/ResetPasswordForm";
+import { AssetPage } from "../pages/AssetPage";
 
 /* list of top-level routes for the app */
 export const pages: routerTypes.Page[] = [
@@ -70,6 +71,14 @@ export const pages: routerTypes.Page[] = [
     args: { type: "page" },
     label: "Home",
     navbar: true,
+  },
+  {
+    path: "/assets/:type/:symbol",
+    component: <AssetPage />,
+    args: { type: "page" },
+    label: "Assets",
+    drawerMode: "open",
+    nest: true,
   },
   {
     path: "/portfolio",

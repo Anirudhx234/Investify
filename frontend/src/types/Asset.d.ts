@@ -47,3 +47,20 @@ export interface Crypto {
 }
 
 export type Set = Record<Type, Omit<Asset, "type">[]>;
+
+export interface TimeSeriesEntry {
+  datetime: string;
+  open: number;
+  high: number;
+  low: number;
+  close: number;
+  volume: number;
+}
+
+export interface PriceHistoryEntry {
+  symbol: string;
+  datetime: string;
+  price: number;
+}
+
+export type Interval = "1min" | "5min" | "15min" | "1h" | "4h" | "1day";

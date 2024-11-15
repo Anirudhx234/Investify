@@ -2,10 +2,12 @@ import { ClientSidebar } from "../scenes/ClientSidebar";
 import { Logo } from "../components/Logo";
 import { useAppSelector } from "../hooks/useAppSelector";
 import { Route, Switch } from "wouter";
+import { AssetSidebar } from "../scenes/AssetSidebar";
 
 const sidebarRoutes = [
   { path: "/clients/me", component: ClientSidebar, nest: true },
   { path: "/clients/:id", component: ClientSidebar, nest: true },
+  { path: "/assets/:type/:symbol", component: AssetSidebar, nest: true },
 ];
 
 export function AppSidebar() {
