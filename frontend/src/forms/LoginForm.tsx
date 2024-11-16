@@ -2,14 +2,13 @@ import type { SubmitHandler } from "react-hook-form";
 
 import { useForm } from "react-hook-form";
 import { useLoginMutation } from "../api/auth";
-import { useRequests } from "../hooks/useRequests";
 import { Link, useLocation } from "wouter";
 import { FormEmailInput } from "../components/FormEmailInput";
 import { FormPasswordInput } from "../components/FormPasswordInput";
 import { FormSubmit } from "../components/FormSubmit";
 import { useAppDispatch } from "../hooks/useAppDispatch";
 import { setClientId } from "../features/clientSlice";
-import { useCallback, useMemo } from "react";
+import { useToastForRequest } from "../hooks/useToastForRequests";
 
 export interface LoginFormShape {
   email: string;
@@ -22,17 +21,12 @@ export function LoginForm() {
   const form = useForm<LoginFormShape>();
   const [login, loginState] = useLoginMutation();
 
-  const onSuccess = useCallback(() => {
-    dispatch(setClientId(loginState.data!.id));
-    navigate("/");
-  }, [dispatch, loginState.data, navigate]);
-
-  const requestStates = useMemo(() => ({ Login: loginState }), [loginState]);
-
-  const { isLoading } = useRequests({
-    requestStates,
-    onSuccess,
-    successMessage: "Logged in!",
+  const { isLoading } = useToastForRequest("Login", loginState, {
+    onSuccess: () => {
+      dispatch(setClientId(loginState.data!.id));
+      navigate("/");
+    },
+    backupSuccessMessage: "Logged in!",
   });
 
   const onSubmit: SubmitHandler<LoginFormShape> = (data) => {

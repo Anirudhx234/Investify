@@ -4,7 +4,7 @@ import {
   usePopularMutualFundsQuery,
   usePopularStocksQuery,
 } from "../api/assets";
-import { useRequest } from "../hooks/useRequests";
+import { useToastForRequests } from "../hooks/useToastForRequests";
 import { AssetSearchBar } from "../scenes/AssetSearchBar";
 import {
   CryptoList,
@@ -16,9 +16,7 @@ import {
 export function HomePage() {
   return (
     <div className="mt-6 flex w-full flex-col items-center gap-12">
-      <h1 className="text-3xl font-bold text-primary">
-        Welcome to Investify!
-      </h1>
+      <h1 className="text-3xl font-bold text-primary">Welcome to Investify!</h1>
       <AssetSearchBar />
       <MarketMovers />
     </div>
@@ -27,32 +25,16 @@ export function HomePage() {
 
 export function MarketMovers() {
   const popularStocksState = usePopularStocksQuery();
-  useRequest({
-    requestLabel: "Popular Stocks",
-    requestState: popularStocksState,
-    successMessage: "Retrieved popular stocks!",
-  });
-
   const popularMutualFundsState = usePopularMutualFundsQuery();
-  useRequest({
-    requestLabel: "Popular Mutual Funds",
-    requestState: popularMutualFundsState,
-    successMessage: "Retrieved popular mutual funds!",
-  });
-
   const popularEtfsState = usePopularEtfsQuery();
-  useRequest({
-    requestLabel: "Popular Etfs",
-    requestState: popularEtfsState,
-    successMessage: "Retrieved popular etfs!",
-  });
-
   const popularCryptoState = usePopularCryptoQuery();
-  useRequest({
-    requestLabel: "Popular Crypto",
-    requestState: popularCryptoState,
-    successMessage: "Retrieved popular crypto!",
-  });
+
+  useToastForRequests([
+    { label: "Popular Stocks", state: popularStocksState },
+    { label: "Popular Mutual Funds", state: popularMutualFundsState },
+    { label: "Popular Etfs", state: popularEtfsState },
+    { label: "Popular Crypto", state: popularCryptoState },
+  ], { backupSuccessMessage: "Retrieved market movers!" });
 
   return (
     <div className="flex flex-wrap items-center justify-center gap-8">

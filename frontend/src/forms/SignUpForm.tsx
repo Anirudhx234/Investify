@@ -7,9 +7,8 @@ import { FormInput } from "../components/FormInput";
 import { FormPasswordInput } from "../components/FormPasswordInput";
 import { FormConfirmPasswordInput } from "../components/FormConfirmPasswordInput";
 import { useSignUpMutation } from "../api/auth";
-import { useRequests } from "../hooks/useRequests";
 import { FormSubmit } from "../components/FormSubmit";
-import { useCallback, useMemo } from "react";
+import { useToastForRequest } from "../hooks/useToastForRequests";
 
 export interface SignUpFormShape {
   email: string;
@@ -23,17 +22,9 @@ export function SignUpForm() {
   const form = useForm<SignUpFormShape>();
   const [signUp, signUpState] = useSignUpMutation();
 
-  const onSuccess = useCallback(() => navigate("/login"), [navigate]);
-
-  const requestStates = useMemo(
-    () => ({ "Sign Up": signUpState }),
-    [signUpState],
-  );
-
-  const { isLoading } = useRequests({
-    requestStates,
-    onSuccess,
-    successMessage: "Verification email sent!",
+  const { isLoading } = useToastForRequest("Sign Up", signUpState, {
+    onSuccess: () => navigate("/login"),
+    backupSuccessMessage: "Verification email sent!",
   });
 
   const onSubmit: SubmitHandler<SignUpFormShape> = (data) => {

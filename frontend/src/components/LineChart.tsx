@@ -3,10 +3,10 @@ import type { ISeriesApi } from "lightweight-charts";
 
 import { useAssetPriceHistoryQuery } from "../api/assets";
 import { useAppSelector } from "../hooks/useAppSelector";
-import { useRequest } from "../hooks/useRequests";
 import { useEffect, useRef } from "react";
 import { createChart, ColorType } from "lightweight-charts";
 import { convertToUnixTimestamp } from "../util/convertToUnixTimestamp";
+import { useToastForRequest } from "../hooks/useToastForRequests";
 
 export function LineChart({
   symbol,
@@ -30,10 +30,8 @@ export function LineChart({
 
   const data = priceHistoryState.data;
 
-  useRequest({
-    requestLabel: `${symbol} Price History`,
-    requestState: priceHistoryState,
-    successMessage: `Retrieved ${symbol} price history!`,
+  useToastForRequest(`${symbol} Price History`, priceHistoryState, {
+    backupSuccessMessage: `Retrieved ${symbol} price history!`,
   });
 
   /* set up chart */

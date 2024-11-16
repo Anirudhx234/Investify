@@ -2,10 +2,9 @@ import { useLocation, useParams } from "wouter";
 import { LinksList } from "../components/LinksList";
 import { useLogoutMutation } from "../api/auth";
 import { useDeleteClientMutation } from "../api/clients";
-import { useRequests } from "../hooks/useRequests";
 import { useDispatch } from "react-redux";
 import { setClientId } from "../features/clientSlice";
-import { useCallback } from "react";
+import { useToastForRequests } from "../hooks/useToastForRequests";
 
 export function ClientSidebar() {
   const params = useParams() as { id?: string | undefined };
@@ -28,18 +27,18 @@ export function ClientSidebarEdit() {
   const [logout, logoutState] = useLogoutMutation();
   const [deleteAccount, deleteAccountState] = useDeleteClientMutation();
 
-  const onSuccess = useCallback(() => {
-    navigate("~/");
-    dispatch(setClientId(null));
-  }, [navigate, dispatch]);
-
-  useRequests({
-    requestStates: {
-      Logout: logoutState,
-      "Delete Account": deleteAccountState,
+  const { isSuccess, component } = useToastForRequests(
+    [
+      { label: "Logout", state: logoutState },
+      { label: "Delete Account", state: deleteAccountState },
+    ],
+    {
+      onSuccess: () => {
+        navigate("~/");
+        dispatch(setClientId(null));
+      },
     },
-    onSuccess,
-  });
+  );
 
   const onLogoutClick = () => {
     logout().unwrap();
@@ -48,6 +47,8 @@ export function ClientSidebarEdit() {
   const onDeleteClientClick = () => {
     deleteAccount().unwrap();
   };
+
+  if (!isSuccess) return component;
 
   return (
     <>

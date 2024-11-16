@@ -58,3 +58,26 @@ export interface CreatePortfolioArgs {
   name: string;
   buyingPower?: number | undefined;
 }
+
+export interface AddRealPortfolioAssetArgs {
+  id: string;
+  asset: {
+    symbol: string;
+    name: string;
+    assetType: Type;
+  };
+  averageCost: number;
+  quantity: number;
+}
+
+export interface ModifyRealPortfolioAssetArgs {
+  portfolioId: string;
+  assetId: string;
+  averageCost: number;
+  quantity: number;
+}
+
+export interface DeleteRealPortfolioAssetArgs {
+  portfolioId: string;
+  assetId: string;
+}

@@ -3,11 +3,10 @@ import type { SubmitHandler } from "react-hook-form";
 import { useForm } from "react-hook-form";
 import { useLocation, useSearch } from "wouter";
 import { useResetPasswordMutation } from "../api/auth";
-import { useRequests } from "../hooks/useRequests";
 import { FormSubmit } from "../components/FormSubmit";
 import { FormPasswordInput } from "../components/FormPasswordInput";
 import { FormConfirmPasswordInput } from "../components/FormConfirmPasswordInput";
-import { useCallback, useMemo } from "react";
+import { useToastForRequest } from "../hooks/useToastForRequests";
 
 export interface ResetPasswordFormShape {
   password: string;
@@ -20,20 +19,14 @@ export function ResetPasswordForm() {
   const form = useForm<ResetPasswordFormShape>();
   const [resetPassword, resetPasswordState] = useResetPasswordMutation();
 
-  const onSuccess = useCallback(() => navigate("/login"), [navigate]);
-
-  const requestStates = useMemo(
-    () => ({
-      "Reset Password": resetPasswordState,
-    }),
-    [resetPasswordState],
+  const { isLoading } = useToastForRequest(
+    "Reset Password",
+    resetPasswordState,
+    {
+      onSuccess: () => navigate("/login"),
+      backupSuccessMessage: "Password reset!",
+    },
   );
-
-  const { isLoading } = useRequests({
-    requestStates,
-    onSuccess,
-    successMessage: "Password reset!",
-  });
 
   const onSubmit: SubmitHandler<ResetPasswordFormShape> = (data) => {
     resetPassword({ ...data, search }).unwrap();

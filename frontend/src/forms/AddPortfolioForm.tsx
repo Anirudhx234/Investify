@@ -2,10 +2,10 @@ import type { SubmitHandler } from "react-hook-form";
 
 import { useForm } from "react-hook-form";
 import { useCreatePortfolioMutation } from "../api/portfolio";
-import { useRequest } from "../hooks/useRequests";
 import { FormInput } from "../components/FormInput";
 import { FormSubmit } from "../components/FormSubmit";
 import { FormNumberInput } from "../components/FormNumberInput";
+import { useToastForRequest } from "../hooks/useToastForRequests";
 
 export function AddPortfolioForm() {
   const [createPortfolio, createPortfolioState] = useCreatePortfolioMutation();
@@ -13,10 +13,8 @@ export function AddPortfolioForm() {
   const realForm = useForm<{ name: string }>();
   const paperForm = useForm<{ name: string; buyingPower: number }>();
 
-  const { isLoading } = useRequest({
-    requestLabel: "Create Portfolio",
-    requestState: createPortfolioState,
-    successMessage: "Created portfolio!",
+  const { isLoading } = useToastForRequest("Create Portfolio", createPortfolioState, {
+    backupSuccessMessage: "Created portfolio!",
   });
 
   const onRealSubmit: SubmitHandler<{ name: string }> = (data) => {

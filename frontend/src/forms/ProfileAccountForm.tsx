@@ -5,31 +5,32 @@ import {
   useModifyEmailMutation,
   useModifyProfileMutation,
 } from "../api/clients";
-import { useRequests } from "../hooks/useRequests";
 import { useForm } from "react-hook-form";
 import { useFormReset } from "../hooks/useFormReset";
 import { useMemo } from "react";
 import { FormEmailInput } from "../components/FormEmailInput";
 import { FormSubmit } from "../components/FormSubmit";
 import { FormPasswordInput } from "../components/FormPasswordInput";
+import { useToastForRequests } from "../hooks/useToastForRequests";
 
 export function ProfileAccountForm() {
   const clientProfileState = useLoggedInClientProfileQuery();
   const [modifyEmail, modifyEmailState] = useModifyEmailMutation();
   const [modifyProfile, modifyProfileState] = useModifyProfileMutation();
 
-  const requestStates = useMemo(
-    () => ({
-      "Modify Email": modifyEmailState,
-      "Modify Profile": modifyProfileState,
-    }),
-    [modifyEmailState, modifyProfileState],
+  const { isLoading } = useToastForRequests(
+    [
+      {
+        label: "Modify Email",
+        state: modifyEmailState,
+      },
+      {
+        label: "Modify Profile",
+        state: modifyProfileState,
+      },
+    ],
+    { backupSuccessMessage: "Change request sent!" },
   );
-
-  const { isLoading } = useRequests({
-    requestStates,
-    successMessage: "Change request sent!",
-  });
 
   const emailForm = useForm<{ email: string }>();
   const passwordForm = useForm<{ password: string }>();
@@ -92,7 +93,7 @@ export function ProfileAccountForm() {
       </form>
 
       <form
-        className="flex flex-col mt-4"
+        className="mt-4 flex flex-col"
         onSubmit={passwordForm.handleSubmit(onModifyPassword)}
         aria-label="form"
         aria-disabled={isLoading}

@@ -2,11 +2,11 @@ import { Redirect, Route, Switch, useParams } from "wouter";
 import { selectIsLoggedIn } from "../features/clientSlice";
 import { useAppSelector } from "../hooks/useAppSelector";
 import { useAssetNewsQuery, useAssetOneDayQuoteQuery } from "../api/assets";
-import { useRequest } from "../hooks/useRequests";
 import { assetIcons } from "../components/assetIcons";
 import { convertAssetTypeToLabel } from "../util/convertAsset";
 import { ObjectTable } from "../components/ObjectTable";
 import { AssetPageChart } from "../scenes/AssetPageChart";
+import { useToastForRequest } from "../hooks/useToastForRequests";
 
 export function AssetPage() {
   const params = useParams() as { symbol: string; type: string };
@@ -47,46 +47,40 @@ export function AssetPageGeneral() {
   const { symbol } = params;
   const assetQuoteState = useAssetOneDayQuoteQuery({ symbol });
 
-  const { message } = useRequest({
-    requestLabel: symbol,
-    requestState: assetQuoteState,
-    successMessage: `Retrieved ${symbol} info!`,
+  const { component, isSuccess } = useToastForRequest(symbol, assetQuoteState, {
+    backupSuccessMessage: `Retrieved ${symbol} info!`,
   });
 
+  if (!isSuccess) return component;
+
   const data = assetQuoteState.data;
-  if (!data) return <p className="text-lg font-bold">{message}</p>;
+  const entries = Object.entries(data ?? {});
 
-  const entries = Object.entries(data);
+  return (
+    <div className="grid w-full grid-cols-1 ~gap-4/8 lg:grid-cols-2">
+      <div className="flex flex-col ~gap-2/4">
+        <h2 className="text-center font-bold capitalize">over the last day</h2>
 
-  if (data) {
-    return (
-      <div className="grid w-full grid-cols-1 ~gap-4/8 lg:grid-cols-2">
-        <div className="flex flex-col ~gap-2/4">
-          <h2 className="text-center font-bold capitalize">
-            over the last day
-          </h2>
-
-          <ObjectTable
-            data={entries.filter(([, val]) => typeof val !== "object")}
-          />
-        </div>
-
-        <div className="flex flex-col ~gap-4/8">
-          {entries
-            .filter(([, val]) => typeof val === "object")
-            .map(([attr, val]) => (
-              <div key={attr} className="flex flex-col ~gap-2/4">
-                <h2 className="text-center font-bold capitalize">
-                  {attr.split("_").join(" ")}
-                </h2>
-
-                <ObjectTable data={val} />
-              </div>
-            ))}
-        </div>
+        <ObjectTable
+          data={entries.filter(([, val]) => typeof val !== "object")}
+        />
       </div>
-    );
-  }
+
+      <div className="flex flex-col ~gap-4/8">
+        {entries
+          .filter(([, val]) => typeof val === "object")
+          .map(([attr, val]) => (
+            <div key={attr} className="flex flex-col ~gap-2/4">
+              <h2 className="text-center font-bold capitalize">
+                {attr.split("_").join(" ")}
+              </h2>
+
+              <ObjectTable data={val} />
+            </div>
+          ))}
+      </div>
+    </div>
+  );
 }
 
 function AssetPageNews() {
@@ -96,10 +90,8 @@ function AssetPageNews() {
   const assetNewsState = useAssetNewsQuery({ symbol });
   const data = assetNewsState.data;
 
-  const { message } = useRequest({
-    requestLabel: `${symbol} News`,
-    requestState: assetNewsState,
-    successMessage: `Retrieved ${symbol} updates!`,
+  const { component } = useToastForRequest(`${symbol} News`, assetNewsState, {
+    backupSuccessMessage: `Retrieved ${symbol} updates!`,
   });
 
   return (
@@ -108,8 +100,8 @@ function AssetPageNews() {
         News surrounding the {params.symbol} stock:
       </h2>
       <ul className="mx-4 flex flex-col gap-4">
-        {!data && <p>{message}</p>}
-        {!data?.length && <p>No news found for {symbol}</p>}
+        {component}
+        {data?.length === undefined && <p>No news found for {symbol}</p>}
         {data?.map(([title, url]) => (
           <li key={url}>
             <a

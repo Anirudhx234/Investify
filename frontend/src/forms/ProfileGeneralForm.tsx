@@ -8,13 +8,13 @@ import {
   useModifyProfileMutation,
 } from "../api/clients";
 import { useMemo, useState } from "react";
-import { useRequests } from "../hooks/useRequests";
 import { useForm } from "react-hook-form";
 import { useFormReset } from "../hooks/useFormReset";
 import { ProfilePicture } from "../components/ProfilePicture";
 import { FormInput } from "../components/FormInput";
 import { FormSubmit } from "../components/FormSubmit";
 import { ReadonlyInput } from "../components/ReadonlyInput";
+import { useToastForRequest } from "../hooks/useToastForRequests";
 
 export function ProfileGeneralForm() {
   const params = useParams() as { id?: string | undefined };
@@ -34,17 +34,11 @@ export function ProfileGeneralFormEdit() {
   const [modifyProfile, modifyProfileState] = useModifyProfileMutation();
   const [uploadedImgURL, setUploadedImgURL] = useState<string | undefined>();
 
-  const requestStates = useMemo(
-    () => ({
-      "Modify Profile": modifyProfileState,
-    }),
-    [modifyProfileState],
+  const { isLoading } = useToastForRequest(
+    "Modify Profile",
+    modifyProfileState,
+    { backupSuccessMessage: "Profile updated!" },
   );
-
-  const { isLoading } = useRequests({
-    requestStates,
-    successMessage: "Profile updated!",
-  });
 
   const form = useForm<ProfileGeneralFormEditShape>();
 

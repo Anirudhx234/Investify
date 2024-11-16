@@ -5,8 +5,8 @@ import { useAssetTimeSeriesQuery } from "../api/assets";
 import { useAppSelector } from "../hooks/useAppSelector";
 import { useEffect, useMemo, useRef } from "react";
 import { ColorType, createChart } from "lightweight-charts";
-import { useRequest } from "../hooks/useRequests";
 import { convertToUnixTimestamp } from "../util/convertToUnixTimestamp";
+import { useToastForRequest } from "../hooks/useToastForRequests";
 
 function parseQueryData(data: assetTypes.TimeSeriesEntry[] | undefined) {
   return (
@@ -72,10 +72,8 @@ export function CandleChart({
   const timeSeriesState = useAssetTimeSeriesQuery({ symbol, interval });
   const { data, refetch } = timeSeriesState;
 
-  useRequest({
-    requestLabel: `${symbol} Time Series`,
-    requestState: timeSeriesState,
-    successMessage: `Retrieved ${symbol} time series!`,
+  useToastForRequest(`${symbol} Time Series`, timeSeriesState, {
+    backupSuccessMessage: `Retrieved ${symbol} time series!`,
   });
 
   const parsedData = useMemo(() => parseQueryData(data), [data]);

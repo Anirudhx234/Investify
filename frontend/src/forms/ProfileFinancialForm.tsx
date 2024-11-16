@@ -7,7 +7,6 @@ import {
   useLoggedInClientProfileQuery,
   useModifyProfileMutation,
 } from "../api/clients";
-import { useRequests } from "../hooks/useRequests";
 import { useFormReset } from "../hooks/useFormReset";
 import { FormInput } from "../components/FormInput";
 import { FormSubmit } from "../components/FormSubmit";
@@ -16,6 +15,7 @@ import { FormNumberInput } from "../components/FormNumberInput";
 import { FormRangeInput } from "../components/FormRangeInput";
 import { twMerge } from "../util/twMerge";
 import { formatNumber } from "../util/formatNumber";
+import { useToastForRequest } from "../hooks/useToastForRequests";
 
 export interface ProfileFinancialFormShape {
   shortTermGoal: string;
@@ -29,17 +29,11 @@ export function ProfileFinancialForm() {
   const clientProfileState = useLoggedInClientProfileQuery();
   const [modifyProfile, modifyProfileState] = useModifyProfileMutation();
 
-  const requestStates = useMemo(
-    () => ({
-      "Modify Profile": modifyProfileState,
-    }),
-    [modifyProfileState],
+  const { isLoading } = useToastForRequest(
+    "Modify Profile",
+    modifyProfileState,
+    { backupSuccessMessage: "Profile updated!" },
   );
-
-  const { isLoading } = useRequests({
-    requestStates,
-    successMessage: "Profile updated!",
-  });
 
   const form = useForm<ProfileFinancialFormShape>();
 

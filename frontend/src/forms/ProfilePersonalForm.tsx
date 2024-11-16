@@ -5,11 +5,11 @@ import {
   useLoggedInClientProfileQuery,
   useModifyProfileMutation,
 } from "../api/clients";
-import { useRequests } from "../hooks/useRequests";
 import { useForm } from "react-hook-form";
 import { useFormReset } from "../hooks/useFormReset";
 import { FormSubmit } from "../components/FormSubmit";
 import { FormNumberInput } from "../components/FormNumberInput";
+import { useToastForRequest } from "../hooks/useToastForRequests";
 
 export interface ProfilePersonalFormShape {
   age: string;
@@ -20,17 +20,13 @@ export function ProfilePersonalForm() {
   const clientProfileState = useLoggedInClientProfileQuery();
   const [modifyProfile, modifyProfileState] = useModifyProfileMutation();
 
-  const requestStates = useMemo(
-    () => ({
-      "Modify Profile": modifyProfileState,
-    }),
-    [modifyProfileState],
+  const { isLoading } = useToastForRequest(
+    "Profile updated!",
+    modifyProfileState,
+    {
+      backupSuccessMessage: "Profile updated!",
+    },
   );
-
-  const { isLoading } = useRequests({
-    requestStates,
-    successMessage: "Profile updated!",
-  });
 
   const form = useForm<ProfilePersonalFormShape>();
 

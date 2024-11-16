@@ -1,28 +1,23 @@
 import { RecursiveMenu } from "../components/RecursiveMenu";
 import { useMemo } from "react";
 import { useClientPortfoliosQuery } from "../api/portfolio";
-import { useRequest } from "../hooks/useRequests";
 import { Link } from "wouter";
 import { CiSettings } from "react-icons/ci";
 import { twMerge } from "../util/twMerge";
 import { FaRegPaperPlane, FaWallet } from "react-icons/fa";
-
-export type PortfolioMenuItem = { key: string; id: string; name: string };
+import { useToastForRequest } from "../hooks/useToastForRequests";
 
 export function PortfoliosSidebar() {
   const clientPortfoliosState = useClientPortfoliosQuery();
-
-  useRequest({
-    requestLabel: "Client Portfolios",
-    requestState: clientPortfoliosState,
-    successMessage: "Retrieved portfolios!",
-  });
-
   const data = clientPortfoliosState.data;
 
   const menuItems = useMemo(() => {
-    const real = data?.realPortfolios.map((e) => ({ key: e.id, ...e })) ?? [];
-    const paper = data?.paperPortfolios.map((e) => ({ key: e.id, ...e })) ?? [];
+    const real =
+      data?.realPortfolios.map((e) => ({ key: e.id, type: "real", ...e })) ??
+      [];
+    const paper =
+      data?.paperPortfolios.map((e) => ({ key: e.id, type: "paper", ...e })) ??
+      [];
 
     return {
       i: {
@@ -31,6 +26,16 @@ export function PortfoliosSidebar() {
       },
     };
   }, [data]);
+
+  const { component, isSuccess } = useToastForRequest(
+    "Your Portfolios",
+    clientPortfoliosState,
+    {
+      backupSuccessMessage: "Retrieved portfolios!",
+    },
+  );
+
+  if (!isSuccess) return component;
 
   return (
     <>
@@ -47,7 +52,7 @@ export function PortfoliosSidebar() {
         menuItems={menuItems}
         renderItem={(item) => (
           <Link
-            href={`/${item.id}`}
+            href={`/${item.type}/${item.id}`}
             className={(active) => twMerge(active && "active")}
           >
             {item.name}
