@@ -27,7 +27,7 @@ export function ClientProfilePage() {
     "Client Profile",
     clientState,
     {
-      backupSuccessMessage: "Profile Retrieved!",
+      backupSuccessMessage: "Profile retrieved!",
     },
   );
 

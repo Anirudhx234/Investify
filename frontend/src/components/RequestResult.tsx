@@ -5,13 +5,9 @@ export function RequestResult({
   status,
   caption,
 }: {
-  status: "loading" | "success" | "error" | "waiting";
+  status: "loading" | "success" | "error";
   caption: string | null;
 }) {
-  if (status === "waiting") {
-    return <p>Waiting...</p>;
-  }
-
   if (status === "error") {
     return (
       <div className="flex items-center gap-1 text-error">

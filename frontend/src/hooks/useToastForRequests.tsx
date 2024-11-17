@@ -37,7 +37,7 @@ export function useToastForRequests(
   const prevAlertRef = useRef<"loading" | "success" | "error" | null>(null);
 
   const { status, message, index } = useMemo(() => {
-    let status: "loading" | "success" | "error" | "waiting" = "waiting";
+    let status: "loading" | "success" | "error" = "success";
     let message: string | null = null;
     let index: number | null = null;
 
@@ -54,10 +54,6 @@ export function useToastForRequests(
       if (state.isLoading) {
         status = "loading";
         index = i;
-      }
-
-      if (state.isSuccess && status != "loading") {
-        status = "success";
       }
 
       if (!message) {
@@ -79,36 +75,37 @@ export function useToastForRequests(
 
   if (status === "error" && wasLoading) {
     caption =
-      message ??
-      options?.backupErrorMessage ??
-      `${label!}: Something went wrong. Please try again later.`;
-    prevAlertRef.current = "error";
+      `${label!}: ` +
+      (message ??
+        options?.backupErrorMessage ??
+        "Something went wrong. Please try again later.");
   }
 
   if (status === "loading") {
-    caption = message ?? `${label!}: Loading...`;
-    prevAlertRef.current = "loading";
+    caption = `${label!}: ` + (message ?? "Loading...");
   }
 
   if (status === "success" && wasLoading) {
     caption =
-      message ?? options?.backupSuccessMessage ?? "Requests successful!";
-    prevAlertRef.current = "success";
+      message ?? options?.backupSuccessMessage ?? "Request successful!";
   }
 
   useEffect(() => {
     let id: string | null = null;
 
     if (status === "error" && wasLoading) {
-      id = toast.createErrorAlert({ caption: caption! });
+      toast.createErrorAlert({ caption: caption! });
+      prevAlertRef.current = "error";
     }
 
     if (status === "loading") {
-      toast.createLoadingAlert({ timeout: null, caption: caption! });
+      id = toast.createLoadingAlert({ timeout: null, caption: caption! });
+      prevAlertRef.current = "loading";
     }
 
     if (status === "success" && wasLoading) {
-      id = toast.createSuccessAlert({ caption: caption! });
+      toast.createSuccessAlert({ caption: caption! });
+      prevAlertRef.current = "success";
       if (options?.onSuccess) options.onSuccess();
     }
 
