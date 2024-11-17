@@ -3,6 +3,7 @@ import { useGetPortfolioQuery } from "../api/portfolio";
 import { useToastForRequest } from "../hooks/useToastForRequests";
 import { RealPortfolioTable } from "../components/RealPortfolioTable";
 import { RealPortfolioAddAssetForm } from "../forms/RealPortfolioAddAssetForm";
+import { PortfolioAnalytics } from "../scenes/PortfolioAnalytics";
 
 export function RealPortfolioEditorPage() {
   const params = useParams() as { id: string };
@@ -24,19 +25,24 @@ export function RealPortfolioEditorPage() {
 
       <div className="divider"></div>
 
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col items-center gap-4">
         <h2 className="text-center text-xl font-bold">Add Asset</h2>
         <RealPortfolioAddAssetForm />
       </div>
 
       <div className="divider"></div>
 
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col items-center gap-4">
         <h2 className="text-center text-xl font-bold">Owned Assets</h2>
         <RealPortfolioTable id={id} />
       </div>
 
       <div className="divider"></div>
+
+      <div className="flex flex-col items-center gap-4">
+        <h2 className="text-center text-xl font-bold">Analytics</h2>
+        <PortfolioAnalytics />
+      </div>
     </div>
   );
 }

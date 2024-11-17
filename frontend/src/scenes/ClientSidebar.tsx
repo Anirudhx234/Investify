@@ -27,7 +27,7 @@ export function ClientSidebarEdit() {
   const [logout, logoutState] = useLogoutMutation();
   const [deleteAccount, deleteAccountState] = useDeleteClientMutation();
 
-  const { isSuccess, component } = useToastForRequests([
+  const { isSuccess, componentNoCaption } = useToastForRequests([
     { label: "Logout", state: logoutState },
     { label: "Delete Account", state: deleteAccountState },
   ]);
@@ -44,7 +44,12 @@ export function ClientSidebarEdit() {
     deleteAccount().unwrap();
   };
 
-  if (!isSuccess) return component;
+  if (!isSuccess)
+    return (
+      <div className="mt-20 flex w-full justify-center">
+        {componentNoCaption}
+      </div>
+    );
 
   return (
     <>

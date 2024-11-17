@@ -14,3 +14,24 @@ export interface Portfolio {
   totalPortfolioValue: number;
   portfolioAssets: PortfolioAsset[];
 }
+
+export interface SectorValuations {
+  name: string;
+  totalValuation: number;
+}
+
+export interface RiskPoint {
+  name: string;
+  risk: number; // X-axis (risk level)
+  return: number; // Y-axis (return level)
+}
+
+export interface RiskScore {
+  overallRiskScore: number;
+  assetsByRisk: [
+    {
+      portfolioAsset: Omit<PortfolioAsset, "currentPrice" | "totalAssetValue">;
+      riskScore: number;
+    },
+  ];
+}

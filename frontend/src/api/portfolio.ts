@@ -25,7 +25,13 @@ const portfolioApi = api.injectEndpoints({
         url: `/portfolios/${id}`,
         method: "DELETE",
       }),
-      invalidatesTags: ["client-portfolios"],
+      invalidatesTags: (_res, _err, args) => [
+        "client-portfolios",
+        { type: "portfolios", id: args.id },
+        { type: "sector-valuations", id: args.id },
+        { type: "risk-charts", id: args.id },
+        { type: "risk-assessments", id: args.id },
+      ],
     }),
 
     getPortfolio: build.query<portfolioTypes.Portfolio, { id: string }>({
@@ -47,6 +53,9 @@ const portfolioApi = api.injectEndpoints({
       }),
       invalidatesTags: (_res, _err, args) => [
         { type: "portfolios", id: args.portfolioId },
+        { type: "sector-valuations", id: args.portfolioId },
+        { type: "risk-charts", id: args.portfolioId },
+        { type: "risk-assessments", id: args.portfolioId },
       ],
     }),
 
@@ -61,6 +70,9 @@ const portfolioApi = api.injectEndpoints({
       }),
       invalidatesTags: (_res, _err, args) => [
         { type: "portfolios", id: args.portfolioId },
+        { type: "sector-valuations", id: args.portfolioId },
+        { type: "risk-charts", id: args.portfolioId },
+        { type: "risk-assessments", id: args.portfolioId },
       ],
     }),
 
@@ -74,6 +86,45 @@ const portfolioApi = api.injectEndpoints({
       }),
       invalidatesTags: (_res, _err, args) => [
         { type: "portfolios", id: args.portfolioId },
+        { type: "sector-valuations", id: args.portfolioId },
+        { type: "risk-charts", id: args.portfolioId },
+        { type: "risk-assessments", id: args.portfolioId },
+      ],
+    }),
+
+    sectorValuations: build.query<
+      portfolioTypes.SectorValuations[],
+      { portfolioId: string }
+    >({
+      query: ({ portfolioId }) => ({
+        url: `/portfolios/${portfolioId}/sector-valuations`,
+        method: "GET",
+      }),
+      providesTags: (_res, _err, args) => [
+        { type: "sector-valuations", id: args.portfolioId },
+      ],
+    }),
+
+    riskReturns: build.query<
+      portfolioTypes.RiskPoint[],
+      { portfolioId: string }
+    >({
+      query: ({ portfolioId }) => ({
+        url: `/portfolios/${portfolioId}/risk-chart`,
+        method: "GET",
+      }),
+      providesTags: (_res, _err, args) => [
+        { type: "risk-charts", id: args.portfolioId },
+      ],
+    }),
+
+    riskScore: build.query<portfolioTypes.RiskScore, { portfolioId: string }>({
+      query: ({ portfolioId }) => ({
+        url: `/portfolios/${portfolioId}/risk-assessment`,
+        method: "GET",
+      }),
+      providesTags: (_res, _err, args) => [
+        { type: "risk-assessments", id: args.portfolioId },
       ],
     }),
   }),
@@ -87,4 +138,7 @@ export const {
   useAddRealPortfolioAssetMutation,
   useModifyRealPortfolioAssetMutation,
   useDeleteRealPortfolioAssetMutation,
+  useSectorValuationsQuery,
+  useRiskReturnsQuery,
+  useRiskScoreQuery,
 } = portfolioApi;

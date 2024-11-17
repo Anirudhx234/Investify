@@ -27,7 +27,7 @@ export function PortfoliosSidebar() {
     };
   }, [data]);
 
-  const { component, isSuccess } = useToastForRequest(
+  const { componentNoCaption, isSuccess } = useToastForRequest(
     "Your Portfolios",
     clientPortfoliosState,
     {
@@ -35,7 +35,12 @@ export function PortfoliosSidebar() {
     },
   );
 
-  if (!isSuccess) return component;
+  if (!isSuccess)
+    return (
+      <div className="mt-20 flex w-full justify-center">
+        {componentNoCaption}
+      </div>
+    );
 
   return (
     <>

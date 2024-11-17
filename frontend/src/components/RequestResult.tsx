@@ -33,3 +33,16 @@ export function RequestResult({
     </div>
   );
 }
+
+export function RequestResultNoCaption({
+  status,
+}: {
+  status: "loading" | "success" | "error";
+}) {
+  if (status === "error") return <MdErrorOutline className="text-error" />;
+  
+  if (status === "loading")
+    return <span className="loading loading-spinner text-warning"></span>;
+
+  return <FaCheck className="text-success" />;
+}

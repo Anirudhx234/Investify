@@ -5,7 +5,10 @@ import type { baseQueryTypes } from "../types";
 
 import { useEffect, useMemo, useRef } from "react";
 import { useToast } from "./useToast";
-import { RequestResult } from "../components/RequestResult";
+import {
+  RequestResult,
+  RequestResultNoCaption,
+} from "../components/RequestResult";
 
 export interface RequestArgs {
   data?: unknown | undefined;
@@ -91,7 +94,7 @@ export function useToastForRequests(
   useEffect(() => {
     let id: string | null = null;
 
-    if (status === "error" && prevAlertRef.current !== "error") {
+    if (status === "error" && prevAlertRef.current === "loading") {
       toast.createErrorAlert({ caption: caption! });
       prevAlertRef.current = "error";
     }
@@ -118,6 +121,7 @@ export function useToastForRequests(
 
   return {
     component: <RequestResult status={status} caption={caption} />,
+    componentNoCaption: <RequestResultNoCaption status={status} />,
     isLoading: status === "loading",
     isSuccess: status === "success",
     isError: status === "error",
