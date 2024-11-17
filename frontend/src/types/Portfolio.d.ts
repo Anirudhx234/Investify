@@ -10,6 +10,7 @@ export interface PortfolioAsset {
 }
 
 export interface Portfolio {
-  portfolioAssets: PortfolioAsset[];
+  name: string;
   totalPortfolioValue: number;
+  portfolioAssets: PortfolioAsset[];
 }

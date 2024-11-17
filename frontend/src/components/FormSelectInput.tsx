@@ -17,7 +17,7 @@ export function FormSelectInput<T extends FieldValues>({
 }: formTypes.Input<T> & formTypes.SelectFieldArgs) {
   const selectRegisterProps = form.register(name, {
     ...registerOptions,
-    required: required ? `${label} is required` : false,
+    required: required ? `${label ?? name} is required` : false,
   });
 
   const { className, disabled, ...otherSelectAttributes } = {
@@ -26,9 +26,11 @@ export function FormSelectInput<T extends FieldValues>({
 
   return (
     <label className="form-control">
-      <div className="label">
-        <span>{label}</span>
-      </div>
+      {label && (
+        <div className="label">
+          <span>{label}</span>
+        </div>
+      )}
       <select
         className={twMerge("select select-bordered text-base", className)}
         {...selectRegisterProps}

@@ -20,6 +20,8 @@ export interface SignUpArgs {
   confirmPassword: string;
 }
 
+export type AssetSearchRes = Record<string, Omit<Asset, "type">[]>;
+
 export interface PopularStocksRes {
   top_gainers: Stock[];
   top_losers: Stock[];
@@ -60,7 +62,7 @@ export interface CreatePortfolioArgs {
 }
 
 export interface AddRealPortfolioAssetArgs {
-  id: string;
+  portfolioId: string;
   asset: {
     symbol: string;
     name: string;

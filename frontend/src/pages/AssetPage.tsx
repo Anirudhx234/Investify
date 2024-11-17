@@ -101,7 +101,9 @@ function AssetPageNews() {
       </h2>
       <ul className="mx-4 flex flex-col gap-4">
         {component}
-        {data?.length === undefined && <p>No news found for {symbol}</p>}
+        {(data === undefined || data.length === 0) && (
+          <p>No news found for {symbol}</p>
+        )}
         {data?.map(([title, url]) => (
           <li key={url}>
             <a

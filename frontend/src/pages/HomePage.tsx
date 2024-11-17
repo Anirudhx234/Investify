@@ -1,3 +1,4 @@
+import { Link, useLocation } from "wouter";
 import {
   usePopularCryptoQuery,
   usePopularEtfsQuery,
@@ -12,12 +13,25 @@ import {
   MutualFundsList,
   StocksList,
 } from "../scenes/MarketMoverList";
+import { twMerge } from "../util/twMerge";
 
 export function HomePage() {
+  const [, navigate] = useLocation();
+
   return (
     <div className="mt-6 flex w-full flex-col items-center gap-12">
       <h1 className="text-3xl font-bold text-primary">Welcome to Investify!</h1>
-      <AssetSearchBar />
+      <AssetSearchBar
+        onSelect={(i) => navigate(`/assets/${i.key}`)}
+        renderItem={(i) => (
+          <Link
+            href={`/assets/${i.key}`}
+            className={(active) => twMerge(active && "active")}
+          >
+            {`${i.symbol} (${i.name})`}
+          </Link>
+        )}
+      />
       <MarketMovers />
     </div>
   );
@@ -29,12 +43,15 @@ export function MarketMovers() {
   const popularEtfsState = usePopularEtfsQuery();
   const popularCryptoState = usePopularCryptoQuery();
 
-  useToastForRequests([
-    { label: "Popular Stocks", state: popularStocksState },
-    { label: "Popular Mutual Funds", state: popularMutualFundsState },
-    { label: "Popular Etfs", state: popularEtfsState },
-    { label: "Popular Crypto", state: popularCryptoState },
-  ], { backupSuccessMessage: "Retrieved market movers!" });
+  useToastForRequests(
+    [
+      { label: "Popular Stocks", state: popularStocksState },
+      { label: "Popular Mutual Funds", state: popularMutualFundsState },
+      { label: "Popular Etfs", state: popularEtfsState },
+      { label: "Popular Crypto", state: popularCryptoState },
+    ],
+    { backupSuccessMessage: "Retrieved market movers!" },
+  );
 
   return (
     <div className="flex flex-wrap items-center justify-center gap-8">

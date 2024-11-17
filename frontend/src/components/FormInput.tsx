@@ -16,7 +16,7 @@ export function FormInput<T extends FieldValues = FieldValues>({
 }: formTypes.Input<T>) {
   const registerProps = form.register(name, {
     ...registerOptions,
-    required: required ? `${label} is required` : false,
+    required: required ? `${label ?? name} is required` : false,
   });
 
   const { className, disabled, ...otherInputAttributes } = {
@@ -25,9 +25,11 @@ export function FormInput<T extends FieldValues = FieldValues>({
 
   return (
     <label className="form-control">
-      <div className="label">
-        <span>{label}</span>
-      </div>
+      {label && (
+        <div className="label">
+          <span>{label}</span>
+        </div>
+      )}
       <input
         className={twMerge("input input-bordered", className)}
         {...registerProps}

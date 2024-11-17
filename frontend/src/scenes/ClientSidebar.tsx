@@ -27,24 +27,20 @@ export function ClientSidebarEdit() {
   const [logout, logoutState] = useLogoutMutation();
   const [deleteAccount, deleteAccountState] = useDeleteClientMutation();
 
-  const { isSuccess, component } = useToastForRequests(
-    [
-      { label: "Logout", state: logoutState },
-      { label: "Delete Account", state: deleteAccountState },
-    ],
-    {
-      onSuccess: () => {
-        navigate("~/");
-        dispatch(setClientId(null));
-      },
-    },
-  );
+  const { isSuccess, component } = useToastForRequests([
+    { label: "Logout", state: logoutState },
+    { label: "Delete Account", state: deleteAccountState },
+  ]);
 
   const onLogoutClick = () => {
+    navigate("~/");
+    dispatch(setClientId(null));
     logout().unwrap();
   };
 
   const onDeleteClientClick = () => {
+    navigate("~/");
+    dispatch(setClientId(null));
     deleteAccount().unwrap();
   };
 

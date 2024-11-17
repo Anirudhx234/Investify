@@ -33,20 +33,20 @@ const portfolioApi = api.injectEndpoints({
         url: `/portfolios/${id}`,
         method: "GET",
       }),
-      providesTags: (_res, _err, args) => [{ type: "portfolio", id: args.id }],
+      providesTags: (_res, _err, args) => [{ type: "portfolios", id: args.id }],
     }),
 
     addRealPortfolioAsset: build.mutation<
       void,
       apiTypes.AddRealPortfolioAssetArgs
     >({
-      query: ({ id, ...body }) => ({
-        url: `/portfolios/${id}/assets`,
+      query: ({ portfolioId, ...body }) => ({
+        url: `/portfolios/${portfolioId}/assets`,
         method: "POST",
         body,
       }),
       invalidatesTags: (_res, _err, args) => [
-        { type: "portfolio", id: args.id },
+        { type: "portfolios", id: args.portfolioId },
       ],
     }),
 
@@ -55,12 +55,12 @@ const portfolioApi = api.injectEndpoints({
       apiTypes.ModifyRealPortfolioAssetArgs
     >({
       query: ({ portfolioId, assetId, ...body }) => ({
-        url: `/portfolio/${portfolioId}/assets/${assetId}`,
+        url: `/portfolios/${portfolioId}/assets/${assetId}`,
         method: "PATCH",
         body,
       }),
       invalidatesTags: (_res, _err, args) => [
-        { type: "portfolio", id: args.portfolioId },
+        { type: "portfolios", id: args.portfolioId },
       ],
     }),
 
@@ -69,11 +69,11 @@ const portfolioApi = api.injectEndpoints({
       apiTypes.DeleteRealPortfolioAssetArgs
     >({
       query: ({ portfolioId, assetId }) => ({
-        url: `/portfolio/${portfolioId}/assets/${assetId}`,
+        url: `/portfolios/${portfolioId}/assets/${assetId}`,
         method: "DELETE",
       }),
       invalidatesTags: (_res, _err, args) => [
-        { type: "portfolio", id: args.portfolioId },
+        { type: "portfolios", id: args.portfolioId },
       ],
     }),
   }),

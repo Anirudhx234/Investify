@@ -1,4 +1,5 @@
 import type { apiTypes, assetTypes } from "../types";
+import { convertLabelToAssetType } from "../util/convertAsset";
 import { convertIntervalToSecs } from "../util/convertIntervalToSecs";
 import { convertToUnixTimestamp } from "../util/convertToUnixTimestamp";
 import { api } from "./api";
@@ -25,6 +26,14 @@ export const assetsApi = api.injectEndpoints({
         search: { symbol },
         method: "GET",
       }),
+      transformResponse: (res: apiTypes.AssetSearchRes) => {
+        const transformed: apiTypes.AssetSearchRes = {};
+        Object.entries(res).forEach(([assetType, list]) => {
+          transformed[convertLabelToAssetType(assetType)] = list;
+        });
+
+        return transformed as assetTypes.Set;
+      },
     }),
 
     popularStocks: build.query<apiTypes.PopularStocksRes, void>({
@@ -154,5 +163,5 @@ export const {
   useAssetOneDayQuoteQuery,
   useAssetTimeSeriesQuery,
   useAssetPriceHistoryQuery,
-  useAssetNewsQuery
+  useAssetNewsQuery,
 } = assetsApi;

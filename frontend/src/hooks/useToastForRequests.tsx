@@ -65,7 +65,6 @@ export function useToastForRequests(
     return { status, message, index };
   }, [requests]);
 
-  const wasLoading = prevAlertRef.current === "loading";
   let label: string | null = null;
   let caption: string | null = null;
 
@@ -73,7 +72,7 @@ export function useToastForRequests(
     label = requests[index].label;
   }
 
-  if (status === "error" && wasLoading) {
+  if (status === "error") {
     caption =
       `${label!}: ` +
       (message ??
@@ -85,15 +84,14 @@ export function useToastForRequests(
     caption = `${label!}: ` + (message ?? "Loading...");
   }
 
-  if (status === "success" && wasLoading) {
-    caption =
-      message ?? options?.backupSuccessMessage ?? "Request successful!";
+  if (status === "success") {
+    caption = message ?? options?.backupSuccessMessage ?? "Request successful!";
   }
 
   useEffect(() => {
     let id: string | null = null;
 
-    if (status === "error" && wasLoading) {
+    if (status === "error" && prevAlertRef.current !== "error") {
       toast.createErrorAlert({ caption: caption! });
       prevAlertRef.current = "error";
     }
@@ -103,7 +101,11 @@ export function useToastForRequests(
       prevAlertRef.current = "loading";
     }
 
-    if (status === "success" && wasLoading) {
+    if (
+      status === "success" &&
+      prevAlertRef.current !== null &&
+      prevAlertRef.current !== "success"
+    ) {
       toast.createSuccessAlert({ caption: caption! });
       prevAlertRef.current = "success";
       if (options?.onSuccess) options.onSuccess();
@@ -112,7 +114,7 @@ export function useToastForRequests(
     return () => {
       if (id) toast.deleteAlert(id);
     };
-  }, [toast, status, wasLoading, caption, options]);
+  }, [toast, status, caption, options]);
 
   return {
     component: <RequestResult status={status} caption={caption} />,

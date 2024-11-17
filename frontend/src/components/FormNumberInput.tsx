@@ -6,7 +6,7 @@ import { FormInput } from "./FormInput";
 export function FormNumberInput<T extends FieldValues>({
   registerOptions,
   inputAttributes,
-  min,
+  min = 0,
   max,
   decimal,
   ...props
@@ -15,15 +15,19 @@ export function FormNumberInput<T extends FieldValues>({
     <FormInput
       registerOptions={{
         ...registerOptions,
-        min,
-        max,
         validate: (value) => {
           if (!decimal && `${value}`.includes(".")) {
             return "Decimal values are not allowed";
           }
         },
       }}
-      inputAttributes={{ ...inputAttributes, type: "number", step: "any" }}
+      inputAttributes={{
+        ...inputAttributes,
+        min,
+        max,
+        type: "number",
+        step: decimal ? 0.01 : 1,
+      }}
       {...props}
     />
   );

@@ -41,7 +41,9 @@ export function Alert({ type, caption, onDismiss }: AlertAttributes) {
 
       {type === "error" && <MdError className={iconStyles} />}
 
-      <span>{alertCaption}</span>
+      <span className="max-w-[50vw] overflow-hidden text-ellipsis whitespace-nowrap">
+        {alertCaption}
+      </span>
 
       {onDismiss !== undefined && (
         <div className="hidden items-center lg:flex">

@@ -25,7 +25,7 @@ export interface SelectFieldArgs {
 /* stuff defined by the implementation and not the domain */
 export interface Input<T extends FieldValues = FieldValues> {
   name: Path<T>;
-  label: string;
+  label?: string | undefined;
 
   isBuffering?: boolean | undefined;
   required?: boolean | undefined;

@@ -1,29 +1,45 @@
-import type { ChangeEvent, KeyboardEvent } from "react";
+import type { ChangeEvent, KeyboardEvent, ReactNode } from "react";
+import type { assetTypes } from "../types";
 
 import { useMemo, useState } from "react";
 import { useLazySearchAssetsQuery } from "../api/assets";
 import { FaSearch } from "react-icons/fa";
 import { MdErrorOutline } from "react-icons/md";
-import { Link, useLocation } from "wouter";
 import { RecursiveMenu } from "../components/RecursiveMenu";
 import {
   convertAssetTypeToLabel,
   convertAssetTypeToRoute,
   convertSymbolToRoute,
 } from "../util/convertAsset";
-import { twMerge } from "../util/twMerge";
 import { assetIcons } from "../components/assetIcons";
 
 export interface SearchItem {
   key: string;
   symbol: string;
   name: string;
+  assetType: assetTypes.Type;
 }
 
-export function AssetSearchBar() {
-  const [, navigate] = useLocation();
+export interface AssetSearchBarStateSetters {
+  setSearchValue: (arg0: string) => void;
+  setIsExpanded: (arg0: boolean) => void;
+}
+
+export interface AssetSearchBarProps {
+  renderItem: (
+    arg0: SearchItem,
+    arg1?: AssetSearchBarStateSetters | undefined,
+  ) => ReactNode;
+
+  onSelect: (
+    arg0: SearchItem,
+    arg1?: AssetSearchBarStateSetters | undefined,
+  ) => void;
+}
+
+export function AssetSearchBar({ renderItem, onSelect }: AssetSearchBarProps) {
   const [searchValue, setSearchValue] = useState("");
-  const isExpanded = searchValue.length >= 3;
+  const [isExpanded, setIsExpanded] = useState(false);
 
   const [searchAssets, { data, isError, isFetching, error, isSuccess }] =
     useLazySearchAssetsQuery();
@@ -32,7 +48,11 @@ export function AssetSearchBar() {
     const newValue = e.target.value;
     if (newValue.length >= 3) {
       searchAssets({ symbol: newValue }).unwrap();
+      setIsExpanded(true);
+    } else {
+      setIsExpanded(false);
     }
+
     setSearchValue(newValue);
   };
 
@@ -48,6 +68,7 @@ export function AssetSearchBar() {
           key: `${convertAssetTypeToRoute(assetType)}/${convertSymbolToRoute(i.symbol)}`,
           symbol: i.symbol,
           name: i.name,
+          assetType: assetType as assetTypes.Type,
         })),
       };
 
@@ -61,7 +82,7 @@ export function AssetSearchBar() {
   const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
       e.preventDefault();
-      if (firstItem) navigate(`/assets/${firstItem.key}`);
+      if (firstItem) onSelect(firstItem, { setSearchValue, setIsExpanded });
     }
   };
 
@@ -112,14 +133,8 @@ export function AssetSearchBar() {
                 {isSuccess && (
                   <RecursiveMenu
                     menuItems={{ i: searchItems! }}
-                    renderItem={(i) => (
-                      <Link
-                        href={`/assets/${i.key}`}
-                        className={(active) => twMerge(active && "active")}
-                      >
-                        {`${i.symbol} (${i.name})`}
-                      </Link>
-                    )}
+                    extraArgs={{ setSearchValue, setIsExpanded }}
+                    renderItem={renderItem}
                     icons={assetIcons}
                   />
                 )}
