@@ -4,6 +4,7 @@ import { PortfolioAnalytics } from "../scenes/PortfolioAnalytics";
 import { PaperPortfolioAddTradeForm } from "../forms/PaperPortfolioAddTradeForm";
 import { PaperPortfolioTable } from "../components/PaperPortfolioTable";
 import { useGetPaperPortfolioQuery } from "../api/portfolio";
+import { PortfolioStats } from "../components/PortfolioStats";
 
 export function PaperPortfolioEditorPage() {
   const params = useParams() as { id: string };
@@ -20,7 +21,11 @@ export function PaperPortfolioEditorPage() {
   if (!isSuccess || !data) return component;
   return (
     <div className="flex w-full flex-col ~gap-4/8">
-      <h1 className="text-center text-3xl font-bold">{data.name}</h1>
+      <div className="flex flex-col items-center gap-4">
+        <h1 className="text-center text-3xl font-bold">{data.name}</h1>
+
+        <PortfolioStats id={id} />
+      </div>
 
       <div className="divider"></div>
 

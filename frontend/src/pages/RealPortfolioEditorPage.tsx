@@ -4,6 +4,7 @@ import { RealPortfolioTable } from "../components/RealPortfolioTable";
 import { RealPortfolioAddAssetForm } from "../forms/RealPortfolioAddAssetForm";
 import { PortfolioAnalytics } from "../scenes/PortfolioAnalytics";
 import { useGetRealPortfolioQuery } from "../api/portfolio";
+import { PortfolioStats } from "../components/PortfolioStats";
 
 export function RealPortfolioEditorPage() {
   const params = useParams() as { id: string };
@@ -21,7 +22,11 @@ export function RealPortfolioEditorPage() {
   if (!isSuccess || !data) return component;
   return (
     <div className="flex w-full flex-col ~gap-4/8">
-      <h1 className="text-center text-3xl font-bold">{data.name}</h1>
+      <div className="flex flex-col items-center gap-4">
+        <h1 className="text-center text-3xl font-bold">{data.name}</h1>
+
+        <PortfolioStats id={id} />
+      </div>
 
       <div className="divider"></div>
 

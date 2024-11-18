@@ -21,6 +21,7 @@ export interface PaperPortfolioTrade {
 export interface RealPortfolio {
   name: string;
   totalPortfolioValue: number;
+  roi: number;
   portfolioAssets: PortfolioAsset[];
 }
 

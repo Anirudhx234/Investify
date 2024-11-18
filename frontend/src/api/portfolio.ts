@@ -34,6 +34,14 @@ const portfolioApi = api.injectEndpoints({
       ],
     }),
 
+    getPortfolio: build.query<portfolioTypes.RealPortfolio, { id: string }>({
+      query: ({ id }) => ({
+        url: `/portfolios/${id}`,
+        method: "GET",
+      }),
+      providesTags: (_res, _err, args) => [{ type: "portfolios", id: args.id }],
+    }),
+
     getRealPortfolio: build.query<portfolioTypes.RealPortfolio, { id: string }>(
       {
         query: ({ id }) => ({
@@ -168,6 +176,7 @@ export const {
   useDeletePortfolioMutation,
   useGetRealPortfolioQuery,
   useGetPaperPortfolioQuery,
+  useGetPortfolioQuery,
   useAddRealPortfolioAssetMutation,
   useModifyRealPortfolioAssetMutation,
   useDeleteRealPortfolioAssetMutation,
