@@ -1,15 +1,15 @@
 import { useParams } from "wouter";
-import { useGetPortfolioQuery } from "../api/portfolio";
 import { useToastForRequest } from "../hooks/useToastForRequests";
 import { RealPortfolioTable } from "../components/RealPortfolioTable";
 import { RealPortfolioAddAssetForm } from "../forms/RealPortfolioAddAssetForm";
 import { PortfolioAnalytics } from "../scenes/PortfolioAnalytics";
+import { useGetRealPortfolioQuery } from "../api/portfolio";
 
 export function RealPortfolioEditorPage() {
   const params = useParams() as { id: string };
   const { id } = params;
 
-  const portfolioState = useGetPortfolioQuery({ id });
+  const portfolioState = useGetRealPortfolioQuery({ id });
   const data = portfolioState.data;
 
   const { component, isSuccess } = useToastForRequest(

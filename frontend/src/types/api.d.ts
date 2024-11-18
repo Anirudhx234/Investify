@@ -83,3 +83,14 @@ export interface DeleteRealPortfolioAssetArgs {
   portfolioId: string;
   assetId: string;
 }
+
+export interface AddPaperPortfolioTradeArgs {
+  portfolioId: string;
+  asset: {
+    symbol: string;
+    name: string;
+    assetType: Type;
+  };
+  type: "BUY" | "SELL";
+  quantity: number;
+}

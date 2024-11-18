@@ -20,7 +20,7 @@ export function AnalyticsRiskAssessmentTable() {
         </thead>
         <tbody>
           {data?.assetsByRisk.map((entry) => (
-            <tr>
+            <tr key={entry.portfolioAsset.id}>
               <th>{entry.portfolioAsset.asset.symbol}</th>
 
               <td className="text-center capitalize">

@@ -1,15 +1,16 @@
-import type { assetTypes } from "../types";
 import type { SubmitHandler } from "react-hook-form";
+import type { assetTypes } from "../types";
 
-import { useForm } from "react-hook-form";
-import { useAddRealPortfolioAssetMutation } from "../api/portfolio";
-import { useToastForRequest } from "../hooks/useToastForRequests";
 import { useState } from "react";
 import { useParams } from "wouter";
-import { FormSubmit } from "../components/FormSubmit";
-import { FormNumberInput } from "../components/FormNumberInput";
-import { FormInput } from "../components/FormInput";
+import { useForm } from "react-hook-form";
+import { useAddPaperPortfolioTradeMutation } from "../api/portfolio";
+import { useToastForRequest } from "../hooks/useToastForRequests";
 import { AssetSearchBar } from "../scenes/AssetSearchBar";
+import { FormInput } from "../components/FormInput";
+import { FormNumberInput } from "../components/FormNumberInput";
+import { FormSelectInput } from "../components/FormSelectInput";
+import { FormSubmit } from "../components/FormSubmit";
 
 export interface SelectedAssetShape {
   symbol: string;
@@ -17,29 +18,28 @@ export interface SelectedAssetShape {
   assetType: assetTypes.Type;
 }
 
-export interface RealPortfolioAddAssetFormShape {
+export interface PaperPortfolioAddTradeFormShape {
   asset: string;
   quantity: number;
-  averageCost: number;
+  type: "BUY" | "SELL";
 }
 
-export function RealPortfolioAddAssetForm() {
+export function PaperPortfolioAddTradeForm() {
   const params = useParams() as { id: string };
   const { id } = params;
 
   const [selectedAsset, setSelectedAsset] = useState<SelectedAssetShape | null>(
     null,
   );
-  const form = useForm<RealPortfolioAddAssetFormShape>();
+  const form = useForm<PaperPortfolioAddTradeFormShape>();
 
-  const [addAsset, addAssetState] = useAddRealPortfolioAssetMutation();
-  const { isLoading } = useToastForRequest("Add Asset", addAssetState, {
-    backupSuccessMessage: "Asset added!",
-    onSuccess: form.reset,
+  const [addTrade, addTradeState] = useAddPaperPortfolioTradeMutation();
+  const { isLoading } = useToastForRequest("Add Trade", addTradeState, {
+    backupSuccessMessage: "Trade added!",
   });
 
-  const onSubmit: SubmitHandler<RealPortfolioAddAssetFormShape> = (data) => {
-    addAsset({ ...data, asset: selectedAsset!, portfolioId: id }).unwrap();
+  const onSubmit: SubmitHandler<PaperPortfolioAddTradeFormShape> = (data) => {
+    addTrade({ ...data, asset: selectedAsset!, portfolioId: id }).unwrap();
   };
 
   return (
@@ -78,13 +78,16 @@ export function RealPortfolioAddAssetForm() {
             }}
           />
 
-          <FormNumberInput
-            name="averageCost"
-            label="Average Cost"
+          <FormSelectInput
+            name="type"
+            label="Type"
             form={form}
             isBuffering={isLoading}
             required
-            decimal
+            options={[
+              { label: "Buy", value: "BUY" },
+              { label: "Sell", value: "SELL" },
+            ]}
           />
 
           <FormNumberInput

@@ -3,7 +3,7 @@ import type { SubmitHandler } from "react-hook-form";
 
 import {
   useDeleteRealPortfolioAssetMutation,
-  useGetPortfolioQuery,
+  useGetRealPortfolioQuery,
   useModifyRealPortfolioAssetMutation,
 } from "../api/portfolio";
 import { useForm } from "react-hook-form";
@@ -19,7 +19,7 @@ export interface RealPortfolioTableProps {
 }
 
 export function RealPortfolioTable({ id }: RealPortfolioTableProps) {
-  const { data, isLoading } = useGetPortfolioQuery({ id });
+  const { data, isLoading } = useGetRealPortfolioQuery({ id });
 
   return (
     <div className="w-full max-w-[100vw] overflow-auto px-2">

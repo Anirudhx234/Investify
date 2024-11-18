@@ -34,7 +34,22 @@ const portfolioApi = api.injectEndpoints({
       ],
     }),
 
-    getPortfolio: build.query<portfolioTypes.Portfolio, { id: string }>({
+    getRealPortfolio: build.query<portfolioTypes.RealPortfolio, { id: string }>(
+      {
+        query: ({ id }) => ({
+          url: `/portfolios/${id}`,
+          method: "GET",
+        }),
+        providesTags: (_res, _err, args) => [
+          { type: "portfolios", id: args.id },
+        ],
+      },
+    ),
+
+    getPaperPortfolio: build.query<
+      portfolioTypes.PaperPortfolio,
+      { id: string }
+    >({
       query: ({ id }) => ({
         url: `/portfolios/${id}`,
         method: "GET",
@@ -127,6 +142,23 @@ const portfolioApi = api.injectEndpoints({
         { type: "risk-assessments", id: args.portfolioId },
       ],
     }),
+
+    addPaperPortfolioTrade: build.mutation<
+      void,
+      apiTypes.AddPaperPortfolioTradeArgs
+    >({
+      query: ({ portfolioId, ...body }) => ({
+        url: `/portfolios/${portfolioId}/trades`,
+        method: "POST",
+        body,
+      }),
+      invalidatesTags: (_res, _err, args) => [
+        { type: "portfolios", id: args.portfolioId },
+        { type: "sector-valuations", id: args.portfolioId },
+        { type: "risk-charts", id: args.portfolioId },
+        { type: "risk-assessments", id: args.portfolioId },
+      ],
+    }),
   }),
 });
 
@@ -134,11 +166,13 @@ export const {
   useClientPortfoliosQuery,
   useCreatePortfolioMutation,
   useDeletePortfolioMutation,
-  useGetPortfolioQuery,
+  useGetRealPortfolioQuery,
+  useGetPaperPortfolioQuery,
   useAddRealPortfolioAssetMutation,
   useModifyRealPortfolioAssetMutation,
   useDeleteRealPortfolioAssetMutation,
   useSectorValuationsQuery,
   useRiskReturnsQuery,
   useRiskScoreQuery,
+  useAddPaperPortfolioTradeMutation,
 } = portfolioApi;

@@ -9,10 +9,24 @@ export interface PortfolioAsset {
   asset: Asset & { id: string };
 }
 
-export interface Portfolio {
+export interface PaperPortfolioTrade {
+  id: string;
+  asset: Asset & { id: string };
+  time: string;
+  type: "BUY" | "SELL";
+  price: number;
+  quantity: number;
+}
+
+export interface RealPortfolio {
   name: string;
   totalPortfolioValue: number;
   portfolioAssets: PortfolioAsset[];
+}
+
+export interface PaperPortfolio extends RealPortfolio {
+  buyingPower: number;
+  trades: PaperPortfolioTrade[];
 }
 
 export interface SectorValuations {
