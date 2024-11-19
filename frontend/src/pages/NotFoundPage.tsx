@@ -1,11 +1,8 @@
-import { MdErrorOutline } from "react-icons/md";
-
-export default function NotFoundPage() {
+export function NotFoundPage() {
   return (
-    <div className="flex items-center gap-1 text-lg text-error">
-      <MdErrorOutline />
-      <p className="font-bold">404</p>
-      <p>Page Not Found</p>
+    <div className="flex h-1/2 w-full flex-col items-center justify-center text-error">
+      <div className="font-bold ~text-2xl/4xl">404</div>
+      <div className="~text-lg/2xl">Page not found</div>
     </div>
   );
 }

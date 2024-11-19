@@ -1,135 +1,117 @@
-import { useParams } from "wouter";
+import type { SubmitHandler } from "react-hook-form";
+
 import {
-  useClientProfileQuery,
+  useLoggedInClientProfileQuery,
   useModifyEmailMutation,
   useModifyProfileMutation,
 } from "../api/clients";
-import { useEffect, useRef } from "react";
-import { SubmitHandler, useForm } from "react-hook-form";
-import FormEmailInput from "../components/FormEmailInput";
-import FormPasswordInput from "../components/FormPasswordInput";
-import Modal from "../components/Modal";
+import { useForm } from "react-hook-form";
+import { useFormReset } from "../hooks/useFormReset";
+import { useMemo } from "react";
+import { FormEmailInput } from "../components/FormEmailInput";
+import { FormSubmit } from "../components/FormSubmit";
+import { FormPasswordInput } from "../components/FormPasswordInput";
+import { useToastForRequests } from "../hooks/useToastForRequests";
 
-export default function ProfileAccountForm() {
-  const params = useParams() as { id: string };
-  const clientProfileState = useClientProfileQuery({ id: params.id });
+export function ProfileAccountForm() {
+  const clientProfileState = useLoggedInClientProfileQuery();
   const [modifyEmail, modifyEmailState] = useModifyEmailMutation();
   const [modifyProfile, modifyProfileState] = useModifyProfileMutation();
-  const modalRef = useRef<HTMLDialogElement>(null);
+
+  const { isLoading } = useToastForRequests(
+    [
+      {
+        label: "Modify Email",
+        state: modifyEmailState,
+      },
+      {
+        label: "Modify Profile",
+        state: modifyProfileState,
+      },
+    ],
+    { backupSuccessMessage: "Change request sent!" },
+  );
+
   const emailForm = useForm<{ email: string }>();
   const passwordForm = useForm<{ password: string }>();
 
-  useEffect(() => {
-    if (clientProfileState.data) {
-      emailForm.reset({ email: clientProfileState.data.email });
-      passwordForm.reset({ password: "" });
-    }
-  }, [emailForm, passwordForm, clientProfileState]);
+  const clientData = useMemo(
+    () =>
+      clientProfileState.data
+        ? { ...clientProfileState.data, password: "" }
+        : undefined,
+    [clientProfileState.data],
+  );
 
-  const isLoggedInUser = params.id === "me";
+  useFormReset(emailForm, clientData);
+  useFormReset(passwordForm, clientData);
 
-  const isBuffering =
-    clientProfileState.isFetching ||
-    modifyEmailState.isLoading ||
-    modifyProfileState.isLoading;
-
-  const isError = modifyEmailState.isError || modifyProfileState.isError;
-
-  const errorMssg =
-    modifyEmailState.error?.message ||
-    modifyProfileState.error?.message ||
-    "An error occurred";
-
-  const onModifyEmail: SubmitHandler<{ email: string }> = async (formData) => {
+  const onModifyEmail: SubmitHandler<{ email: string }> = (data) => {
     const oldEmail = clientProfileState.data!.email;
-
-    try {
-      await modifyEmail({ id: params.id, newEmail: formData.email }).unwrap();
-    } catch {
-      /* empty */
-    }
-
-    emailForm.reset({ email: oldEmail });
-    modalRef.current?.showModal();
+    modifyEmail({ newEmail: data.email })
+      .unwrap()
+      .then(() => {
+        emailForm.reset({ email: oldEmail });
+      })
+      .catch(() => {});
   };
 
-  const onModifyPassword: SubmitHandler<{ password: string }> = async (
-    formData,
-  ) => {
+  const onModifyPassword: SubmitHandler<{ password: string }> = (data) => {
     const body = new FormData();
-    body.set("password", formData.password);
-
-    try {
-      await modifyProfile({
-        id: params.id,
-        formData: body,
-      }).unwrap();
-    } catch {
-      /* empty */
-    }
-
-    passwordForm.reset({ password: "" });
-    modalRef.current?.showModal();
-  };
-
-  const onModalExit = () => {
-    modalRef.current?.close();
+    body.set("password", data.password);
+    modifyProfile(body)
+      .unwrap()
+      .then(() => {
+        passwordForm.reset({ password: "" });
+      })
+      .catch(() => {});
   };
 
   return (
-    <div className="flex flex-col items-center">
-      <h1 className="text-lg font-semibold">
-        Client ID: {clientProfileState.data?.id}
+    <div className="flex w-full flex-col gap-4 ~text-sm/base">
+      <h1 className="text-center font-bold ~text-2xl/3xl">
+        Account Information
       </h1>
+
       <div className="divider"></div>
+
       <form
-        className="flex w-full flex-col gap-4"
+        className="flex flex-col"
         onSubmit={emailForm.handleSubmit(onModifyEmail)}
         aria-label="form"
-        aria-disabled={isBuffering || !isLoggedInUser}
+        aria-disabled={isLoading}
       >
         <FormEmailInput
+          name="email"
+          label="Email"
           form={emailForm}
-          disabled={isBuffering || !isLoggedInUser}
+          isBuffering={isLoading}
           required
         />
-        {isLoggedInUser && (
-          <div>
-            <button className="btn btn-primary" disabled={isBuffering}>
-              {isBuffering && <span className="loading loading-spinner"></span>}
-              Change
-            </button>
-          </div>
-        )}
-      </form>
-      {isLoggedInUser && (
-        <form
-          className="mt-8 flex w-full flex-col gap-4"
-          onSubmit={passwordForm.handleSubmit(onModifyPassword)}
-          aria-label="form"
-          aria-disabled={isBuffering}
-        >
-          <FormPasswordInput
-            form={passwordForm}
-            autoComplete="new-password"
-            disabled={isBuffering}
-          />
 
-          <div>
-            <button className="btn btn-primary" disabled={isBuffering}>
-              {isBuffering && <span className="loading loading-spinner"></span>}
-              Change
-            </button>
-          </div>
-        </form>
-      )}
-      <Modal
-        ref={modalRef}
-        onExit={onModalExit}
-        title={!isError ? "Success!" : "Error"}
+        <div>
+          <FormSubmit className="btn-primary" isBuffering={isLoading} />
+        </div>
+      </form>
+
+      <form
+        className="mt-4 flex flex-col"
+        onSubmit={passwordForm.handleSubmit(onModifyPassword)}
+        aria-label="form"
+        aria-disabled={isLoading}
       >
-        <p className="py-4">{!isError ? "Change request sent!" : errorMssg}</p>
-      </Modal>
+        <FormPasswordInput
+          name="password"
+          label="Password"
+          form={passwordForm}
+          isBuffering={isLoading}
+          required
+        />
+
+        <div>
+          <FormSubmit className="btn-primary" isBuffering={isLoading} />
+        </div>
+      </form>
     </div>
   );
 }

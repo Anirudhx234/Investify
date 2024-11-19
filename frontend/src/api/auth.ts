@@ -1,50 +1,72 @@
-import type Auth from "../types/Auth";
-import api from "./api";
+import type { apiTypes, clientTypes } from "../types";
+import { api } from "./api";
 
 const authApi = api.injectEndpoints({
   endpoints: (build) => ({
-    signUp: build.mutation<Auth.SignUpResponse, Auth.SignUpRequest>({
-      query: ({ ...args }) => ({
+    signUp: build.mutation<void, apiTypes.SignUpArgs>({
+      query: ({ ...body }) => ({
         url: "/auth/signup",
         method: "POST",
-        body: args,
+        body,
       }),
+      invalidatesTags: ["logged-in-client"],
     }),
-    login: build.mutation<Auth.LoginResponse, Auth.LoginRequest>({
-      query: ({ ...args }) => ({
+
+    verifyClient: build.query<void, apiTypes.VerifyClientArgs>({
+      query: ({ url, search }) => ({
+        url,
+        method: "GET",
+        search,
+      }),
+      providesTags: ["logged-in-client"],
+    }),
+
+    login: build.mutation<
+      clientTypes.LoggedInClient,
+      Pick<apiTypes.SignUpArgs, "email" | "password">
+    >({
+      query: ({ ...body }) => ({
         url: "/auth/login",
         method: "POST",
-        body: args,
+        body,
       }),
+      invalidatesTags: ["logged-in-client"],
     }),
+
     logout: build.mutation<void, void>({
       query: () => ({
         url: "/auth/logout",
         method: "POST",
       }),
+      invalidatesTags: ["logged-in-client"],
     }),
-    forgotPassword: build.mutation<void, { email: string }>({
+
+    forgotPassword: build.mutation<void, Pick<apiTypes.SignUpArgs, "email">>({
       query: ({ ...args }) => ({
         url: "/auth/forgot-password",
         method: "POST",
         body: args,
       }),
+      invalidatesTags: ["logged-in-client"],
     }),
-    resetPassword: build.mutation<
-      void,
-      { searchParams?: string | undefined; newPassword: string }
-    >({
-      query: ({ newPassword, searchParams }) => ({
-        url: "/auth/reset-password?" + (searchParams ?? ""),
+
+    resetPassword: build.mutation<void, apiTypes.ResetPasswordArgs>({
+      query: ({ search, password }) => ({
+        url: "/auth/reset-password",
         method: "PATCH",
-        body: { newPassword },
+        search,
+        body: {
+          newPassword: password,
+        },
       }),
+      invalidatesTags: ["logged-in-client"],
     }),
   }),
 });
 
 export const {
   useSignUpMutation,
+  useVerifyClientQuery,
   useLoginMutation,
   useLogoutMutation,
   useForgotPasswordMutation,

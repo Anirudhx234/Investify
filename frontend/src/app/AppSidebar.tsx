@@ -1,18 +1,21 @@
+import { ClientSidebar } from "../scenes/ClientSidebar";
+import { Logo } from "../components/Logo";
+import { useAppSelector } from "../hooks/useAppSelector";
 import { Route, Switch } from "wouter";
-import Logo from "../components/Logo";
-import useAppSelector from "../hooks/useAppSelector";
-import ClientsSidebar from "../scenes/ClientsSidebar";
-import AssetsSidebar from "../scenes/AssetsSidebar";
-import PortfolioAssetForm from "../forms/PortfolioAssetForm";
+import { AssetSidebar } from "../scenes/AssetSidebar";
+import { PortfoliosSidebar } from "../scenes/PortfoliosSidebar";
 
-const sidebarRoutes = {
-  "/clients/:id": { component: ClientsSidebar, nest: true },
-  "/assets": { component: AssetsSidebar, nest: true },
-  "/portfolio": { component: PortfolioAssetForm },
-};
+const sidebarRoutes = [
+  { path: "/clients/me", component: ClientSidebar, nest: true },
+  { path: "/clients/:id", component: ClientSidebar, nest: true },
+  { path: "/assets/:type/:symbol", component: AssetSidebar, nest: true },
+  { path: "/portfolios", component: PortfoliosSidebar, nest: true },
+];
 
-export default function AppSidebar() {
-  const drawerMode = useAppSelector((state) => state.appRoute.args?.drawerMode);
+export function AppSidebar() {
+  const drawerMode = useAppSelector(
+    (state) => state.route.attributes?.drawerMode,
+  );
 
   return (
     <aside className="min-h-screen w-72 scroll-pt-20 scroll-smooth bg-base-100">
@@ -24,8 +27,8 @@ export default function AppSidebar() {
       <div className="h-4"></div>
       <div className="flex flex-col items-center px-2">
         <Switch>
-          {Object.entries(sidebarRoutes).map(([key, value]) => (
-            <Route key={key} path={key} {...value} />
+          {sidebarRoutes.map((route) => (
+            <Route key={route.path} {...route} />
           ))}
         </Switch>
       </div>

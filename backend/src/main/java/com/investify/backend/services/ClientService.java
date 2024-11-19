@@ -6,6 +6,7 @@ import com.investify.backend.enums.InvestmentRisk;
 import com.investify.backend.exceptions.RestException;
 import com.investify.backend.mappers.ClientMapper;
 import com.investify.backend.repositories.ClientRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,10 +19,12 @@ import java.util.Optional;
 import java.util.UUID;
 
 @RequiredArgsConstructor
+@Transactional
 @Service
 public class ClientService {
 
     private final AuthService authService;
+
     private final ClientRepository clientRepository;
 
     private final PasswordEncoder passwordEncoder;
@@ -142,10 +145,6 @@ public class ClientService {
             client.setCurrentSavings(updateProfileDto.getCurrentSavings());
         }
 
-
-
-
-
         Client updatedClient = clientRepository.save(client);
         return clientMapper.toClientDto(updatedClient);
     }
@@ -183,12 +182,13 @@ public class ClientService {
     }
 
     public ClientDto findDtoById(String clientId) {
-        return clientMapper.toClientDto(findById(clientId));
+        Client client = findById(clientId);
+        return clientMapper.toClientDto(client);
     }
 
     public Client findById(String clientId) {
         if ("me".equals(clientId)) {
-            return authService.getLoggedInClient();
+            clientId = authService.getLoggedInClient().getId(); // TODO: Return logged in client directly (fix lazy loading issue)
         }
         return clientRepository.findById(UUID.fromString(clientId))
                 .orElseThrow(() -> new RestException("Unknown client", HttpStatus.NOT_FOUND));

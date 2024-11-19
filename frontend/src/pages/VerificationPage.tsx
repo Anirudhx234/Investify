@@ -1,32 +1,22 @@
-import type { VerificationArgs } from "../types/AppRouter";
+import type { routerTypes } from "../types";
 
-import { useSearch } from "wouter";
-import { useVerifyQuery } from "../api/verify";
-import { MdErrorOutline } from "react-icons/md";
+import { useLocation, useSearch } from "wouter";
+import { useVerifyClientQuery } from "../api/auth";
+import { useToastForRequest } from "../hooks/useToastForRequests";
 
-export default function VerificationPage({ url, method }: VerificationArgs) {
-  const searchParams = useSearch();
-  const { isSuccess, isError, error } = useVerifyQuery({ url, method, searchParams });
+export function VerificationPage({ url }: routerTypes.VerificationArgs) {
+  const search = useSearch();
+  const [, navigate] = useLocation();
 
-  const errorMssg = error?.message ?? "Invalid Verification URL";
+  const verifyClientState = useVerifyClientQuery({
+    url,
+    search,
+  });
 
-  if (isSuccess) {
-    return <p className="text-success">Success!</p>;
-  }
+  const { component } = useToastForRequest("Verifying", verifyClientState, {
+    onSuccess: () => navigate("/"),
+    backupSuccessMessage: "Client verified!",
+  });
 
-  if (isError) {
-    return (
-      <div className="flex items-center gap-1 text-lg text-error">
-        <MdErrorOutline />
-        <p>{errorMssg}</p>
-      </div>
-    );
-  }
-
-  return (
-    <div className="flex items-center gap-1 text-lg">
-      <span>Loading</span>
-      <span className="loading loading-bars loading-lg"></span>
-    </div>
-  );
+  return component;
 }

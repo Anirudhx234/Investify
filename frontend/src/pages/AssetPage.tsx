@@ -1,170 +1,119 @@
-import type Assets from "../types/Assets";
+import { Redirect, Route, Switch, useParams } from "wouter";
+import { selectIsLoggedIn } from "../features/clientSlice";
+import { useAppSelector } from "../hooks/useAppSelector";
+import { useAssetNewsQuery, useAssetOneDayQuoteQuery } from "../api/assets";
+import { assetIcons } from "../components/assetIcons";
+import { convertAssetTypeToLabel } from "../util/convertAsset";
+import { ObjectTable } from "../components/ObjectTable";
+import { AssetPageChart } from "../scenes/AssetPageChart";
+import { useToastForRequest } from "../hooks/useToastForRequests";
 
-import { useParams } from "wouter";
-import {useAssetMetaDataQuery, useScraperQuery} from "../api/assets";
-import { MdErrorOutline } from "react-icons/md";
-import DataTable from "../components/DataTable";
-import AssetPageChart from "../scenes/AssetPageChart";
+export function AssetPage() {
+  const params = useParams() as { symbol: string; type: string };
+  const { symbol, type } = params;
+  const label = convertAssetTypeToLabel(type);
 
-export default function AssetPage() {
-  const params = useParams() as { symbol: string };
+  const isLoggedIn = useAppSelector(selectIsLoggedIn);
 
   return (
-    <div className="flex w-full flex-col gap-4">
-      <h1 className="ml-8 font-bold ~text-lg/xl">{params.symbol}</h1>
-      <div
-        role="tablist"
-        className="tabs-boxed tabs tabs-sm w-full bg-base-100 lg:tabs-md"
-      >
-        <input
-          type="radio"
-          name="asset-page-tablist"
-          role="tab"
-          className="tab ml-4"
-          aria-label="General"
-          defaultChecked
-        />
-        <div
-          role="tabpanel"
-          className="tab-content w-full border-t-2 border-t-primary ~p-2/4"
-        >
-          <AssetPageGeneral />
-        </div>
-
-        <input
-          type="radio"
-          name="asset-page-tablist"
-          role="tab"
-          className="tab"
-          aria-label="Chart"
-        />
-        <div
-          role="tabpanel"
-          className="tab-content w-full border-t-2 border-t-primary ~p-2/4"
-        >
-          <AssetPageChart />
-        </div>
-
-        <input
-          type="radio"
-          name="asset-page-tablist"
-          role="tab"
-          className="tab"
-          aria-label="Portfolio"
-        />
-        <div
-          role="tabpanel"
-          className="tab-content w-full border-t-2 border-t-primary ~p-2/4"
-        >
-          <AssetPagePortfolio />
-        </div>
-
-        <input
-            type="radio"
-            name="asset-page-tablist"
-            role="tab"
-            className="tab"
-            aria-label="News"
-        />
-        <div
-            role="tabpanel"
-            className="tab-content w-full border-t-2 border-t-primary ~p-2/4"
-        >
-          <AssetPageNews />
-        </div>
+    <div className="w-full">
+      <h1 className="mx-5 text-2xl font-bold">{symbol}</h1>
+      <div className="mx-4 mt-0.5 flex items-center gap-1">
+        <span>{assetIcons[label]}</span>
+        <span className="capitalize">{label}</span>
       </div>
+
+      <div className="divider"></div>
+
+      <Switch>
+        <Route path="/general" component={AssetPageGeneral} />
+        <Route path="/line-chart" component={AssetPageChart} />
+        <Route path="/candle-chart" component={AssetPageChart} />
+        <Route path="/news" component={AssetPageNews} />
+        {isLoggedIn && (
+          <Route path="/portfolio" component={() => <>Portfolio</>} />
+        )}
+        <Route
+          path="*"
+          component={() => <Redirect to="/general" replace />}
+        ></Route>
+      </Switch>
     </div>
   );
 }
 
-function AssetPageGeneral() {
-  const params = useParams() as { type: Assets.Type; symbol: string };
-  const { data, isError, error, isSuccess } = useAssetMetaDataQuery(params);
+export function AssetPageGeneral() {
+  const params = useParams() as { symbol: string; type: string };
+  const { symbol } = params;
+  const assetQuoteState = useAssetOneDayQuoteQuery({ symbol });
 
-  const errorMssg = error?.message || "An error occurred";
+  const { component, isSuccess } = useToastForRequest(symbol, assetQuoteState, {
+    backupSuccessMessage: `Retrieved ${symbol} info!`,
+  });
 
-  if (isSuccess) {
-    return <DataTable data={data} />;
-  }
+  if (!isSuccess) return component;
 
-  if (isError) {
-    return (
-      <div className="flex items-center gap-1 text-error">
-        <MdErrorOutline />
-        <p>{errorMssg}</p>
-      </div>
-    );
-  }
+  const data = assetQuoteState.data;
+  const entries = Object.entries(data ?? {});
 
   return (
-    <div className="flex items-center gap-2">
-      <span className="loading loading-spinner"></span>Loading...
+    <div className="grid w-full grid-cols-1 ~gap-4/8 lg:grid-cols-2">
+      <div className="flex flex-col ~gap-2/4">
+        <h2 className="text-center font-bold capitalize">over the last day</h2>
+
+        <ObjectTable
+          data={entries.filter(([, val]) => typeof val !== "object")}
+        />
+      </div>
+
+      <div className="flex flex-col ~gap-4/8">
+        {entries
+          .filter(([, val]) => typeof val === "object")
+          .map(([attr, val]) => (
+            <div key={attr} className="flex flex-col ~gap-2/4">
+              <h2 className="text-center font-bold capitalize">
+                {attr.split("_").join(" ")}
+              </h2>
+
+              <ObjectTable data={val} />
+            </div>
+          ))}
+      </div>
     </div>
   );
-}
-
-function AssetPagePortfolio() {
-  return <>Add to portfolio</>;
 }
 
 function AssetPageNews() {
   const params = useParams() as { symbol: string };
-  const { data: articles, error, isLoading } = useScraperQuery(params);
+  const { symbol } = params;
 
-  const styles = {
-    list: {
-      listStyleType: 'none',
-      padding: 0,
-      margin: '20px 0',
-    },
-    listItem: {
-      marginBottom: '10px',
-    },
-    link: {
-      textDecoration: 'none',
-      color: '#00aeff',
-      fontWeight: 'bold',
-      transition: 'color 0.3s',
-    },
-    linkHover: {
-      color: '#0056b3',
-      textDecoration: 'underline',
-    },
-  };
+  const assetNewsState = useAssetNewsQuery({ symbol });
+  const data = assetNewsState.data;
 
-  const handleMouseOver = (e) => {
-    e.currentTarget.style.color = styles.linkHover.color;
-    e.currentTarget.style.textDecoration = styles.linkHover.textDecoration;
-  };
-
-  const handleMouseOut = (e) => {
-    e.currentTarget.style.color = styles.link.color;
-    e.currentTarget.style.textDecoration = styles.link.textDecoration;
-  };
-
-  if (isLoading) return <div>Loading...</div>;
-  if (error) return <div>Error fetching articles</div>;
+  const { component } = useToastForRequest(`${symbol} News`, assetNewsState, {
+    backupSuccessMessage: `Retrieved ${symbol} updates!`,
+  });
 
   return (
-      <div>
-        <h1>News surrounding the {params.symbol} stock:</h1>
-        <ul style={styles.list}>
-          {!articles && <div>No recent news available for this asset</div>}
-          {articles?.map(([title, url], index) => (
-              <li key={index} style={styles.listItem}>
-                <a
-                    href={url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    style={styles.link}
-                    onMouseOver={handleMouseOver}
-                    onMouseOut={handleMouseOut}
-                >
-                  {title}
-                </a>
-              </li>
-          ))}
-        </ul>
-      </div>
+    <div>
+      <h2 className="m-4 text-lg font-semibold">
+        News surrounding the {params.symbol} stock:
+      </h2>
+      <ul className="mx-4 flex flex-col gap-4">
+        {component}
+        {data?.map(([title, url]) => (
+          <li key={url}>
+            <a
+              href={url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="link link-primary transition-colors hover:link-secondary"
+            >
+              {title}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
   );
 }

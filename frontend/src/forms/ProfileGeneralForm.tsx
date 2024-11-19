@@ -1,143 +1,157 @@
-import type Clients from "../types/Clients";
+import type { ChangeEvent } from "react";
+import type { SubmitHandler } from "react-hook-form";
 
 import { useParams } from "wouter";
 import {
   useClientProfileQuery,
+  useLoggedInClientProfileQuery,
   useModifyProfileMutation,
 } from "../api/clients";
-import { ChangeEvent, useEffect, useRef, useState } from "react";
-import { SubmitHandler, useForm } from "react-hook-form";
-import Modal from "../components/Modal";
-import ProfilePicture from "../components/ProfilePicture";
-import FormTextInput from "../components/FormTextInput";
+import { useMemo, useState } from "react";
+import { useForm } from "react-hook-form";
+import { useFormReset } from "../hooks/useFormReset";
+import { ProfilePicture } from "../components/ProfilePicture";
+import { FormInput } from "../components/FormInput";
+import { FormSubmit } from "../components/FormSubmit";
+import { ReadonlyInput } from "../components/ReadonlyInput";
+import { useToastForRequest } from "../hooks/useToastForRequests";
 
-export default function ProfileGeneralForm() {
-  const params = useParams() as { id: string };
-  const clientProfileState = useClientProfileQuery({ id: params.id });
+export function ProfileGeneralForm() {
+  const params = useParams() as { id?: string | undefined };
+  const clientId = params.id ?? "me";
+
+  if (clientId === "me") return <ProfileGeneralFormEdit />;
+  else return <ProfileGeneralFormView />;
+}
+
+export interface ProfileGeneralFormEditShape {
+  username: string;
+  profilePicture: FileList | undefined | null;
+}
+
+export function ProfileGeneralFormEdit() {
+  const clientProfileState = useLoggedInClientProfileQuery();
   const [modifyProfile, modifyProfileState] = useModifyProfileMutation();
-  const modalRef = useRef<HTMLDialogElement>(null);
-  const generalForm = useForm<Clients.ModifyProfileGeneralForm>();
+  const [uploadedImgURL, setUploadedImgURL] = useState<string | undefined>();
 
-  const [uploadedImgURL, setUploadedImgURL] = useState<string | null>(null);
+  const { isLoading } = useToastForRequest(
+    "Modify Profile",
+    modifyProfileState,
+    { backupSuccessMessage: "Profile updated!" },
+  );
 
-  useEffect(() => {
-    if (clientProfileState.data) {
-      generalForm.reset({
-        ...clientProfileState.data,
-        profilePicture: undefined,
-      });
-    }
-  }, [generalForm, clientProfileState]);
+  const form = useForm<ProfileGeneralFormEditShape>();
 
-  const isLoggedInUser = params.id === "me";
+  const clientData = useMemo(
+    () =>
+      clientProfileState.data
+        ? { ...clientProfileState.data, profilePicture: undefined }
+        : undefined,
+    [clientProfileState.data],
+  );
 
-  const profilePictureRegister = generalForm.register("profilePicture", {
+  useFormReset(form, clientData);
+
+  const profilePictureRegister = form.register("profilePicture", {
     onChange: (e: ChangeEvent<HTMLInputElement>) => {
       if (e.target.files?.[0]) {
         const url = URL.createObjectURL(e.target.files[0]);
         setUploadedImgURL(url);
       } else {
-        setUploadedImgURL(null);
+        setUploadedImgURL(undefined);
       }
     },
   });
 
-  const isBuffering =
-    clientProfileState.isFetching || modifyProfileState.isLoading;
-
-  const isError = modifyProfileState.isError;
-  const errorMssg = modifyProfileState.error?.message ?? "An error occurred";
-
-  const onModifyProfile: SubmitHandler<
-    Clients.ModifyProfileGeneralForm
-  > = async (data) => {
+  const onModifyProfile: SubmitHandler<ProfileGeneralFormEditShape> = (
+    data,
+  ) => {
     const formData = new FormData();
 
-    if (data.username !== clientProfileState.data?.username)
+    if (data.username !== clientData?.username)
       formData.set("username", data.username);
 
-    if (data.profilePicture[0])
+    if (data.profilePicture?.[0])
       formData.set("profilePicture", data.profilePicture[0]);
 
-    try {
-      await modifyProfile({
-        id: params.id,
-        formData,
-      }).unwrap();
-    } catch {
-      /* empty */
-    }
-
-    modalRef.current?.showModal();
-  };
-
-  const onModalExit = () => {
-    modalRef.current?.close();
+    modifyProfile(formData)
+      .unwrap()
+      .catch(() => {});
   };
 
   return (
-    <div className="flex flex-col items-center">
-      <h1 className="text-lg font-semibold">
-        Client ID: {clientProfileState.data?.id}
+    <div className="flex w-full flex-col gap-4 ~text-sm/base">
+      <h1 className="text-center font-bold ~text-2xl/3xl">
+        General Information
       </h1>
-      <div className="divider"></div>
-      <div className="h-4"></div>
-      <form
-        className="flex w-full flex-col gap-4"
-        onSubmit={generalForm.handleSubmit(onModifyProfile)}
-        aria-label="form"
-        aria-disabled={isBuffering || !isLoggedInUser}
-      >
-        <div className="flex flex-col items-center gap-4">
-          <ProfilePicture
-            src={uploadedImgURL ?? { id: params.id }}
-            className="~h-20/40 ~w-20/40"
-          />
 
-          {isLoggedInUser && (
-            <label
-              htmlFor="profilePicture"
-              className="btn btn-secondary btn-wide"
-            >
-              Upload Picture
-              <input
-                type="file"
-                id="profilePicture"
-                accept="image/*"
-                className="hidden"
-                disabled={isBuffering}
-                {...profilePictureRegister}
-              />
-            </label>
-          )}
+      <div className="divider"></div>
+
+      <form
+        className="flex flex-col"
+        onSubmit={form.handleSubmit(onModifyProfile)}
+        aria-label="form"
+        aria-disabled={isLoading}
+      >
+        <div className="mb-8 flex flex-col items-center gap-8">
+          <ProfilePicture src={uploadedImgURL} className="~h-20/40 ~w-20/40" />
+          <label
+            htmlFor="profilePicture"
+            className="btn btn-secondary btn-wide"
+          >
+            Upload Picture
+            <input
+              type="file"
+              id="profilePicture"
+              accept="image/*"
+              className="hidden"
+              disabled={isLoading}
+              {...profilePictureRegister}
+            />
+          </label>
         </div>
 
-        <FormTextInput
+        <FormInput
           name="username"
-          labelText="Username"
-          form={generalForm}
-          autoComplete="username"
-          disabled={isBuffering || !isLoggedInUser}
+          label="Username"
+          form={form}
+          inputAttributes={{ autoComplete: "username" }}
+          isBuffering={isLoading}
           required
         />
 
-        {isLoggedInUser && (
-          <div>
-            <button className="btn btn-primary" disabled={isBuffering}>
-              {isBuffering && <span className="loading loading-spinner"></span>}
-              Change
-            </button>
-          </div>
-        )}
-
+        <div>
+          <FormSubmit className="btn-primary" isBuffering={isLoading} />
+        </div>
       </form>
-      <Modal
-        ref={modalRef}
-        onExit={onModalExit}
-        title={!isError ? "Success!" : "Error"}
-      >
-        <p className="py-4">{!isError ? "Change request sent!" : errorMssg}</p>
-      </Modal>
+    </div>
+  );
+}
+
+export function ProfileGeneralFormView() {
+  const params = useParams() as { id: string };
+  const clientProfileState = useClientProfileQuery({ id: params.id });
+
+  return (
+    <div className="flex w-full flex-col gap-4 ~text-sm/base">
+      <h1 className="text-center font-bold ~text-2xl/3xl">
+        General Information
+      </h1>
+
+      <div className="divider"></div>
+
+      <div className="flex flex-col items-center gap-4">
+        <ProfilePicture
+          src={clientProfileState.data?.profilePicture ?? undefined}
+          className="~h-20/40 ~w-20/40"
+        />
+      </div>
+
+      <ReadonlyInput
+        name="username"
+        label="Username"
+        value={clientProfileState.data?.username}
+      />
     </div>
   );
 }

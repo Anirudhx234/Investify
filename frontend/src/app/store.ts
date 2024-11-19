@@ -1,14 +1,22 @@
-import storage from "redux-persist/lib/storage";
-import { persistStore, persistCombineReducers, PERSIST } from "redux-persist";
 import { configureStore } from "@reduxjs/toolkit";
+import storage from "redux-persist/lib/storage";
+import {
+  persistStore,
+  persistCombineReducers,
+  FLUSH,
+  REHYDRATE,
+  PAUSE,
+  PERSIST,
+  PURGE,
+  REGISTER,
+} from "redux-persist";
 
 import themeReducer from "../features/themeSlice";
-import appRouteReducer from "../features/appRouteSlice";
+import routeReducer from "../features/routeSlice";
 import clientReducer from "../features/clientSlice";
-import searchReducer from "../features/searchSlice";
-// import sectorValuationsReducer from "../features/sectorValuationsSlice";
+import toastReducer from "../features/toastSlice";
 
-import api from "../api/api";
+import { api } from "../api/api";
 
 /* local storage based persist config */
 const persistConfig = {
@@ -20,10 +28,9 @@ const persistConfig = {
 /* local storage persisted reducer */
 const persistedReducer = persistCombineReducers(persistConfig, {
   theme: themeReducer,
-  appRoute: appRouteReducer,
+  route: routeReducer,
   client: clientReducer,
-  search: searchReducer,
-  // sectorValuations: sectorValuationsReducer,
+  toast: toastReducer,
   [api.reducerPath]: api.reducer,
 });
 
@@ -33,7 +40,7 @@ export const store = configureStore({
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: {
-        ignoredActions: [PERSIST],
+        ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
       },
     }).concat(api.middleware),
 });

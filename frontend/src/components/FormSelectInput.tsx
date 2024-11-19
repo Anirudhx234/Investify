@@ -1,40 +1,41 @@
-import type { Path, UseFormReturn, FieldValues } from "react-hook-form";
+import type { FieldErrors, FieldValues } from "react-hook-form";
+import type { formTypes } from "../types";
 
-export interface Option {
-  value: string | number;
-  label: string;
-}
+import { twMerge } from "../util/twMerge";
+import { ErrorMessage } from "@hookform/error-message";
+import { MdErrorOutline } from "react-icons/md";
 
-export interface FormSelectInputProps<T extends FieldValues> {
-  name: Path<T>;
-  form: UseFormReturn<T>;
-  labelText: string;
-  options: Option[];
-  disabled?: boolean;
-}
-
-export default function FormSelectInput<T extends FieldValues>({
+export function FormSelectInput<T extends FieldValues>({
   name,
+  label,
+  registerOptions,
+  selectAttributes,
   form,
-  labelText,
   options,
-  disabled,
-}: FormSelectInputProps<T>) {
-  const { register, formState: { errors } } = form;
+  required,
+  isBuffering,
+}: formTypes.Input<T> & formTypes.SelectFieldArgs) {
+  const selectRegisterProps = form.register(name, {
+    ...registerOptions,
+    required: required ? `${label ?? name} is required` : false,
+  });
 
-  // Use a type-safe way to access the error message
-  const errorMessage = errors[name]?.message as string | undefined;
+  const { className, disabled, ...otherSelectAttributes } = {
+    ...selectAttributes,
+  };
 
   return (
-    <div className="form-control w-full">
-      <label htmlFor={name} className="label">
-        <span className="label-text">{labelText}</span>
-      </label>
+    <label className="form-control">
+      {label && (
+        <div className="label">
+          <span>{label}</span>
+        </div>
+      )}
       <select
-        id={name}
-        {...register(name, { required: `${labelText} is required` })}
-        disabled={disabled}
-        className={`select select-bordered w-full ${errorMessage ? "select-error" : ""}`}
+        className={twMerge("select select-bordered text-base", className)}
+        {...selectRegisterProps}
+        {...otherSelectAttributes}
+        disabled={disabled || isBuffering}
       >
         <option value="" disabled>
           Select an option
@@ -45,9 +46,23 @@ export default function FormSelectInput<T extends FieldValues>({
           </option>
         ))}
       </select>
-      {errorMessage && (
-        <p className="text-error mt-1 text-sm">{errorMessage}</p>
-      )}
-    </div>
+
+      <div className="label">
+        <span className="label-text-alt">
+          <div className="flex items-center gap-1 text-error">
+            <ErrorMessage
+              errors={form.formState.errors as FieldErrors}
+              name={name}
+              render={({ message }) => (
+                <>
+                  <MdErrorOutline />
+                  <p>{message}</p>
+                </>
+              )}
+            />
+          </div>
+        </span>
+      </div>
+    </label>
   );
 }

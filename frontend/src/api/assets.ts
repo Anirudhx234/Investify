@@ -1,153 +1,107 @@
-import type Assets from "../types/Assets";
-import convertToUnixTimestamp from "../util/convertToUnixTimestamp";
-import intervalSecs from "../util/intervalSecs";
+import type { apiTypes, assetTypes } from "../types";
+import { convertLabelToAssetType } from "../util/convertAsset";
+import { convertIntervalToSecs } from "../util/convertIntervalToSecs";
+import { convertToUnixTimestamp } from "../util/convertToUnixTimestamp";
+import { api } from "./api";
+import { host } from "./server";
 
-import api from "./api";
-import { createWebSocket } from "./websocket";
+export function timeSeriesResToEntries(res: apiTypes.TimeSeriesRes) {
+  return res.values
+    .map((entry) => ({
+      datetime: entry.datetime,
+      open: parseFloat(entry.open),
+      close: parseFloat(entry.close),
+      high: parseFloat(entry.high),
+      low: parseFloat(entry.low),
+      volume: parseFloat(entry.volume),
+    }))
+    .reverse();
+}
 
 export const assetsApi = api.injectEndpoints({
   endpoints: (build) => ({
-    assetsSearch: build.query<Assets.SearchMenuItems, { symbol: string }>({
+    searchAssets: build.query<assetTypes.Set, { symbol: string }>({
       query: ({ symbol }) => ({
-        url: "/assets?symbol=" + symbol,
+        url: "/assets",
+        search: { symbol },
         method: "GET",
       }),
-      transformResponse: (res: Assets.Set) => {
-        const transformedData: Assets.SearchMenuItems = {};
-
-        Object.entries(res).forEach(([type, list]) => {
-          transformedData[type] = {
-            items: list.map((item) => ({
-              link: `/${type}/${item.symbol}`,
-              label: `${item.name} (${item.symbol})`,
-            })),
-          };
+      transformResponse: (res: apiTypes.AssetSearchRes) => {
+        const transformed: apiTypes.AssetSearchRes = {};
+        Object.entries(res).forEach(([assetType, list]) => {
+          transformed[convertLabelToAssetType(assetType)] = list;
         });
 
-        return transformedData;
+        return transformed as assetTypes.Set;
       },
     }),
 
-    assetsList: build.query<Assets.Asset[], { symbol: string }>({
-      query: ({ symbol }) => ({
-        url: "/assets?symbol=" + symbol,
-        method: "GET",
-      }),
-      transformResponse: (res: Assets.Set) => {
-        const result: Assets.Asset[] = [];
-
-        Object.entries(res).forEach(([type, list]) => {
-          list.forEach((item) => {
-            const assetType = type as Assets.Type;
-            result.push({ type: assetType, ...item });
-          });
-        });
-
-        return result;
-      },
-    }),
-
-    popularStocks: build.query<Assets.PopularStocksResponse, void>({
+    popularStocks: build.query<apiTypes.PopularStocksRes, void>({
       query: () => ({
         url: "/assets/popular/stocks",
         method: "GET",
       }),
     }),
 
-    popularMutualFunds: build.query<Assets.MutualFund[], void>({
+    popularMutualFunds: build.query<assetTypes.MutualFund[], void>({
       query: () => ({
         url: "/assets/popular/mutual-funds",
         method: "GET",
       }),
-      transformResponse: (res: Assets.PopularMutualFundsResponse) =>
+      transformResponse: (res: { result: { list: assetTypes.MutualFund[] } }) =>
         res.result.list,
     }),
 
-    popularEtfs: build.query<Assets.Etf[], void>({
+    popularEtfs: build.query<assetTypes.Etf[], void>({
       query: () => ({
         url: "/assets/popular/etfs",
         method: "GET",
       }),
-      transformResponse: (res: Assets.PopularEtfsResponse) => res.result.list,
+      transformResponse: (res: { result: { list: assetTypes.Etf[] } }) =>
+        res.result.list,
     }),
 
-    popularCrypto: build.query<Assets.Crypto[], void>({
+    popularCrypto: build.query<assetTypes.Crypto[], void>({
       query: () => ({
         url: "/assets/popular/crypto",
         method: "GET",
       }),
-      transformResponse: (res: Assets.PopularCryptoResponse) => res.crypto,
+      transformResponse: (res: { crypto: assetTypes.Crypto[] }) => res.crypto,
     }),
 
-    assetMetaData: build.query<object, Assets.AssetDataRequest>({
+    assetOneDayQuote: build.query<object, { symbol: string }>({
       query: ({ symbol }) => ({
-        url: `/assets/quote/${symbol}?interval=1day`,
+        url: `/assets/quote/${symbol}`,
+        search: { interval: "1day" },
         method: "GET",
       }),
-      providesTags: (_res, _err, args) => [
-        { type: "asset-metadata", id: args.symbol },
-      ],
     }),
 
-    assetTimeSeriesData: build.query<
-      Assets.TimeSeriesEntry[],
-      Assets.TimeSeriesRequest
+    assetTimeSeries: build.query<
+      assetTypes.TimeSeriesEntry[],
+      apiTypes.TimeSeriesArgs
     >({
       query: ({ symbol, interval }) => ({
-        url: `/assets/time-series/${symbol}?interval=${interval}`,
+        url: `/assets/time-series/${symbol}`,
+        search: { interval },
         method: "GET",
       }),
-      transformResponse: (res: Assets.TimeSeriesResponse) => {
-        const transformed: Assets.TimeSeriesEntry[] = [];
-        for (let i = res.values.length - 1; i >= 0; i--) {
-          const item = res.values[i];
-          transformed.push({
-            datetime: item.datetime,
-            open: parseFloat(item.open),
-            close: parseFloat(item.close),
-            high: parseFloat(item.high),
-            low: parseFloat(item.low),
-            volume: parseFloat(item.volume),
-          });
-        }
-
-        return transformed;
-      },
+      transformResponse: timeSeriesResToEntries,
     }),
 
-    assetLivePriceData: build.query<
-      (Assets.TimeSeriesEntry | Assets.PriceDataEntry)[],
-      Assets.TimeSeriesRequest
+    assetPriceHistory: build.query<
+      (assetTypes.TimeSeriesEntry | assetTypes.PriceHistoryEntry)[],
+      apiTypes.TimeSeriesArgs
     >({
       query: ({ symbol, interval }) => ({
-        url: `/assets/time-series/${symbol}?interval=${interval}`,
+        url: `/assets/time-series/${symbol}`,
+        search: { interval },
         method: "GET",
       }),
-      transformResponse: (res: Assets.TimeSeriesResponse) => {
-        const transformed: Assets.TimeSeriesEntry[] = [];
-        for (let i = res.values.length - 1; i >= 0; i--) {
-          const item = res.values[i];
-          transformed.push({
-            datetime: item.datetime,
-            open: parseFloat(item.open),
-            close: parseFloat(item.close),
-            high: parseFloat(item.high),
-            low: parseFloat(item.low),
-            volume: parseFloat(item.volume),
-          });
-        }
-
-        return transformed;
-      },
-      onCacheEntryAdded: async (
-        arg,
-        { cacheDataLoaded, cacheEntryRemoved, updateCachedData },
-      ) => {
-        await cacheDataLoaded;
-
-        const ws = createWebSocket({
-          url: `/prices`,
-        });
+      transformResponse: timeSeriesResToEntries,
+      onCacheEntryAdded: async (args, api) => {
+        await api.cacheDataLoaded;
+        const ws = new WebSocket(`ws://${host}/prices`);
 
         try {
           const listener = (e: MessageEvent) => {
@@ -155,11 +109,11 @@ export const assetsApi = api.injectEndpoints({
 
             if (typeof data !== "object") return;
             if (typeof data["symbol"] !== "string") return;
-            if (data["symbol"] !== arg.symbol) return;
+            if (data["symbol"] !== args.symbol) return;
             if (typeof data["datetime"] !== "string") return;
             if (typeof data["price"] !== "number") return;
 
-            updateCachedData((draft) => {
+            api.updateCachedData((draft) => {
               const lastEnteredDataTime = convertToUnixTimestamp(
                 draft[draft.length - 1].datetime,
               ) as number;
@@ -168,14 +122,17 @@ export const assetsApi = api.injectEndpoints({
                 data["datetime"],
               ) as number;
 
-              if (intervalSecs(arg.interval) <= newTime - lastEnteredDataTime) {
+              if (
+                convertIntervalToSecs(args.interval) <=
+                newTime - lastEnteredDataTime
+              ) {
                 draft.push(data);
               }
             });
           };
 
           ws.onopen = () => {
-            ws.send(JSON.stringify({ symbol: arg.symbol }));
+            ws.send(JSON.stringify({ symbol: args.symbol }));
           };
 
           ws.onmessage = listener;
@@ -183,33 +140,28 @@ export const assetsApi = api.injectEndpoints({
           /* empty */
         }
 
-        await cacheEntryRemoved;
+        await api.cacheEntryRemoved;
         ws.close();
       },
     }),
-    scraper: build.query<string[][], { symbol: string }>({
+
+    assetNews: build.query<string[][], { symbol: string }>({
       query: ({ symbol }) => ({
         url: `/assets/scraper/${symbol}`,
         method: "GET",
       }),
-      transformResponse: (res: any) => {
-        // List<List<String>> as an array of arrays
-        return res; // directly return the response since it's already in the right format
-      },
     }),
   }),
 });
 
 export const {
-  useLazyAssetsSearchQuery,
-  useAssetsSearchQuery,
-  useLazyAssetsListQuery,
-  useAssetMetaDataQuery,
-  useAssetTimeSeriesDataQuery,
-  useAssetLivePriceDataQuery,
+  useLazySearchAssetsQuery,
   usePopularStocksQuery,
   usePopularMutualFundsQuery,
   usePopularEtfsQuery,
   usePopularCryptoQuery,
-  useScraperQuery,
+  useAssetOneDayQuoteQuery,
+  useAssetTimeSeriesQuery,
+  useAssetPriceHistoryQuery,
+  useAssetNewsQuery,
 } = assetsApi;

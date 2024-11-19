@@ -1,10 +1,13 @@
 package com.investify.backend.dtos;
+import com.investify.backend.entities.Badge;
 import com.investify.backend.enums.InvestmentRisk;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -23,4 +26,5 @@ public class ClientDto {
     private InvestmentRisk investmentRisk;
     private Integer userSavings;
     private Integer currentSavings;
+    private List<Badge> badges;
 }

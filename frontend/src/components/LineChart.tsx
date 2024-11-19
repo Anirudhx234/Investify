@@ -1,36 +1,42 @@
-import { ColorType, createChart } from "lightweight-charts";
-import { useEffect, useRef, useState } from "react";
-import convertToUnixTimestamp from "../util/convertToUnixTimestamp.ts";
-import { useAssetLivePriceDataQuery } from "../api/assets.ts";
-import { MdErrorOutline } from "react-icons/md";
-import useAppSelector from "../hooks/useAppSelector.ts";
+import type { assetTypes } from "../types";
+import type { ISeriesApi } from "lightweight-charts";
 
-export function LineChartComponent({
+import { useAssetPriceHistoryQuery } from "../api/assets";
+import { useAppSelector } from "../hooks/useAppSelector";
+import { useEffect, useRef } from "react";
+import { createChart, ColorType } from "lightweight-charts";
+import { convertToUnixTimestamp } from "../util/convertToUnixTimestamp";
+import { useToastForRequest } from "../hooks/useToastForRequests";
+
+export function LineChart({
   symbol,
   interval,
 }: {
   symbol: string;
-  interval: string;
+  interval: assetTypes.Interval;
 }) {
   const theme = useAppSelector((state) => state.theme.mode);
   const dark = theme === "dark";
 
-  const { data, isLoading, isError, error } = useAssetLivePriceDataQuery({
+  const chartContainerRef = useRef<HTMLDivElement>(null);
+  const chartRef = useRef<ReturnType<typeof createChart> | null>(null);
+  const seriesRef = useRef<ISeriesApi<"Area"> | null>(null);
+  const dataIdxRef = useRef<number>(0);
+
+  const priceHistoryState = useAssetPriceHistoryQuery({
     interval,
     symbol,
   });
 
-  const chartContainerRef = useRef<HTMLDivElement>(null);
-  const chartRef = useRef<ReturnType<typeof createChart> | null>(null);
-  const seriesRef = useRef<unknown>(null);
-  const dataIdxRef = useRef<number>(0);
+  const data = priceHistoryState.data;
 
-  const [chartProgress, setChartProgress] = useState(false);
+  useToastForRequest(`${symbol} Price History`, priceHistoryState, {
+    backupSuccessMessage: `Retrieved ${symbol} price history!`,
+  });
 
-  /* set up the chart */
+  /* set up chart */
   useEffect(() => {
     if (chartContainerRef.current === null) return;
-    if (!chartProgress) return;
 
     const chartContainer = chartContainerRef.current;
     const chart = createChart(chartContainer, {
@@ -43,8 +49,6 @@ export function LineChartComponent({
     });
 
     chartRef.current = chart;
-    seriesRef.current = null;
-    chart.timeScale().fitContent();
 
     const handleResize = () => {
       if (chartContainerRef.current) {
@@ -54,50 +58,46 @@ export function LineChartComponent({
         });
       }
     };
-
     window.addEventListener("resize", handleResize);
 
     const series = chart.addAreaSeries();
     seriesRef.current = series;
-    series.setData([]);
 
-    setChartProgress(true);
+    chart.timeScale().fitContent();
+    setTimeout(handleResize, 0);
 
     return () => {
       window.removeEventListener("resize", handleResize);
       chart.remove();
     };
-  }, [chartProgress]);
+  }, []);
 
   /* reset data */
   useEffect(() => {
     if (chartContainerRef.current === null) return;
     if (chartRef.current === null) return;
-    if (!chartProgress) return;
+    if (seriesRef.current === null) return;
 
-    const series = seriesRef.current as ReturnType<
-      typeof chartRef.current.addAreaSeries
-    >;
-
-    series.setData([]);
+    seriesRef.current.setData([]);
     dataIdxRef.current = 0;
-  }, [symbol, interval, chartProgress]);
+
+    chartRef.current.timeScale().fitContent();
+  }, [symbol, interval]);
 
   /* update data */
   useEffect(() => {
     if (chartContainerRef.current === null) return;
     if (chartRef.current === null) return;
-    if (!chartProgress) return;
+    if (seriesRef.current === null) return;
 
-    const series = seriesRef.current as ReturnType<
-      typeof chartRef.current.addAreaSeries
-    >;
+    const series = seriesRef.current;
 
     if (data) {
       let i = dataIdxRef.current;
 
       for (; i < data.length; i++) {
         const d = data[i];
+        console.log(d);
         series.update({
           time: convertToUnixTimestamp(d.datetime),
           value: "price" in d ? d.price : d.close,
@@ -106,21 +106,21 @@ export function LineChartComponent({
 
       dataIdxRef.current = i;
     }
-  }, [data, chartProgress]);
+
+    chartRef.current.timeScale().fitContent();
+  }, [data]);
 
   /* update window */
   useEffect(() => {
     if (chartContainerRef.current === null) return;
     if (chartRef.current === null) return;
-    if (!chartProgress) return;
     chartRef.current.timeScale().fitContent();
-  }, [symbol, interval, chartProgress]);
+  }, [symbol, interval]);
 
   /* update theme */
   useEffect(() => {
     if (chartContainerRef.current === null) return;
     if (chartRef.current === null) return;
-    if (!chartProgress) return;
 
     chartRef.current.applyOptions({
       layout: {
@@ -135,40 +135,13 @@ export function LineChartComponent({
         horzLines: { color: dark ? "#3a3a3a" : "#e0e0e0" },
       },
     });
-  }, [dark, chartProgress]);
-
-  if (isLoading) {
-    return (
-      <div className="flex items-center gap-2">
-        <span className="loading loading-spinner"></span>
-        Loading...
-      </div>
-    );
-  }
-
-  if (isError) {
-    const errorMssg = error?.message;
-    return (
-      <div className="flex items-center gap-1 text-error">
-        <MdErrorOutline />
-        <span>{errorMssg}</span>
-      </div>
-    );
-  }
+  }, [dark]);
 
   return (
-    <div className="relative flex aspect-[2/1] w-full items-center justify-center">
-      {!chartProgress && (
-        <button
-          className="btn btn-primary z-1"
-          onClick={() => setChartProgress(true)}
-        >
-          Initialize Chart
-        </button>
-      )}
+    <div className="relative z-0 aspect-[2/1] w-full">
       <div
         ref={chartContainerRef}
-        className="absolute left-0 top-0 h-full w-full overflow-hidden rounded-lg border-2 border-base-300 shadow"
+        className="h-full w-full overflow-hidden rounded-lg border-2 border-base-300 shadow"
       />
     </div>
   );

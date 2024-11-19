@@ -1,66 +1,79 @@
-import type { AppPage } from "../types/AppRouter";
+import { routerTypes } from "../types";
 
 import { Redirect, Route, Switch } from "wouter";
-import appPages from "./appPages";
-import VerificationPage from "../pages/VerificationPage";
-import { useEffect } from "react";
-import useAppDispatch from "../hooks/useAppDispatch";
-import { setAppRouteArgs } from "../features/appRouteSlice";
-import useAppSelector from "../hooks/useAppSelector";
+import { pages } from "./pages";
+import { useAppDispatch } from "../hooks/useAppDispatch";
+import { useAppSelector } from "../hooks/useAppSelector";
+import { useToast } from "../hooks/useToast";
+import { selectIsLoggedIn } from "../features/clientSlice";
+import { memo, useEffect } from "react";
+import { setRouteAttributes } from "../features/routeSlice";
+import { VerificationPage } from "../pages/VerificationPage";
 
 /* component for rendering top-level routes in the app */
-export default function AppRouter() {
+export const AppRouter = memo(function AppRouter() {
   return (
     <Switch>
-      {appPages.map((appPage) => (
-        <AppPage key={appPage.path} {...appPage} />
+      {pages.map((page) => (
+        <Page key={page.path} {...page} />
       ))}
     </Switch>
   );
-}
+});
 
-function AppPage({ ...appPage }: AppPage) {
+export function Page({ ...page }: routerTypes.Page) {
   return (
     <Route
-      path={appPage.path}
-      nest={appPage.nest}
-      component={() => <AppPageComponent {...appPage} />}
+      path={page.path}
+      nest={page.nest}
+      component={() => <PageComponent {...page} />}
     />
   );
 }
 
-function AppPageComponent({ ...appPage }: AppPage) {
+export function PageComponent({ ...page }: routerTypes.Page) {
   const dispatch = useAppDispatch();
-  const auth = useAppSelector((state) => state.client.id !== null);
+  const isLoggedIn = useAppSelector(selectIsLoggedIn);
+  const toast = useToast();
 
   useEffect(() => {
-    const appRoute = { ...appPage, component: undefined };
-    dispatch(setAppRouteArgs(appRoute));
-
+    const route = { ...page, component: undefined };
+    dispatch(setRouteAttributes(route));
     return () => {
-      dispatch(setAppRouteArgs(null));
+      dispatch(setRouteAttributes(null));
     };
-  }, [dispatch, appPage]);
+  }, [page, dispatch]);
 
-  if (appPage.protection === "signed-in" && !auth)
+  useEffect(() => {
+    if (page.protection === "signed-in" && !isLoggedIn) {
+      toast.createErrorAlert({
+        caption: "Please login to visit this page",
+      });
+    }
+    if (page.protection === "signed-out" && isLoggedIn) {
+      toast.createErrorAlert({ caption: "You are logged in" });
+    }
+  }, [page, isLoggedIn, toast]);
+
+  if (page.protection === "signed-in" && !isLoggedIn)
     return <Redirect to="~/" replace />;
 
-  if (appPage.protection === "signed-out" && auth)
+  if (page.protection === "signed-out" && isLoggedIn)
     return <Redirect to="~/" replace />;
 
-  if (appPage.routeArgs.type === "redirection")
-    return <Redirect to={`~${appPage.routeArgs.path}`} replace />;
+  if (page.args.type === "redirection")
+    return <Redirect to={`~${page.args.path}`} replace />;
 
-  if (appPage.routeArgs.type === "verification")
-    return <VerificationPage {...appPage.routeArgs} />;
+  if (page.args.type === "verification")
+    return <VerificationPage {...page.args} />;
 
-  if (appPage.routeArgs.type === "form") {
+  if (page.args.type === "form") {
     return (
       <div className="flex w-full justify-center">
-        <div className="w-full max-w-lg">{appPage.component}</div>
+        <div className="w-full max-w-lg">{page.component}</div>
       </div>
     );
   }
 
-  return appPage.component;
+  return page.component;
 }

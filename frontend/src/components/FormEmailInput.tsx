@@ -1,33 +1,22 @@
-import type { UseFormReturn, Path } from "react-hook-form";
+import type { formTypes } from "../types";
+import { validateEmail } from "../util/validateEmail";
+import { FormInput } from "./FormInput";
 
-import emailRegex from "../util/emailRegex";
-import FormInput from "./FormInput";
-
-export interface FormEmailInputProps<T extends { email: string }> {
-  form: UseFormReturn<T>;
-  required?: boolean | undefined;
-  disabled?: boolean;
-}
-
-export default function FormEmailInput<T extends { email: string }>({
-  required,
-  form,
-  disabled,
-}: FormEmailInputProps<T>) {
-  const registerInputProps = form.register("email" as Path<T>, {
-    required: required ? "Email is required" : false,
-    pattern: { value: emailRegex, message: "Invalid email address" },
-  });
-
+export function FormEmailInput<T extends { email: string }>({
+  registerOptions,
+  inputAttributes,
+  ...props
+}: formTypes.Input<T>) {
   return (
     <FormInput
-      name="email"
-      labelText="Email"
-      registerInputProps={registerInputProps}
-      type="text"
-      errors={form.formState.errors}
-      autoComplete="email"
-      disabled={disabled}
+      registerOptions={{
+        ...registerOptions,
+        validate: (value) => {
+          return validateEmail(value) || "Invalid email address";
+        },
+      }}
+      inputAttributes={{ ...inputAttributes, autoComplete: "email" }}
+      {...props}
     />
   );
 }

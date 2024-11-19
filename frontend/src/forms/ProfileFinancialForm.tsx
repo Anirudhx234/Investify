@@ -1,152 +1,171 @@
+import type { SubmitHandler } from "react-hook-form";
+import type { ChangeEvent } from "react";
+
+import { useForm } from "react-hook-form";
+import { useMemo, useState } from "react";
 import {
-  useClientProfileQuery,
+  useLoggedInClientProfileQuery,
   useModifyProfileMutation,
 } from "../api/clients";
-import { useEffect, useRef } from "react";
-import { SubmitHandler, useForm } from "react-hook-form";
-import Clients from "../types/Clients";
-import Modal from "../components/Modal";
-import FormTextInput from "../components/FormTextInput";
-import FormNumberInput from "../components/FormNumberInput";
-import FormSelectInput from "../components/FormSelectInput";
-import ProgressBar from "../components/ProgressBar.tsx";
-import { InvestmentRisk } from "../enums/InvestmentRisk";
+import { useFormReset } from "../hooks/useFormReset";
+import { FormInput } from "../components/FormInput";
+import { FormSubmit } from "../components/FormSubmit";
+import { FormSelectInput } from "../components/FormSelectInput";
+import { FormNumberInput } from "../components/FormNumberInput";
+import { FormRangeInput } from "../components/FormRangeInput";
+import { twMerge } from "../util/twMerge";
+import { formatNumber } from "../util/formatNumber";
+import { useToastForRequest } from "../hooks/useToastForRequests";
 
-export default function ProfileFinancialForm() {
-  const clientProfileState = useClientProfileQuery({});
+export interface ProfileFinancialFormShape {
+  shortTermGoal: string;
+  longTermGoal: string;
+  investmentRisk: "LOW" | "MEDIUM" | "HIGH";
+  userSavings: string;
+  currentSavings: string;
+}
+
+export function ProfileFinancialForm() {
+  const clientProfileState = useLoggedInClientProfileQuery();
   const [modifyProfile, modifyProfileState] = useModifyProfileMutation();
-  const modalRef = useRef<HTMLDialogElement>(null);
-  const financialForm = useForm<Clients.ModifyProfileFinancialForm>();
 
-  useEffect(() => {
-    if (clientProfileState.data) {
-      financialForm.reset({
-        shortTermGoal: clientProfileState.data.shortTermGoal ?? "",
-        longTermGoal: clientProfileState.data.longTermGoal ?? "",
-        investmentRisk:
-          clientProfileState.data.investmentRisk ?? InvestmentRisk.LOW,
-        userSavings: clientProfileState.data.userSavings ?? 0,
-        currentSavings: clientProfileState.data.currentSavings ?? 0,
-      });
-    }
-  }, [financialForm, clientProfileState]);
+  const { isLoading } = useToastForRequest(
+    "Modify Profile",
+    modifyProfileState,
+    { backupSuccessMessage: "Profile updated!" },
+  );
 
-  const isBuffering =
-    clientProfileState.isFetching || modifyProfileState.isLoading;
+  const form = useForm<ProfileFinancialFormShape>();
 
-  const isError = modifyProfileState.isError;
-  const errorMssg = modifyProfileState.error?.message ?? "An error occurred";
+  const clientData = useMemo(
+    () => ({
+      shortTermGoal: clientProfileState.data?.shortTermGoal ?? "",
+      longTermGoal: clientProfileState.data?.longTermGoal ?? "",
+      investmentRisk: clientProfileState.data?.investmentRisk ?? "LOW",
+      userSavings: `${clientProfileState.data?.userSavings ?? ""}`,
+      currentSavings: `${clientProfileState.data?.currentSavings ?? ""}`,
+    }),
+    [clientProfileState.data],
+  );
 
-  const onModifyProfile: SubmitHandler<
-    Clients.ModifyProfileFinancialForm
-  > = async (data) => {
+  useFormReset(form, clientData);
+
+  const onModifyProfile: SubmitHandler<ProfileFinancialFormShape> = (data) => {
     const formData = new FormData();
 
-    if (data.shortTermGoal !== clientProfileState.data?.shortTermGoal) {
-      formData.set("shortTermGoal", `${data.shortTermGoal}`);
-    }
+    if (data.shortTermGoal !== clientData.shortTermGoal)
+      formData.set("shortTermGoal", data.shortTermGoal);
 
-    if (data.longTermGoal !== clientProfileState.data?.longTermGoal) {
-      formData.set("longTermGoal", `${data.longTermGoal}`);
-    }
+    if (data.longTermGoal !== clientData.longTermGoal)
+      formData.set("longTermGoal", data.longTermGoal);
 
-    if (data.investmentRisk !== clientProfileState.data?.investmentRisk) {
-      formData.set("investmentRisk", `${data.investmentRisk}`);
-    }
+    if (data.investmentRisk !== clientData.investmentRisk)
+      formData.set("investmentRisk", data.investmentRisk);
 
-    if (data.userSavings !== clientProfileState.data?.userSavings) {
-      formData.set("userSavings", `${data.userSavings}`);
-    }
+    if (data.userSavings !== clientData.userSavings)
+      formData.set("userSavings", data.userSavings);
 
-    if (data.currentSavings !== clientProfileState.data?.currentSavings) {
-      formData.set("currentSavings", `${data.currentSavings}`);
-    }
-    console.log(data.currentSavings);
+    if (data.currentSavings !== clientData.currentSavings)
+      formData.set("currentSavings", data.currentSavings);
 
-    console.log(data.userSavings);
-
-    console.log(data.investmentRisk, clientProfileState.data?.investmentRisk);
-
-    try {
-      await modifyProfile({ formData }).unwrap();
-    } catch {
-      /* empty */
-    }
-
-    modalRef.current?.showModal();
+    modifyProfile(formData)
+      .unwrap()
+      .catch(() => {});
   };
 
-  const onModalExit = () => {
-    modalRef.current?.close();
-  };
+  const [progress, setProgress] = useState<string | undefined>(
+    clientData.currentSavings,
+  );
+
+  const savingsGoalAmnt = clientData.userSavings
+    ? parseFloat(clientData.userSavings)
+    : undefined;
+  const progressPerc = progress ? parseFloat(progress) : undefined;
 
   return (
-    <div className="flex flex-col items-center">
-      <h1 className="text-lg font-semibold">FINANCIAL GOALS</h1>
-      <br />
-      Client ID: {clientProfileState.data?.id}
+    <div className="flex w-full flex-col gap-4 ~text-sm/base">
+      <h1 className="text-center font-bold ~text-2xl/3xl">Financial Goals</h1>
+
       <div className="divider"></div>
+
       <form
-        className="flex w-full flex-col gap-4"
-        onSubmit={financialForm.handleSubmit(onModifyProfile)}
+        className="flex flex-col"
+        onSubmit={form.handleSubmit(onModifyProfile)}
         aria-label="form"
-        aria-disabled={isBuffering}
+        aria-disabled={isLoading}
       >
-        <FormTextInput
+        <FormInput
           name="shortTermGoal"
-          labelText="What is your short-term goal?"
-          form={financialForm}
-          disabled={isBuffering}
+          label="Short Term Goals"
+          form={form}
+          isBuffering={isLoading}
         />
 
-        <FormTextInput
+        <FormInput
           name="longTermGoal"
-          labelText="What is your long-term goal?"
-          form={financialForm}
-          disabled={isBuffering}
+          label="Long Term Goals"
+          form={form}
+          isBuffering={isLoading}
         />
 
         <FormSelectInput
           name="investmentRisk"
-          labelText="How risky are you willing to be with your investments?"
-          form={financialForm}
+          label="Investment Risk"
+          form={form}
           options={[
-            { value: InvestmentRisk.LOW, label: "Low" },
-            { value: InvestmentRisk.MEDIUM, label: "Medium" },
-            { value: InvestmentRisk.HIGH, label: "High" },
+            {
+              value: "LOW",
+              label: "Low",
+            },
+            {
+              value: "MEDIUM",
+              label: "Medium",
+            },
+            {
+              value: "HIGH",
+              label: "High",
+            },
           ]}
-          disabled={isBuffering}
+          isBuffering={isLoading}
         />
 
         <FormNumberInput
           name="userSavings"
-          labelText="Savings goal"
-          form={financialForm}
-          disabled={isBuffering}
+          label="Savings goal"
+          form={form}
+          isBuffering={isLoading}
           min={0}
+          decimal
         />
 
-        <ProgressBar
+        <FormRangeInput
           name="currentSavings"
-          form={financialForm}
-          savingsGoal={clientProfileState.data?.userSavings ?? 100}
-          savings={clientProfileState.data?.currentSavings ?? 0}
+          label="Current Savings"
+          form={form}
+          isBuffering={isLoading}
+          registerOptions={{
+            onChange: (e: ChangeEvent<HTMLInputElement>) =>
+              setProgress(e.target.value),
+          }}
+          inputAttributes={{
+            className: twMerge(
+              "border-none outline-none focus:outline-none",
+              progressPerc === 100 ? "range-success" : "range-primary",
+            ),
+          }}
         />
+
+        {progressPerc !== undefined && savingsGoalAmnt !== undefined && (
+          <div className="mt-2 text-center text-sm">
+            ${formatNumber((progressPerc / 100) * savingsGoalAmnt)} of $
+            {formatNumber(savingsGoalAmnt)} saved
+          </div>
+        )}
 
         <div>
-          <button className="btn btn-primary" disabled={isBuffering}>
-            {isBuffering && <span className="loading loading-spinner"></span>}
-            Change
-          </button>
+          <FormSubmit className="btn-primary" isBuffering={isLoading} />
         </div>
       </form>
-      <Modal
-        ref={modalRef}
-        onExit={onModalExit}
-        title={!isError ? "Success!" : "Error"}
-      >
-        <p className="py-4">{!isError ? "Change request sent!" : errorMssg}</p>
-      </Modal>
     </div>
   );
 }

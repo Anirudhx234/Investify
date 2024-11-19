@@ -1,50 +1,66 @@
-import type AppClient from "../types/AppClient";
-import type Clients from "../types/Clients";
+import type { clientTypes } from "../types";
 
-import api from "./api";
+import { api } from "./api";
 
 const clientsApi = api.injectEndpoints({
   endpoints: (build) => ({
-    clientProfile: build.query<AppClient, Clients.IdRequest>({
-      query: ({ id = "me" }) => ({
+    clientProfile: build.query<clientTypes.Client, { id: string }>({
+      query: ({ id }) => ({
         url: "/clients/" + id,
         method: "GET",
       }),
-      providesTags: (res) => [{ type: "clients", id: res?.id }],
+      providesTags: (res, _err, args) => {
+        if (args.id === "me") {
+          return ["logged-in-client"];
+        } else if (res) {
+          return [{ type: "clients", id: res.id }];
+        } else {
+          return [];
+        }
+      },
     }),
+
+    loggedInClientProfile: build.query<clientTypes.LoggedInClient, void>({
+      query: () => ({
+        url: "/clients/me",
+        method: "GET",
+      }),
+      providesTags: ["logged-in-client"],
+    }),
+
     modifyEmail: build.mutation<
-      AppClient,
-      Clients.IdRequest & { newEmail: string }
+      clientTypes.LoggedInClient,
+      { newEmail: string }
     >({
-      query: ({ id = "me", newEmail }) => ({
-        url: "/clients/" + id + "/email",
+      query: ({ newEmail }) => ({
+        url: "/clients/me/email",
         method: "PATCH",
         body: { newEmail },
       }),
     }),
-    modifyProfile: build.mutation<
-      AppClient,
-      Clients.IdRequest & { formData: FormData }
-    >({
-      query: ({ id = "me", formData }) => ({
-        url: "/clients/" + id,
+
+    modifyProfile: build.mutation<clientTypes.LoggedInClient, FormData>({
+      query: (formData) => ({
+        url: "/clients/me",
         method: "PATCH",
         body: formData,
       }),
-      invalidatesTags: (res) => [{ type: "clients", id: res?.id }],
+      invalidatesTags: ["logged-in-client"],
     }),
-    deleteClient: build.mutation<AppClient, Clients.IdRequest>({
-      query: ({ id = "me" }) => ({
-        url: "/clients/" + id,
+
+    deleteClient: build.mutation<clientTypes.LoggedInClient, void>({
+      query: () => ({
+        url: "/clients/me",
         method: "DELETE",
       }),
-      invalidatesTags: (res) => [{ type: "clients", id: res?.id }],
+      invalidatesTags: ["logged-in-client"],
     }),
   }),
 });
 
 export const {
   useClientProfileQuery,
+  useLoggedInClientProfileQuery,
   useModifyEmailMutation,
   useModifyProfileMutation,
   useDeleteClientMutation,

@@ -1,42 +1,52 @@
-import Assets from "./Assets";
+import { Asset } from "./Asset";
 
-/* types relating to portfolio */
-declare namespace Portfolio {
-  interface PortfolioAssetsResponse {
-    portfolioAssets: {
-      asset: {
-        id: string;
-        symbol: string;
-        name: string;
-        type: Assets.Type;
-      };
-      quantity: number;
-      initialPrice: number;
-      currentPrice: number;
-      totalAssetValue: number;
-    }[];
-    totalPortfolioValue: number;
-  }
-
-  interface AddPortfolioAssetRequest {
-    symbol: string;
-    name: string;
-    assetType: Assets.Type;
-    initialPrice: number;
-    quantity: number;
-  }
-
-  interface ModifyPortfolioRequest {
-    clientId?: string | undefined;
-    assetId: string;
-    initialPrice: number;
-    quantity: number;
-  }
-
-  interface DeletePortfolioRequest {
-    clientId?: string | undefined;
-    assetId: string;
-  }
+export interface PortfolioAsset {
+  id: string;
+  quantity: number;
+  averageCost: number;
+  currentPrice: number;
+  totalAssetValue: number;
+  asset: Asset & { id: string };
 }
 
-export default Portfolio;
+export interface PaperPortfolioTrade {
+  id: string;
+  asset: Asset & { id: string };
+  time: string;
+  type: "BUY" | "SELL";
+  price: number;
+  quantity: number;
+}
+
+export interface RealPortfolio {
+  name: string;
+  totalPortfolioValue: number;
+  roi: number;
+  portfolioAssets: PortfolioAsset[];
+}
+
+export interface PaperPortfolio extends RealPortfolio {
+  buyingPower: number;
+  trades: PaperPortfolioTrade[];
+}
+
+export interface SectorValuations {
+  name: string;
+  totalValuation: number;
+}
+
+export interface RiskPoint {
+  name: string;
+  risk: number; // X-axis (risk level)
+  return: number; // Y-axis (return level)
+}
+
+export interface RiskScore {
+  overallRiskScore: number;
+  assetsByRisk: [
+    {
+      portfolioAsset: Omit<PortfolioAsset, "currentPrice" | "totalAssetValue">;
+      riskScore: number;
+    },
+  ];
+}

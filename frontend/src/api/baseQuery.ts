@@ -1,23 +1,23 @@
-import type CustomBaseQuery from "../types/CustomBaseQuery";
+import type { baseQueryTypes } from "../types";
 
-import { fetchBaseQuery, retry } from "@reduxjs/toolkit/query";
-import buildUrl from "../util/buildUrl";
+import { fetchBaseQuery } from "@reduxjs/toolkit/query";
+import { buildUrl } from "../util/buildUrl";
+import { host } from "./server";
 
 /* basic fetch wrapper */
-const rawBaseQuery = fetchBaseQuery({
-  baseUrl: "http://localhost:8080/api",
+export const rawBaseQuery = fetchBaseQuery({
+  baseUrl: `http://${host}/api`,
   credentials: "include",
-  timeout: 3000,
 });
 
 /* custom base query for api */
-const baseQuery: CustomBaseQuery.CustomBaseQueryFn = async (
+export const baseQuery: baseQueryTypes.CustomBaseQueryFn = async (
   args,
   api,
   extraOptions,
 ) => {
-  const { url, queryParams, ...remainingArgs } = args;
-  const fullUrl = buildUrl(url, queryParams);
+  const { url, search, ...remainingArgs } = args;
+  const fullUrl = buildUrl(url, search);
 
   const result = await rawBaseQuery(
     { url: fullUrl, ...remainingArgs },
@@ -48,6 +48,3 @@ const baseQuery: CustomBaseQuery.CustomBaseQueryFn = async (
     data: result.data as object,
   };
 };
-
-const baseQueryWithRetries = retry(baseQuery, { maxRetries: 0 });
-export default baseQueryWithRetries;

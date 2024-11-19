@@ -1,11 +1,12 @@
-export default function buildUrl(
-  url: string,
-  queryParams?: object | undefined,
-) {
-  if (!queryParams) return url;
+export function buildUrl(url: string, search?: string | object | undefined) {
+  if (!search) return url;
+
+  if (typeof search === "string") {
+    return `${url}?${search}`;
+  }
 
   const queryString = new URLSearchParams(
-    Object.entries(queryParams)
+    Object.entries(search)
       .filter((entry) => entry !== undefined && entry !== null)
       .map((entry) => [entry[0], `${entry[1]}`]),
   ).toString();

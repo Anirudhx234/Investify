@@ -1,103 +1,95 @@
+import type { SubmitHandler } from "react-hook-form";
+
+import { useMemo } from "react";
 import {
-  useClientProfileQuery,
+  useLoggedInClientProfileQuery,
   useModifyProfileMutation,
 } from "../api/clients";
-import { useEffect, useRef } from "react";
-import { SubmitHandler, useForm } from "react-hook-form";
-import Clients from "../types/Clients";
-import Modal from "../components/Modal";
-import FormNumberInput from "../components/FormNumberInput";
+import { useForm } from "react-hook-form";
+import { useFormReset } from "../hooks/useFormReset";
+import { FormSubmit } from "../components/FormSubmit";
+import { FormNumberInput } from "../components/FormNumberInput";
+import { useToastForRequest } from "../hooks/useToastForRequests";
 
-export default function ProfilePersonalForm() {
-  const clientProfileState = useClientProfileQuery({});
+export interface ProfilePersonalFormShape {
+  age: string;
+  income: string;
+}
+
+export function ProfilePersonalForm() {
+  const clientProfileState = useLoggedInClientProfileQuery();
   const [modifyProfile, modifyProfileState] = useModifyProfileMutation();
-  const modalRef = useRef<HTMLDialogElement>(null);
-  const personalForm = useForm<Clients.ModifyProfilePersonalForm>();
 
-  useEffect(() => {
-    if (clientProfileState.data) {
-      personalForm.reset({
-        age: clientProfileState.data.age ?? 0,
-        income: clientProfileState.data.income ?? 0,
-      });
-    }
-  }, [personalForm, clientProfileState]);
+  const { isLoading } = useToastForRequest(
+    "Profile updated!",
+    modifyProfileState,
+    {
+      backupSuccessMessage: "Profile updated!",
+    },
+  );
 
-  const isBuffering =
-    clientProfileState.isFetching || modifyProfileState.isLoading;
+  const form = useForm<ProfilePersonalFormShape>();
 
-  const isError = modifyProfileState.isError;
-  const errorMssg = modifyProfileState.error?.message ?? "An error occurred";
+  const clientData = useMemo(
+    () => ({
+      age: `${clientProfileState.data?.age ?? ""}`,
+      income: `${clientProfileState.data?.income ?? ""}`,
+    }),
+    [clientProfileState.data],
+  );
 
-  const onModifyProfile: SubmitHandler<
-    Clients.ModifyProfilePersonalForm
-  > = async (data) => {
+  useFormReset(form, clientData);
+
+  const onModifyProfile: SubmitHandler<ProfilePersonalFormShape> = (data) => {
     const formData = new FormData();
 
-    if (data.age !== clientProfileState.data?.age)
-      formData.set("age", `${data.age}`);
+    if (data.age !== clientData.age) formData.set("age", `${data.age}`);
 
-    if (data.income !== clientProfileState.data?.income)
+    if (data.income !== clientData.income)
       formData.set("income", `${data.income}`);
 
-    try {
-      await modifyProfile({ formData }).unwrap();
-    } catch {
-      /* empty */
-    }
-
-    modalRef.current?.showModal();
-  };
-
-  const onModalExit = () => {
-    modalRef.current?.close();
+    modifyProfile(formData)
+      .unwrap()
+      .catch(() => {});
   };
 
   return (
-    <div className="flex flex-col items-center">
-      <h1 className="text-lg font-semibold">
-        Client ID: {clientProfileState.data?.id}
+    <div className="flex w-full flex-col gap-4 ~text-sm/base">
+      <h1 className="text-center font-bold ~text-2xl/3xl">
+        Personal Information
       </h1>
+
       <div className="divider"></div>
 
       <form
-        className="flex w-full flex-col gap-4"
-        onSubmit={personalForm.handleSubmit(onModifyProfile)}
+        className="flex flex-col"
+        onSubmit={form.handleSubmit(onModifyProfile)}
         aria-label="form"
-        aria-disabled={isBuffering}
+        aria-disabled={isLoading}
       >
         <FormNumberInput
           name="age"
-          labelText="Age"
-          form={personalForm}
-          disabled={isBuffering}
+          label="Age"
+          form={form}
+          isBuffering={isLoading}
+          required
           min={0}
         />
 
         <FormNumberInput
           name="income"
-          labelText="Income"
-          form={personalForm}
-          disabled={isBuffering}
+          label="Income"
+          form={form}
+          isBuffering={isLoading}
+          required
           min={0}
           decimal
         />
 
         <div>
-          <button className="btn btn-primary" disabled={isBuffering}>
-            {isBuffering && <span className="loading loading-spinner"></span>}
-            Change
-          </button>
+          <FormSubmit className="btn-primary" isBuffering={isLoading} />
         </div>
       </form>
-
-      <Modal
-        ref={modalRef}
-        onExit={onModalExit}
-        title={!isError ? "Success!" : "Error"}
-      >
-        <p className="py-4">{!isError ? "Change request sent!" : errorMssg}</p>
-      </Modal>
     </div>
   );
 }

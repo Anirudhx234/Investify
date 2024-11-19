@@ -1,20 +1,23 @@
-import type { AppRouteArgs } from "../types/AppRouter";
+import type { routerTypes } from "../types";
 
+import { twMerge } from "tailwind-merge";
+import { selectIsLoggedIn } from "../features/clientSlice";
+import { useAppSelector } from "../hooks/useAppSelector";
+import { Logo } from "../components/Logo";
+import { Link } from "wouter";
+import { ProfilePicture } from "../components/ProfilePicture";
 import { GiHamburgerMenu } from "react-icons/gi";
-import Logo from "../components/Logo";
-import useAppSelector from "../hooks/useAppSelector";
-import twMerge from "../util/twMerge";
-import useAppDispatch from "../hooks/useAppDispatch";
+import { useAppDispatch } from "../hooks/useAppDispatch";
 import { toggleTheme } from "../features/themeSlice";
 import { FaMoon, FaSun } from "react-icons/fa";
 import { IoMdArrowDropdown } from "react-icons/io";
-import appRoutes from "../app/appPages";
-import { Link } from "wouter";
-import ProfilePicture from "../components/ProfilePicture";
+import { pages } from "../app/pages";
 
-export default function Navbar() {
-  const drawerMode = useAppSelector((state) => state.appRoute.args?.drawerMode);
-  const loggedInClientId = useAppSelector((state) => state.client.id);
+export function Navbar() {
+  const drawerMode = useAppSelector(
+    (state) => state.route.attributes?.drawerMode,
+  );
+  const isLoggedIn = useAppSelector(selectIsLoggedIn);
 
   return (
     <nav className="navbar w-full">
@@ -31,7 +34,7 @@ export default function Navbar() {
         <ul className="hidden lg:flex">
           <NavLinks />
         </ul>
-        {loggedInClientId !== null ? (
+        {isLoggedIn ? (
           <ProfilePicture />
         ) : (
           <Link href="/login" className="btn btn-secondary btn-sm">
@@ -43,8 +46,10 @@ export default function Navbar() {
   );
 }
 
-function DrawerMenu() {
-  const drawerMode = useAppSelector((state) => state.appRoute.args?.drawerMode);
+export function DrawerMenu() {
+  const drawerMode = useAppSelector(
+    (state) => state.route.attributes?.drawerMode,
+  );
 
   return (
     <label
@@ -62,13 +67,13 @@ function DrawerMenu() {
   );
 }
 
-function ThemeSwitcher() {
+export function ThemeSwitcher() {
   const themeMode = useAppSelector((state) => state.theme.mode);
   const dispatch = useAppDispatch();
 
   return (
     <button
-      className="btn btn-square btn-ghost ~text-lg/xl"
+      className="btn btn-square btn-ghost hidden ~text-lg/xl lg:inline-flex"
       onClick={() => dispatch(toggleTheme())}
     >
       {themeMode === "light" ? <FaMoon /> : <FaSun />}
@@ -76,8 +81,8 @@ function ThemeSwitcher() {
   );
 }
 
-function MobileDropdown() {
-  const label = useAppSelector((state) => state.appRoute.args?.label);
+export function MobileDropdown() {
+  const label = useAppSelector((state) => state.route.attributes?.label);
 
   return (
     <div className="dropdown dropdown-end lg:hidden">
@@ -99,32 +104,30 @@ function MobileDropdown() {
   );
 }
 
-function NavLinks() {
+export function NavLinks() {
   return (
     <>
-      {appRoutes
-        .filter((appRoute) => appRoute.navbar)
-        .map((appRoute) => (
-          <li key={appRoute.path}>
-            <NavLink {...appRoute} />
+      {pages
+        .filter((page) => page.navbar)
+        .map((page) => (
+          <li key={page.path}>
+            <NavLink {...page} />
           </li>
         ))}
     </>
   );
 }
 
-function NavLink({ ...appRoute }: AppRouteArgs) {
-  const actualAppRoutePath = useAppSelector(
-    (state) => state.appRoute.args?.path,
-  );
-  const label = appRoute.label ?? appRoute.path.split("/")[1];
+export function NavLink({ ...route }: routerTypes.Route) {
+  const currentPath = useAppSelector((state) => state.route.attributes?.path);
+  const label = route.label ?? route.path.split("/")[1];
 
   return (
     <Link
-      href={appRoute.path}
+      href={route.path}
       className={twMerge(
         "btn btn-ghost cursor-pointer font-normal capitalize",
-        actualAppRoutePath === appRoute.path && "bg-base-300",
+        currentPath === route.path && "bg-base-300",
       )}
     >
       {label}

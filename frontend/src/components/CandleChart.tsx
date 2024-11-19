@@ -1,80 +1,86 @@
-import { ColorType, createChart, Time } from "lightweight-charts";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import convertToUnixTimestamp from "../util/convertToUnixTimestamp.ts";
-import { useAssetTimeSeriesDataQuery } from "../api/assets.ts";
-import { MdErrorOutline } from "react-icons/md";
-import useAppSelector from "../hooks/useAppSelector.ts";
+import type { assetTypes } from "../types";
+import type { ISeriesApi, Time } from "lightweight-charts";
 
-interface ChartComponentProps {
+import { useAssetTimeSeriesQuery } from "../api/assets";
+import { useAppSelector } from "../hooks/useAppSelector";
+import { useEffect, useMemo, useRef } from "react";
+import { ColorType, createChart } from "lightweight-charts";
+import { convertToUnixTimestamp } from "../util/convertToUnixTimestamp";
+import { useToastForRequest } from "../hooks/useToastForRequests";
+
+function parseQueryData(data: assetTypes.TimeSeriesEntry[] | undefined) {
+  return (
+    data?.map((d) => ({
+      ...d,
+      time: convertToUnixTimestamp(d.datetime),
+    })) ?? []
+  );
+}
+
+function calculateMASeriesData(
+  candleData: ReturnType<typeof parseQueryData>,
+  maLength: number,
+) {
+  const maData = [];
+  let prev = 0 as Time;
+
+  for (let i = 0; i < candleData.length; i++) {
+    const t = candleData[i].time;
+    if (t < prev) {
+      continue;
+    }
+
+    prev = t;
+    if (i < maLength) {
+      // Provide whitespace data points until the MA can be calculated
+      maData.push({ time: t });
+    } else {
+      // Calculate the moving average, slow but simple way
+      let sum = 0;
+      for (let j = 0; j < maLength; j++) {
+        sum += candleData[i - j].close;
+      }
+      const maValue = sum / maLength;
+      maData.push({ time: t, value: maValue });
+    }
+  }
+
+  return maData;
+}
+
+export interface ChartComponentProps {
   symbol: string;
-  interval: string;
+  interval: assetTypes.Interval;
   showMA: boolean;
   timePeriod: number;
 }
 
-export const CandleChartComponent = ({
+export function CandleChart({
   symbol,
   interval,
   showMA,
   timePeriod,
-}: ChartComponentProps) => {
+}: ChartComponentProps) {
   const theme = useAppSelector((state) => state.theme.mode);
   const dark = theme === "dark";
 
-  const { data, isLoading, isError, error, refetch } =
-    useAssetTimeSeriesDataQuery({ symbol, interval });
-
-  const parsedData = useMemo(() => {
-    return (
-      data?.map((d) => ({
-        ...d,
-        time: convertToUnixTimestamp(d.datetime),
-      })) ?? []
-    );
-  }, [data]);
-
-  const calculateMovingAverageSeriesData = useCallback(
-    (candleData: typeof parsedData, maLength: number) => {
-      const maData = [];
-
-      let prev = 0 as Time;
-      for (let i = 0; i < candleData.length; i++) {
-        const t = candleData[i].time;
-        if (t < prev) {
-          continue;
-        }
-
-        prev = t;
-        if (i < maLength) {
-          // Provide whitespace data points until the MA can be calculated
-          maData.push({ time: t });
-        } else {
-          // Calculate the moving average, slow but simple way
-          let sum = 0;
-          for (let j = 0; j < maLength; j++) {
-            sum += candleData[i - j].close;
-          }
-          const maValue = sum / maLength;
-          maData.push({ time: t, value: maValue });
-        }
-      }
-
-      return maData;
-    },
-    [],
-  );
-
   const chartContainerRef = useRef<HTMLDivElement>(null);
   const chartRef = useRef<ReturnType<typeof createChart> | null>(null);
-  const maSeriesRef = useRef<unknown>(null);
-  const candleSeriesRef = useRef<unknown>(null);
+  const maSeriesRef = useRef<ISeriesApi<"Line"> | null>(null);
+  const candleSeriesRef = useRef<ISeriesApi<"Candlestick"> | null>(null);
 
-  const [chartProgress, setChartProgress] = useState(false);
+  const timeSeriesState = useAssetTimeSeriesQuery({ symbol, interval });
+  const { data, refetch } = timeSeriesState;
+
+  useToastForRequest(`${symbol} Time Series`, timeSeriesState, {
+    backupSuccessMessage: `Retrieved ${symbol} time series!`,
+  });
+
+  const parsedData = useMemo(() => parseQueryData(data), [data]);
 
   /* set up the chart */
   useEffect(() => {
     if (chartContainerRef.current === null) return;
-    if (!chartProgress) return;
 
     const chartContainer = chartContainerRef.current;
     const chart = createChart(chartContainer, {
@@ -87,9 +93,6 @@ export const CandleChartComponent = ({
     });
 
     chartRef.current = chart;
-    maSeriesRef.current = null;
-    candleSeriesRef.current = null;
-    chart.timeScale().fitContent();
 
     const handleResize = () => {
       if (chartContainerRef.current) {
@@ -105,55 +108,43 @@ export const CandleChartComponent = ({
     candleSeriesRef.current = chart.addCandlestickSeries();
     maSeriesRef.current = chart.addLineSeries();
 
+    chart.timeScale().fitContent();
+    setTimeout(handleResize, 0);
+
     return () => {
       window.removeEventListener("resize", handleResize);
       chart.remove();
     };
-  }, [refetch, chartProgress]);
+  }, [refetch]);
 
   /* reset candle data */
   useEffect(() => {
     if (chartContainerRef.current === null) return;
     if (chartRef.current === null) return;
-    if (!chartProgress) return;
+    if (candleSeriesRef.current === null) return;
 
-    const candleSeries = candleSeriesRef.current as ReturnType<
-      typeof chartRef.current.addAreaSeries
-    > | null;
-
-    candleSeries?.setData(parsedData);
-  }, [parsedData, chartProgress]);
+    candleSeriesRef.current.setData(parsedData);
+  }, [parsedData]);
 
   /* reset ma data */
   useEffect(() => {
     if (chartContainerRef.current === null) return;
     if (chartRef.current === null) return;
-    if (!chartProgress) return;
-
-    const maSeries = maSeriesRef.current as ReturnType<
-      typeof chartRef.current.addLineSeries
-    > | null;
+    if (maSeriesRef.current === null) return;
 
     if (!showMA) {
-      maSeries?.setData([]);
+      maSeriesRef.current.setData([]);
     } else {
-      maSeries?.setData(
-        calculateMovingAverageSeriesData(parsedData, timePeriod),
+      maSeriesRef.current.setData(
+        calculateMASeriesData(parsedData, timePeriod),
       );
     }
-  }, [
-    parsedData,
-    showMA,
-    timePeriod,
-    calculateMovingAverageSeriesData,
-    chartProgress,
-  ]);
+  }, [parsedData, showMA, timePeriod]);
 
   /* update theme */
   useEffect(() => {
     if (chartContainerRef.current === null) return;
     if (chartRef.current === null) return;
-    if (!chartProgress) return;
 
     chartRef.current.applyOptions({
       layout: {
@@ -168,46 +159,19 @@ export const CandleChartComponent = ({
         horzLines: { color: dark ? "#3a3a3a" : "#e0e0e0" },
       },
     });
-  }, [dark, chartProgress]);
-
-  if (isLoading) {
-    return (
-      <div className="flex items-center gap-2">
-        <span className="loading loading-spinner"></span>
-        Loading...
-      </div>
-    );
-  }
-
-  if (isError) {
-    const errorMssg = error?.message;
-    return (
-      <div className="flex items-center gap-1 text-error">
-        <MdErrorOutline />
-        <span>{errorMssg}</span>
-      </div>
-    );
-  }
+  }, [dark]);
 
   return (
     <>
-      <button className="m-1 text-sm" onClick={() => refetch()}>
+      <button className="m-1 text-sm" onClick={refetch}>
         Click Here To Reload Data
       </button>
-      <div className="relative flex aspect-[2/1] w-full items-center justify-center">
-        {!chartProgress && (
-          <button
-            className="btn btn-primary z-1"
-            onClick={() => setChartProgress(true)}
-          >
-            Initialize Chart
-          </button>
-        )}
+      <div className="relative z-0 aspect-[2/1] w-full">
         <div
           ref={chartContainerRef}
-          className="absolute left-0 top-0 h-full w-full overflow-hidden rounded-lg border-2 border-base-300 shadow"
+          className="h-full w-full overflow-hidden rounded-lg border-2 border-base-300 shadow"
         />
       </div>
     </>
   );
-};
+}

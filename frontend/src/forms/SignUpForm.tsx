@@ -1,38 +1,36 @@
-import type Auth from "../types/Auth";
 import type { SubmitHandler } from "react-hook-form";
 
-import { useRef } from "react";
 import { useForm } from "react-hook-form";
-import { useSignUpMutation } from "../api/auth";
 import { Link, useLocation } from "wouter";
-import FormEmailInput from "../components/FormEmailInput";
-import FormTextInput from "../components/FormTextInput";
-import FormPasswordInput from "../components/FormPasswordInput";
-import FormConfirmPasswordInput from "../components/FormConfirmPasswordInput";
-import Modal from "../components/Modal";
+import { FormEmailInput } from "../components/FormEmailInput";
+import { FormInput } from "../components/FormInput";
+import { FormPasswordInput } from "../components/FormPasswordInput";
+import { FormConfirmPasswordInput } from "../components/FormConfirmPasswordInput";
+import { useSignUpMutation } from "../api/auth";
+import { FormSubmit } from "../components/FormSubmit";
+import { useToastForRequest } from "../hooks/useToastForRequests";
 
-export default function SignUpForm() {
+export interface SignUpFormShape {
+  email: string;
+  username: string;
+  password: string;
+  confirmPassword: string;
+}
+
+export function SignUpForm() {
   const [, navigate] = useLocation();
-  const form = useForm<Auth.SignUpRequest>();
-  const modalRef = useRef<HTMLDialogElement>(null);
-  const [signUp, { isLoading, isSuccess, error }] = useSignUpMutation();
+  const form = useForm<SignUpFormShape>();
+  const [signUp, signUpState] = useSignUpMutation();
 
-  const errorMssg = error?.message;
+  const { isLoading } = useToastForRequest("Sign Up", signUpState, {
+    onSuccess: () => navigate("/login"),
+    backupSuccessMessage: "Verification email sent!",
+  });
 
-  const onSubmit: SubmitHandler<Auth.SignUpRequest> = async (formData) => {
-    try {
-      await signUp(formData).unwrap();
-      form.reset();
-    } catch {
-      /* empty */
-    }
-
-    modalRef.current?.showModal();
-  };
-
-  const onModalExit = () => {
-    modalRef.current?.close();
-    navigate("/login");
+  const onSubmit: SubmitHandler<SignUpFormShape> = (data) => {
+    signUp(data)
+      .unwrap()
+      .catch(() => {});
   };
 
   return (
@@ -53,42 +51,41 @@ export default function SignUpForm() {
         aria-label="form"
         aria-disabled={isLoading}
       >
-        <FormEmailInput form={form} disabled={isLoading} required />
-
-        <FormTextInput
-          name="username"
-          labelText="Username"
+        <FormEmailInput
+          name="email"
+          label="Email"
           form={form}
-          autoComplete="username"
-          disabled={isLoading}
+          isBuffering={isLoading}
           required
         />
 
-        <FormPasswordInput
+        <FormInput
+          name="username"
+          label="Username"
           form={form}
-          autoComplete="new-password"
-          disabled={isLoading}
+          isBuffering={isLoading}
+          required
+          inputAttributes={{ autoComplete: "username" }}
         />
 
-        <FormConfirmPasswordInput form={form} disabled={isLoading} />
+        <FormPasswordInput
+          name="password"
+          label="Password"
+          form={form}
+          isBuffering={isLoading}
+          required
+        />
 
-        <button className="btn btn-primary mt-4" disabled={isLoading}>
-          {isLoading && <span className="loading loading-spinner"></span>}
-          Submit
-        </button>
+        <FormConfirmPasswordInput
+          name="confirmPassword"
+          label="Confirm Password"
+          form={form}
+          isBuffering={isLoading}
+          required
+        />
+
+        <FormSubmit className="btn-primary" isBuffering={isLoading} />
       </form>
-
-      <Modal
-        ref={modalRef}
-        title={isSuccess ? "Success!" : "Error"}
-        onExit={onModalExit}
-      >
-        <p className="py-4">
-          {isSuccess
-            ? "We've sent you an email. Click the verification link to activate your account!"
-            : errorMssg}
-        </p>
-      </Modal>
     </div>
   );
 }

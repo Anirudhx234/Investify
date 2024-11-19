@@ -1,38 +1,38 @@
 import type { SubmitHandler } from "react-hook-form";
 
 import { useForm } from "react-hook-form";
-import useAppDispatch from "../hooks/useAppDispatch";
-import Auth from "../types/Auth";
-import { useRef } from "react";
 import { useLoginMutation } from "../api/auth";
+import { Link, useLocation } from "wouter";
+import { FormEmailInput } from "../components/FormEmailInput";
+import { FormPasswordInput } from "../components/FormPasswordInput";
+import { FormSubmit } from "../components/FormSubmit";
+import { useAppDispatch } from "../hooks/useAppDispatch";
 import { setClientId } from "../features/clientSlice";
-import { Link } from "wouter";
-import FormEmailInput from "../components/FormEmailInput";
-import FormPasswordInput from "../components/FormPasswordInput";
-import Modal from "../components/Modal";
+import { useToastForRequest } from "../hooks/useToastForRequests";
 
-export default function LoginForm() {
+export interface LoginFormShape {
+  email: string;
+  password: string;
+}
+
+export function LoginForm() {
   const dispatch = useAppDispatch();
-  const form = useForm<Auth.LoginRequest>();
-  const modalRef = useRef<HTMLDialogElement>(null);
-  const [login, { data, isLoading, isSuccess, error }] = useLoginMutation();
+  const [, navigate] = useLocation();
+  const form = useForm<LoginFormShape>();
+  const [login, loginState] = useLoginMutation();
 
-  const errorMssg = error?.message;
+  const { isLoading } = useToastForRequest("Login", loginState, {
+    onSuccess: () => {
+      dispatch(setClientId(loginState.data!.id));
+      navigate("/");
+    },
+    backupSuccessMessage: "Logged in!",
+  });
 
-  const onSubmit: SubmitHandler<Auth.LoginRequest> = async (formData) => {
-    try {
-      await login(formData).unwrap();
-      form.reset();
-    } catch {
-      /* empty */
-    }
-
-    modalRef.current?.showModal();
-  };
-
-  const onModalExit = () => {
-    modalRef.current?.close();
-    if (isSuccess) dispatch(setClientId(data.id));
+  const onSubmit: SubmitHandler<LoginFormShape> = (data) => {
+    login(data)
+      .unwrap()
+      .catch(() => {});
   };
 
   return (
@@ -53,33 +53,31 @@ export default function LoginForm() {
         aria-label="form"
         aria-disabled={isLoading}
       >
-        <FormEmailInput form={form} disabled={isLoading} required />
-
-        <FormPasswordInput
+        <FormEmailInput
+          name="email"
+          label="Email"
           form={form}
-          autoComplete="current-password"
-          disabled={isLoading}
+          isBuffering={isLoading}
+          required
         />
 
-        <Link href="/forgot-password" className="link link-primary text-center my-2">
+        <FormPasswordInput
+          name="password"
+          label="Password"
+          form={form}
+          isBuffering={isLoading}
+          required
+        />
+
+        <Link
+          href="/forgot-password"
+          className="link link-primary my-2 text-center"
+        >
           Forgot Password?
         </Link>
 
-        <button className="btn btn-secondary mt-4" disabled={isLoading}>
-          {isLoading && <span className="loading loading-spinner"></span>}
-          Submit
-        </button>
+        <FormSubmit className="btn-secondary" isBuffering={isLoading} />
       </form>
-
-      <Modal
-        ref={modalRef}
-        title={isSuccess ? "Success!" : "Error"}
-        onExit={onModalExit}
-      >
-        <p className="py-4">
-          {isSuccess ? "Successfully logged in!" : errorMssg}
-        </p>
-      </Modal>
     </div>
   );
 }

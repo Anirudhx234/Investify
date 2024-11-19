@@ -1,34 +1,28 @@
-import type { Path, UseFormReturn } from "react-hook-form";
+import { Path } from "react-hook-form";
+import type { formTypes } from "../types";
+import { FormInput } from "./FormInput";
 
-import FormInput from "./FormInput";
-
-export interface FormConfirmPasswordInputProps<
+export function FormConfirmPasswordInput<
   T extends { password: string; confirmPassword: string },
-> {
-  form: UseFormReturn<T>;
-  disabled?: boolean;
-}
-
-export default function FormConfirmPasswordInput<
-  T extends { password: string; confirmPassword: string },
->({ form, disabled }: FormConfirmPasswordInputProps<T>) {
-  const registerInputProps = form.register("confirmPassword" as Path<T>, {
-    required: "Password Confirmation is required",
-    validate: (value) => {
-      if (form.watch("password" as Path<T>) != value)
-        return "Passwords do not match";
-    },
-  });
-
+>({
+  form,
+  inputAttributes,
+  registerOptions,
+  ...props
+}: formTypes.Input<T>) {
   return (
     <FormInput
-      name="confirmPassword"
-      labelText="Confirm Password"
-      registerInputProps={registerInputProps}
-      type="password"
-      errors={form.formState.errors}
-      autoComplete="new-password"
-      disabled={disabled}
+      registerOptions={{
+        ...registerOptions,
+        validate: (value) => {
+          if (form.watch("password" as Path<T>) !== value) {
+            return "Passwords do not match";
+          }
+        },
+      }}
+      inputAttributes={{ ...inputAttributes, type: "password", autoComplete: "new-password" }}
+      form={form}
+      {...props}
     />
   );
 }

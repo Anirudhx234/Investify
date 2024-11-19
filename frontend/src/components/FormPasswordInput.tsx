@@ -1,36 +1,20 @@
-import type { Path, UseFormReturn } from "react-hook-form";
-import type { HTMLInputAutoCompleteAttribute } from "react";
+import type { formTypes } from "../types";
+import { checkPasswordStrength } from "../util/checkPasswordStrength";
+import { FormInput } from "./FormInput";
 
-import FormInput from "./FormInput";
-import passwordStrengthCheck from "../util/passwordStrengthCheck";
-
-export interface FormPasswordInputProps<T extends { password: string }> {
-  form: UseFormReturn<T>;
-  autoComplete?: HTMLInputAutoCompleteAttribute;
-  disabled?: boolean;
-}
-
-export default function FormPasswordInput<T extends { password: string }>({
-  form,
-  autoComplete,
-  disabled
-}: FormPasswordInputProps<T>) {
-  const registerInputProps = form.register("password" as Path<T>, {
-    required: "Password is required",
-    validate: (value) => {
-      return passwordStrengthCheck(value);
-    },
-  });
-
+export function FormPasswordInput<T extends { password: string }>({
+  registerOptions,
+  inputAttributes,
+  ...props
+}: formTypes.Input<T>) {
   return (
     <FormInput
-      name="password"
-      labelText="Password"
-      registerInputProps={registerInputProps}
-      type="password"
-      errors={form.formState.errors}
-      autoComplete={autoComplete}
-      disabled={disabled}
+      registerOptions={{
+        ...registerOptions,
+        validate: (value) => checkPasswordStrength(value) ?? true,
+      }}
+      inputAttributes={{ ...inputAttributes, type: "password" }}
+      {...props}
     />
   );
 }
