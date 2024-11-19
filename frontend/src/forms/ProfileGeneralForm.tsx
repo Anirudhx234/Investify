@@ -74,7 +74,9 @@ export function ProfileGeneralFormEdit() {
     if (data.profilePicture?.[0])
       formData.set("profilePicture", data.profilePicture[0]);
 
-    modifyProfile(formData).unwrap();
+    modifyProfile(formData)
+      .unwrap()
+      .catch(() => {});
   };
 
   return (

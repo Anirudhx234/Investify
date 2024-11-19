@@ -30,7 +30,9 @@ export function LoginForm() {
   });
 
   const onSubmit: SubmitHandler<LoginFormShape> = (data) => {
-    login(data).unwrap();
+    login(data)
+      .unwrap()
+      .catch(() => {});
   };
 
   return (

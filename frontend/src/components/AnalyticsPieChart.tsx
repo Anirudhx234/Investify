@@ -4,6 +4,7 @@ import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
 import { convertToTitleCase } from "../util/convertToTitleCase";
 import { convertAssetTypeToLabel } from "../util/convertAsset";
 import { chartColors } from "./AnalyticsChartColors";
+import { formatNumber } from "../util/formatNumber";
 
 export function AnalyticsPieChart() {
   const params = useParams() as { id: string };
@@ -20,7 +21,7 @@ export function AnalyticsPieChart() {
   return (
     <div className="flex w-full justify-center">
       <ResponsiveContainer width="100%" aspect={1.5}>
-        <PieChart >
+        <PieChart>
           <Pie
             data={valuations}
             nameKey="name"
@@ -43,9 +44,11 @@ export function AnalyticsPieChart() {
                 const { value } = payload[0];
                 return (
                   <div className="relative inline-block rounded p-1">
-                    <p className="relative rounded bg-primary px-2 py-1 text-sm font-semibold text-primary-content shadow-md after:absolute after:bottom-full after:left-1/2 after:-translate-x-1/2 after:border-[6px] after:border-x-transparent after:border-b-primary after:border-t-transparent after:content-['']">
-                      Value: ${value}
-                    </p>
+                    {value !== undefined && (
+                      <p className="relative rounded bg-primary px-2 py-1 text-sm font-semibold text-primary-content shadow-md after:absolute after:bottom-full after:left-1/2 after:-translate-x-1/2 after:border-[6px] after:border-x-transparent after:border-b-primary after:border-t-transparent after:content-['']">
+                        Value: ${formatNumber(value as number)}
+                      </p>
+                    )}
                   </div>
                 );
               }

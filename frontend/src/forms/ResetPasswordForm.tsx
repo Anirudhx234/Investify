@@ -29,7 +29,9 @@ export function ResetPasswordForm() {
   );
 
   const onSubmit: SubmitHandler<ResetPasswordFormShape> = (data) => {
-    resetPassword({ ...data, search }).unwrap();
+    resetPassword({ ...data, search })
+      .unwrap()
+      .catch(() => {});
   };
 
   return (

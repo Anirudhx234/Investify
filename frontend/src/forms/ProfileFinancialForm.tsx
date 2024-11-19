@@ -68,7 +68,9 @@ export function ProfileFinancialForm() {
     if (data.currentSavings !== clientData.currentSavings)
       formData.set("currentSavings", data.currentSavings);
 
-    modifyProfile(formData).unwrap();
+    modifyProfile(formData)
+      .unwrap()
+      .catch(() => {});
   };
 
   const [progress, setProgress] = useState<string | undefined>(

@@ -47,7 +47,9 @@ export function AssetSearchBar({ renderItem, onSelect }: AssetSearchBarProps) {
   const handleSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
     const newValue = e.target.value;
     if (newValue.length >= 3) {
-      searchAssets({ symbol: newValue }).unwrap();
+      searchAssets({ symbol: newValue })
+        .unwrap()
+        .catch(() => {});
       setIsExpanded(true);
     } else {
       setIsExpanded(false);

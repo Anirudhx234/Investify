@@ -96,11 +96,15 @@ export function RealPortfolioTableRow({
   useFormReset(form, formFields);
 
   const onModifyAsset: SubmitHandler<RealPortfolioAssetFormShape> = (data) => {
-    modifyAsset({ ...data, assetId: asset.id, portfolioId }).unwrap();
+    modifyAsset({ ...data, assetId: asset.id, portfolioId })
+      .unwrap()
+      .catch(() => {});
   };
 
   const onDeleteAsset = () => {
-    deleteAsset({ assetId: asset.id, portfolioId }).unwrap();
+    deleteAsset({ assetId: asset.id, portfolioId })
+      .unwrap()
+      .catch(() => {});
   };
 
   return (
@@ -123,9 +127,7 @@ export function RealPortfolioTableRow({
         </div>
       </td>
 
-      <td className="text-center py-2">
-        {formatNumber(props.currentPrice)}
-      </td>
+      <td className="py-2 text-center">{formatNumber(props.currentPrice)}</td>
 
       <td className="px-2 pt-4">
         <div className="flex justify-center">

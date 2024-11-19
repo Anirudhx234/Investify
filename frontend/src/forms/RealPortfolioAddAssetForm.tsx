@@ -39,7 +39,9 @@ export function RealPortfolioAddAssetForm() {
   });
 
   const onSubmit: SubmitHandler<RealPortfolioAddAssetFormShape> = (data) => {
-    addAsset({ ...data, asset: selectedAsset!, portfolioId: id }).unwrap();
+    addAsset({ ...data, asset: selectedAsset!, portfolioId: id })
+      .unwrap()
+      .catch(() => {});
   };
 
   return (

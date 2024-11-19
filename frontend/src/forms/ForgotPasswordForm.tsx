@@ -26,7 +26,9 @@ export function ForgotPasswordForm() {
   );
 
   const onSubmit: SubmitHandler<ForgotPasswordFormShape> = (data) => {
-    forgotPassword(data).unwrap();
+    forgotPassword(data)
+      .unwrap()
+      .catch(() => {});
   };
 
   return (

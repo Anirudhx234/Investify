@@ -28,7 +28,9 @@ export function SignUpForm() {
   });
 
   const onSubmit: SubmitHandler<SignUpFormShape> = (data) => {
-    signUp(data).unwrap();
+    signUp(data)
+      .unwrap()
+      .catch(() => {});
   };
 
   return (

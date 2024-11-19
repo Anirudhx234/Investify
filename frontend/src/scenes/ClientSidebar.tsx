@@ -35,13 +35,17 @@ export function ClientSidebarEdit() {
   const onLogoutClick = () => {
     navigate("~/");
     dispatch(setClientId(null));
-    logout().unwrap();
+    logout()
+      .unwrap()
+      .catch(() => {});
   };
 
   const onDeleteClientClick = () => {
     navigate("~/");
     dispatch(setClientId(null));
-    deleteAccount().unwrap();
+    deleteAccount()
+      .unwrap()
+      .catch(() => {});
   };
 
   if (!isSuccess)

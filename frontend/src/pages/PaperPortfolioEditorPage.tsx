@@ -21,7 +21,7 @@ export function PaperPortfolioEditorPage() {
   if (!isSuccess || !data) return component;
   return (
     <div className="flex w-full flex-col ~gap-4/8">
-      <div className="flex flex-col items-center gap-4">
+      <div className="flex flex-col items-center gap-8">
         <h1 className="text-center text-3xl font-bold">{data.name}</h1>
 
         <PortfolioStats id={id} />
@@ -29,21 +29,21 @@ export function PaperPortfolioEditorPage() {
 
       <div className="divider"></div>
 
-      <div className="flex flex-col items-center gap-4">
+      <div className="flex flex-col items-center gap-8">
         <h2 className="text-center text-xl font-bold">Trade</h2>
         <PaperPortfolioAddTradeForm />
       </div>
 
       <div className="divider"></div>
 
-      <div className="flex flex-col items-center gap-4">
+      <div className="flex flex-col items-center gap-8">
         <h2 className="text-center text-xl font-bold">Trade History</h2>
         <PaperPortfolioTable id={id} />
       </div>
 
       <div className="divider"></div>
 
-      <div className="flex flex-col items-center gap-4">
+      <div className="flex flex-col items-center gap-8">
         <h2 className="text-center text-xl font-bold">Analytics</h2>
         <PortfolioAnalytics />
       </div>

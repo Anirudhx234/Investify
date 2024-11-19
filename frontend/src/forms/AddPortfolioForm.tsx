@@ -13,14 +13,19 @@ export function AddPortfolioForm() {
   const realForm = useForm<{ name: string }>();
   const paperForm = useForm<{ name: string; buyingPower: number }>();
 
-  const { isLoading } = useToastForRequest("Create Portfolio", createPortfolioState, {
-    backupSuccessMessage: "Created portfolio!",
-  });
+  const { isLoading } = useToastForRequest(
+    "Create Portfolio",
+    createPortfolioState,
+    {
+      backupSuccessMessage: "Created portfolio!",
+    },
+  );
 
   const onRealSubmit: SubmitHandler<{ name: string }> = (data) => {
     createPortfolio({ ...data })
       .unwrap()
-      .then(() => realForm.reset());
+      .then(() => realForm.reset())
+      .catch(() => {});
   };
 
   const onPaperSubmit: SubmitHandler<{ name: string; buyingPower: number }> = (
@@ -28,7 +33,8 @@ export function AddPortfolioForm() {
   ) => {
     createPortfolio({ ...data })
       .unwrap()
-      .then(() => paperForm.reset());
+      .then(() => paperForm.reset())
+      .catch(() => {});
   };
 
   return (

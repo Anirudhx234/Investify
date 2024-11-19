@@ -39,7 +39,9 @@ export function PaperPortfolioAddTradeForm() {
   });
 
   const onSubmit: SubmitHandler<PaperPortfolioAddTradeFormShape> = (data) => {
-    addTrade({ ...data, asset: selectedAsset!, portfolioId: id }).unwrap();
+    addTrade({ ...data, asset: selectedAsset!, portfolioId: id })
+      .unwrap()
+      .catch(() => {});
   };
 
   return (

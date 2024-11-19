@@ -48,7 +48,9 @@ export function ProfilePersonalForm() {
     if (data.income !== clientData.income)
       formData.set("income", `${data.income}`);
 
-    modifyProfile(formData).unwrap();
+    modifyProfile(formData)
+      .unwrap()
+      .catch(() => {});
   };
 
   return (

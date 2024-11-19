@@ -52,7 +52,8 @@ export function ProfileAccountForm() {
       .unwrap()
       .then(() => {
         emailForm.reset({ email: oldEmail });
-      });
+      })
+      .catch(() => {});
   };
 
   const onModifyPassword: SubmitHandler<{ password: string }> = (data) => {
@@ -62,7 +63,8 @@ export function ProfileAccountForm() {
       .unwrap()
       .then(() => {
         passwordForm.reset({ password: "" });
-      });
+      })
+      .catch(() => {});
   };
 
   return (
