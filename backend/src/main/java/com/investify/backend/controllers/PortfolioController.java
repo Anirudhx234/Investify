@@ -119,28 +119,23 @@ public class PortfolioController {
         Map<String, Double> sectorValuations = portfolioService.calculateSectorValuations(portfolioId);
         return ResponseEntity.ok(sectorValuations);
     }
-    
-    @GetMapping("/{portfolioId}/total-portfolio-value")
-    public ResponseEntity<Double> getTotalPortfolioValue(@PathVariable UUID portfolioId) {
-        double totalValue = portfolioService.getTotalPortfolioValue(portfolioId);
-        return ResponseEntity.ok(totalValue);
-    }
 
+    /*
     @GetMapping("/{portfolioId}/roi")
     public ResponseEntity<Double> getPortfolioROI(@PathVariable UUID portfolioId) {
         double roi = portfolioService.getPortfolioROI(portfolioId);
         return ResponseEntity.ok(roi);
-    }
+    }*/
 
     @GetMapping("/{paperPortfolioId}/trades")
     public ResponseEntity getTrades(@PathVariable UUID paperPortfolioId) {
-        List<Trade> trades = portfolioService.getTrades(paperPortfolioId);
+        List<TradeDto> trades = portfolioService.getTrades(paperPortfolioId);
         return ResponseEntity.ok(trades);
     }
 
     @PostMapping("/{paperPortfolioId}/trades")
-    public ResponseEntity createTrade(@PathVariable UUID paperPortfolioId, @RequestBody TradeDto request) {
-        Trade trade = portfolioService.createTrade(paperPortfolioId, request);
+    public ResponseEntity createTrade(@PathVariable UUID paperPortfolioId, @RequestBody CreateTradeDto request) {
+        TradeDto trade = portfolioService.createTrade(paperPortfolioId, request);
         return ResponseEntity.ok(trade);
     }
 }
