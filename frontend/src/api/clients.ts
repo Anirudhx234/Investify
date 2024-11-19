@@ -19,7 +19,6 @@ const clientsApi = api.injectEndpoints({
         }
       },
     }),
-
     loggedInClientProfile: build.query<clientTypes.LoggedInClient, void>({
       query: () => ({
         url: "/clients/me",

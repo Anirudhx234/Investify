@@ -9,6 +9,7 @@ import { PortfoliosPage } from "../pages/PortfoliosPage";
 import { NotFoundPage } from "../pages/NotFoundPage";
 import { ResetPasswordForm } from "../forms/ResetPasswordForm";
 import { AssetPage } from "../pages/AssetPage";
+import {CompetitionPage} from "../pages/CompetitionPage.tsx";
 
 /* list of top-level routes for the app */
 export const pages: routerTypes.Page[] = [
@@ -88,6 +89,15 @@ export const pages: routerTypes.Page[] = [
     drawerMode: "open",
     navbar: true,
     protection: "signed-in",
+    nest: true,
+  },
+  {
+    path: "/competition",
+    component: <CompetitionPage />,
+    args: { type: "page" },
+    label: "Competition",
+    drawerMode: "open",
+    navbar: true,
     nest: true,
   },
   {
