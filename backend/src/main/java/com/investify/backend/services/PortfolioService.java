@@ -241,6 +241,10 @@ public class PortfolioService {
             List<TradeDto> trades = getTrades(portfolioAsset.getPortfolio().getId());
 
             for (TradeDto trade : trades) {
+                if (trade.getAsset() != portfolioAsset.getAsset()) {
+                    continue;
+                }
+                
                 double totalValue = trade.getPrice() * trade.getQuantity();
                 if (trade.getType() == TradeType.SELL) {
                     totalGain += totalValue;
