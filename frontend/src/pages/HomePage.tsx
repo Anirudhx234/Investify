@@ -23,10 +23,9 @@ const HomePage: React.FC = () => {
 
   return (
     <div className="p-4">
-      <h1 className="text-2xl font-bold mb-4">Search Example</h1>
+      <h1 className="text-2xl font-bold mb-4">Search</h1>
       <SearchBar onSearch={handleSearch} initialQuery="Bob" />
 
-      {/* Dropdown with search results */}
       {query && (
         <div className="relative mt-2 w-full max-w-md">
           <ul className="absolute bg-white border border-gray-300 rounded-lg shadow-lg w-full">
