@@ -24,6 +24,7 @@ import java.util.UUID;
 public class ClientService {
 
     private final AuthService authService;
+
     private final ClientRepository clientRepository;
 
     private final PasswordEncoder passwordEncoder;
@@ -181,7 +182,8 @@ public class ClientService {
     }
 
     public ClientDto findDtoById(String clientId) {
-        return clientMapper.toClientDto(findById(clientId));
+        Client client = findById(clientId);
+        return clientMapper.toClientDto(client);
     }
 
     public Client findById(String clientId) {

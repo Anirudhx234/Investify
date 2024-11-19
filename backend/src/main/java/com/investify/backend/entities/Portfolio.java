@@ -26,7 +26,6 @@ public abstract class Portfolio {
     @JsonBackReference
     private Client client;
 
-    @Column(unique = true)
     private String name;
 
     @OneToMany(mappedBy = "portfolio", cascade = CascadeType.ALL, orphanRemoval = true)

@@ -19,6 +19,7 @@ public abstract class Asset {
     private UUID id;
 
     private String symbol;
+
     private String name;
 
     @OneToMany(mappedBy = "asset", cascade = CascadeType.ALL, orphanRemoval = true)
