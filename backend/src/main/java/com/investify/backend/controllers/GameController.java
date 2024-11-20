@@ -42,8 +42,8 @@ public class GameController {
 
     @PostMapping("/{gameId}/clients/{clientId}/join")
     public ResponseEntity joinGame(@PathVariable UUID gameId, @PathVariable String clientId) {
-        GameDto game = gameService.joinGame(clientId, gameId);
-        return ResponseEntity.ok(game);
+        GamePortfolioListDto gamePortfolio = gameService.joinGame(clientId, gameId);
+        return ResponseEntity.ok(gamePortfolio);
     }
 
     @GetMapping("/{gameId}/leaderboard")
