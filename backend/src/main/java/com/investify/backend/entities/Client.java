@@ -88,6 +88,6 @@ public class Client {
     @JsonManagedReference
     private List<GamePortfolio> gamePortfolios;
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany
     private List<Badge> badges;
 }

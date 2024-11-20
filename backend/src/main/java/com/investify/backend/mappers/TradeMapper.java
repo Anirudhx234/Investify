@@ -17,7 +17,6 @@ public interface TradeMapper {
 
     @Named("localDateTimeToString")
     default String localDateTimeToString(LocalDateTime dateTime) {
-        // You can adjust the format as needed
         return dateTime != null ? dateTime.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME) : null;
     }
 }

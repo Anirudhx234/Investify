@@ -5,7 +5,7 @@ import lombok.Data;
 
 @AllArgsConstructor
 @Data
-public class PortfolioAssetROI {
+public class ROIDto {
     private double cost;
     private double gain;
     private double roi;
