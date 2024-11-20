@@ -129,7 +129,7 @@ public class GameService {
         );
     }
 
-    public Game joinGame(String clientId, UUID gameId) {
+    public GameDto joinGame(String clientId, UUID gameId) {
         Client client = clientService.findById(clientId);
 
         Optional<GamePortfolio> gamePortfolio = gamePortfolioRepository.findByClientAndGameId(client, gameId);
@@ -142,7 +142,7 @@ public class GameService {
         GamePortfolio portfolio = new GamePortfolio(client, game);
         gamePortfolioRepository.save(portfolio);
 
-        return game;
+        return gameMapper.toGameDto(game);
     }
 
     public List<LeaderboardPositionDto> getLeaderboard(UUID gameId) {
