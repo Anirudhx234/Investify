@@ -1,7 +1,7 @@
 /* types for the complicated api endpoints */
 
 import { Interval, Stock } from "./Asset";
-import { GamePortfolio } from "./Game";
+import { Game, GamePortfolio } from "./Game";
 
 export interface VerifyClientArgs {
   url: string;
@@ -103,6 +103,6 @@ export interface GamePortfoliosRes {
 }
 
 export interface AvailableGamesRes {
-  upcomingGames: GamePortfolio[];
-  activeGames: GamePortfolio[];
+  upcomingGames: Game[];
+  activeGames: Game[];
 }

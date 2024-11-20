@@ -98,6 +98,8 @@ export const pages: routerTypes.Page[] = [
     label: "Games",
     drawerMode: "open",
     navbar: true,
+    nest: true,
+    protection: "signed-in",
   },
   {
     path: "/",
