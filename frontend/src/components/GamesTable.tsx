@@ -50,7 +50,10 @@ export function JoinableGamesTable({ games }: { games: gameTypes.Game[] }) {
   const { isLoading } = useToastForRequest("Join Game", joinGameState, {
     backupErrorMessage: "Game joined!",
     onSuccess: () => {
-      if (joinGameState.data) navigate(`~/games/${joinGameState.data.id}`);
+      if (joinGameState.data)
+        navigate(
+          `~/games/${joinGameState.data.game.id}/portfolios/${joinGameState.data.id}`,
+        );
     },
   });
 

@@ -1,9 +1,10 @@
-import { Link, Redirect, Route, Switch } from "wouter";
+import { Link, Redirect, Route, Switch, useParams } from "wouter";
 import { CreateGameForm } from "../forms/CreateGameForm";
 import { twMerge } from "../util/twMerge";
 import { GamesTable, JoinableGamesTable } from "../components/GamesTable";
 import { useAvailableGamesQuery, useGamePortfoliosQuery } from "../api/game";
 import { useToastForRequest } from "../hooks/useToastForRequests";
+import { PaperPortfolioEditorPage } from "./PaperPortfolioEditorPage";
 
 export function GamesPage() {
   return (
@@ -11,7 +12,10 @@ export function GamesPage() {
       <Route path="/create" component={CreateGameForm} />
       <Route path="/joined" component={JoinedGames} nest />
       <Route path="/browse" component={BrowseGames} nest />
-      <Route path="/:id" component={() => <>Game Page</>} />
+      <Route
+        path="/:gameId/portfolios/:portfolioId"
+        component={GamePortfolio}
+      />
       <Route path="*" component={() => <Redirect to="/create" replace />} />
     </Switch>
   );
@@ -123,4 +127,11 @@ export function BrowseGames() {
       </Switch>
     </div>
   );
+}
+
+export function GamePortfolio() {
+  const params = useParams() as { gameId: string; portfolioId: string };
+  const portfolioId = params.portfolioId;
+
+  return <PaperPortfolioEditorPage id={portfolioId} />;
 }

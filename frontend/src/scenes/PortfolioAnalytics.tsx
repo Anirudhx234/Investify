@@ -1,4 +1,3 @@
-import { useParams } from "wouter";
 import {
   useRiskReturnsQuery,
   useRiskScoreQuery,
@@ -10,10 +9,7 @@ import { AnalyticsRiskReturnChart } from "../components/AnalyticsRiskReturnChart
 import { AnalyticsRiskAssessmentTable } from "../components/AnalyticsRiskAssessmentTable";
 import { AnalyticsHeatMap } from "../components/AnalyticsHeatMap";
 
-export function PortfolioAnalytics() {
-  const params = useParams() as { id: string };
-  const { id } = params;
-
+export function PortfolioAnalytics({ id }: { id: string }) {
   const pieChartState = useSectorValuationsQuery({ portfolioId: id });
   const riskReturnsState = useRiskReturnsQuery({ portfolioId: id });
   const riskScoreState = useRiskScoreQuery({ portfolioId: id });

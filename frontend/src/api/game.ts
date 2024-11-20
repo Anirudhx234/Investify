@@ -25,7 +25,7 @@ const gameApi = api.injectEndpoints({
       }),
     }),
 
-    joinGame: build.mutation<gameTypes.Game, { gameId: string }>({
+    joinGame: build.mutation<gameTypes.GamePortfolio, { gameId: string }>({
       query: ({ gameId }) => ({
         url: `/games/${gameId}/clients/me/join`,
         method: "POST",

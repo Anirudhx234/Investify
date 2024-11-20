@@ -1,4 +1,3 @@
-import { useParams } from "wouter";
 import { useToastForRequest } from "../hooks/useToastForRequests";
 import { RealPortfolioTable } from "../components/RealPortfolioTable";
 import { RealPortfolioAddAssetForm } from "../forms/RealPortfolioAddAssetForm";
@@ -6,10 +5,7 @@ import { PortfolioAnalytics } from "../scenes/PortfolioAnalytics";
 import { useGetRealPortfolioQuery } from "../api/portfolio";
 import { PortfolioStats } from "../components/PortfolioStats";
 
-export function RealPortfolioEditorPage() {
-  const params = useParams() as { id: string };
-  const { id } = params;
-
+export function RealPortfolioEditorPage({ id }: { id: string }) {
   const portfolioState = useGetRealPortfolioQuery({ id });
   const data = portfolioState.data;
 
@@ -32,7 +28,7 @@ export function RealPortfolioEditorPage() {
 
       <div className="flex flex-col items-center gap-8">
         <h2 className="text-center text-xl font-bold">Add Asset</h2>
-        <RealPortfolioAddAssetForm />
+        <RealPortfolioAddAssetForm id={id} />
       </div>
 
       <div className="divider"></div>
@@ -46,7 +42,7 @@ export function RealPortfolioEditorPage() {
 
       <div className="flex flex-col items-center gap-8">
         <h2 className="text-center text-xl font-bold">Analytics</h2>
-        <PortfolioAnalytics />
+        <PortfolioAnalytics id={id} />
       </div>
     </div>
   );

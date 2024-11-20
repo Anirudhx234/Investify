@@ -1,4 +1,3 @@
-import { useParams } from "wouter";
 import { useToastForRequest } from "../hooks/useToastForRequests";
 import { PortfolioAnalytics } from "../scenes/PortfolioAnalytics";
 import { PaperPortfolioAddTradeForm } from "../forms/PaperPortfolioAddTradeForm";
@@ -6,9 +5,7 @@ import { PaperPortfolioTable } from "../components/PaperPortfolioTable";
 import { useGetPaperPortfolioQuery } from "../api/portfolio";
 import { PortfolioStats } from "../components/PortfolioStats";
 
-export function PaperPortfolioEditorPage() {
-  const params = useParams() as { id: string };
-  const { id } = params;
+export function PaperPortfolioEditorPage({ id }: { id: string }) {
   const portfolioState = useGetPaperPortfolioQuery({ id });
   const data = portfolioState.data;
 
@@ -31,7 +28,7 @@ export function PaperPortfolioEditorPage() {
 
       <div className="flex flex-col items-center gap-8">
         <h2 className="text-center text-xl font-bold">Trade</h2>
-        <PaperPortfolioAddTradeForm />
+        <PaperPortfolioAddTradeForm id={id} />
       </div>
 
       <div className="divider"></div>
@@ -45,7 +42,7 @@ export function PaperPortfolioEditorPage() {
 
       <div className="flex flex-col items-center gap-8">
         <h2 className="text-center text-xl font-bold">Analytics</h2>
-        <PortfolioAnalytics />
+        <PortfolioAnalytics id={id} />
       </div>
     </div>
   );
