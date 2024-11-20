@@ -129,20 +129,20 @@ public class GameService {
         );
     }
 
-    public Game joinGame(String clientId, UUID gameId) {
+    public GamePortfolioListDto joinGame(String clientId, UUID gameId) {
         Client client = clientService.findById(clientId);
 
-        Optional<GamePortfolio> gamePortfolio = gamePortfolioRepository.findByClientAndGameId(client, gameId);
-        if (gamePortfolio.isPresent()) {
+        Optional<GamePortfolio> existingPortfolio = gamePortfolioRepository.findByClientAndGameId(client, gameId);
+        if (existingPortfolio.isPresent()) {
             throw new RestException("Client has already joined game", HttpStatus.FORBIDDEN);
         }
 
         Game game = findById(gameId);
 
-        GamePortfolio portfolio = new GamePortfolio(client, game);
-        gamePortfolioRepository.save(portfolio);
+        GamePortfolio gamePortfolio = new GamePortfolio(client, game);
+        gamePortfolioRepository.save(gamePortfolio);
 
-        return game;
+        return toGamePortfolioListDto(gamePortfolio);
     }
 
     public List<LeaderboardPositionDto> getLeaderboard(UUID gameId) {

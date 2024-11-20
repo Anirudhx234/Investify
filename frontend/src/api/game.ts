@@ -31,6 +31,13 @@ const gameApi = api.injectEndpoints({
         method: "POST",
       }),
     }),
+    
+    leaderboardData: build.query<gameTypes.Player[], { gameId: string }>({
+      query: ({ gameId }) => ({
+        url: "/games/" + gameId + "/leaderboard",
+        method: "GET",
+      })
+    }),
   }),
 });
 
@@ -39,4 +46,5 @@ export const {
   useCreateGameMutation,
   useGamePortfoliosQuery,
   useJoinGameMutation,
+  useLeaderboardDataQuery,
 } = gameApi;

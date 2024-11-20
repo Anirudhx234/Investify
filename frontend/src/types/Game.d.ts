@@ -1,3 +1,5 @@
+import type { Client } from "./Client";
+
 export interface Game {
   id: string;
   name: string;
@@ -10,4 +12,9 @@ export interface GamePortfolio {
   id: string;
   name: string;
   game: Game;
+}
+
+export interface Player {
+    client: Client;
+    totalValue: number;
 }

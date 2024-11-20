@@ -26,5 +26,5 @@ public class ClientDto {
     private InvestmentRisk investmentRisk;
     private Integer userSavings;
     private Integer currentSavings;
-    private List<Badge> badges;
+    private List<BadgeDto> badges;
 }
