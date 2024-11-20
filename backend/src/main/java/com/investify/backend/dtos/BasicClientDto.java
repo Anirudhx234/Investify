@@ -14,4 +14,5 @@ import java.util.UUID;
 public class BasicClientDto {
     private String id;
     private String username;
+    private String profilePicture;
 }

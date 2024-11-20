@@ -84,7 +84,7 @@ public class PortfolioService {
         return response;
     }
 
-    public Object getPortfolio(UUID portfolioId) {
+    public PortfolioResponse getPortfolio(UUID portfolioId) {
         Portfolio portfolio = findPortfolioById(portfolioId);
 
         if (portfolio instanceof RealPortfolio) {
@@ -96,7 +96,6 @@ public class PortfolioService {
     }
 
     private RealPortfolioResponse getRealPortfolio(RealPortfolio portfolio) {
-        // Retrieve the portfolio assets
         List<PortfolioAssetResponse> portfolioAssets = portfolio.getPortfolioAssets()
                 .stream()
                 .map(asset -> {
@@ -113,7 +112,6 @@ public class PortfolioService {
                 })
                 .collect(Collectors.toList());
 
-        // Calculate total portfolio value
         double totalPortfolioValue = portfolioAssets.stream()
                 .mapToDouble(PortfolioAssetResponse::getTotalAssetValue)
                 .sum();
@@ -124,7 +122,6 @@ public class PortfolioService {
     }
 
     private PaperPortfolioResponse getPaperPortfolio(PaperPortfolio portfolio) {
-        // Retrieve the portfolio assets
         List<PortfolioAssetResponse> portfolioAssets = portfolio.getPortfolioAssets()
                 .stream()
                 .map(asset -> {
@@ -143,7 +140,6 @@ public class PortfolioService {
 
         List<TradeDto> trades = getTrades(portfolio.getId());
 
-        // Calculate total portfolio value
         double totalPortfolioValue = portfolioAssets.stream()
                 .mapToDouble(PortfolioAssetResponse::getTotalAssetValue)
                 .sum();
