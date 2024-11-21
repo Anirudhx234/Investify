@@ -4,28 +4,30 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.investify.backend.config.TwelveDataApiKeyManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.Cache;
+import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 @Service
 @PropertySource("classpath:application-APIs.properties")
 public class TwelveDataService {
-
-    @Value("${twelveData.api.key}")
-    private String twelveDataApiKey;
-
     @Value("${twelveData.demoapi.key}")
     private String twelveDataDemoApiKey;
+
+    @Autowired
+    CacheManager cacheManager;
+
+    @Autowired
+    TwelveDataApiKeyManager twelveDataApiKeyManager;
 
     private final WebClient webClient;
 
@@ -34,6 +36,8 @@ public class TwelveDataService {
         this.webClient = polygonWebClientBuilder.baseUrl("https://api.twelvedata.com").build();
     }
 
+
+    @Cacheable("searchAssets")
     public Mono<Map<String, List<Map<String, String>>>> searchForAssets(String symbol) {
         return webClient.get()
                 .uri(uriBuilder -> uriBuilder
@@ -126,6 +130,8 @@ public class TwelveDataService {
     // Valid intervals: 1min, 5min, 15min, 30min, 45min, 1h, 2h, 4h, 1day, 1week, 1month
     // @Cacheable(value = "timeSeriesCache", key = "#ticker + '-' + #interval")
     public Mono<Map> getAssetTimeSeries(String ticker, String interval) {
+        String twelveDataApiKey = twelveDataApiKeyManager.getNextApiKey();
+
         return webClient.get()
                 .uri(uriBuilder -> uriBuilder
                         .path("/time_series")
@@ -139,6 +145,8 @@ public class TwelveDataService {
     }
 
     public Mono<Map> getAssetQuote(String ticker, String interval) {
+        String twelveDataApiKey = twelveDataApiKeyManager.getNextApiKey();
+
         return webClient.get()
                 .uri(uriBuilder -> uriBuilder
                         .path("/quote")
@@ -153,8 +161,19 @@ public class TwelveDataService {
     }
 
     // Get current price of an asset
-    // @Cacheable(value = "assetPriceCache", key = "#symbol")
     public double getLivePrice(String symbol) {
+        Cache cache = cacheManager.getCache("livePriceCache");
+        if (cache != null) {
+            Cache.ValueWrapper cachedValue = cache.get(symbol);
+            if (cachedValue != null) {
+                // System.out.println("Cache hit for " + symbol);
+                return (double) cachedValue.get();
+            }
+        }
+
+        String twelveDataApiKey = twelveDataApiKeyManager.getNextApiKey();
+        //System.out.println("Cache miss for " + symbol + ". Using: " + twelveDataApiKey);
+
         ObjectMapper objectMapper = new ObjectMapper();
 
         try {
@@ -170,9 +189,15 @@ public class TwelveDataService {
                     .block();
 
             JsonNode jsonNode = objectMapper.readTree(priceResponse);
-            return jsonNode.get("price").asDouble();
+            double price = jsonNode.get("price").asDouble();
+
+            if (cache != null) {
+                cache.put(symbol, price);
+            }
+
+            return price;
         } catch (Exception e) {
-            throw new RuntimeException("Failed to fetch or parse the API response", e);
+            throw new RuntimeException("Failed to fetch live price for " + symbol + " (TwelveData)", e);
         }
     }
 
