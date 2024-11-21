@@ -90,6 +90,7 @@ export function RealPortfolioAddAssetForm({ id }: { id: string }) {
             label="Quantity"
             form={form}
             isBuffering={isLoading}
+            decimal
             required
           />
 

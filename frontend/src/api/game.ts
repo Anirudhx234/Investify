@@ -9,7 +9,7 @@ const gameApi = api.injectEndpoints({
         method: "POST",
         body,
       }),
-      invalidatesTags: ["logged-in-client-game-portfolios"],
+      invalidatesTags: ["client-game-portfolios-list"],
     }),
 
     getGamePortfolio: build.query<gameTypes.GamePortfolio, { gameId: string }>({
@@ -17,6 +17,8 @@ const gameApi = api.injectEndpoints({
         url: `/games/${gameId}/clients/me`,
         method: "GET",
       }),
+      providesTags: (res) =>
+        res ? [{ type: "client-game-portfolios", id: res.game.id }] : [],
     }),
 
     gamePortfolios: build.query<apiTypes.GamePortfoliosRes, void>({
@@ -24,7 +26,7 @@ const gameApi = api.injectEndpoints({
         url: "/games/clients/me",
         method: "GET",
       }),
-      providesTags: ["logged-in-client-game-portfolios"],
+      providesTags: ["client-game-portfolios-list"],
     }),
 
     availableGames: build.query<apiTypes.AvailableGamesRes, void>({
@@ -32,7 +34,7 @@ const gameApi = api.injectEndpoints({
         url: "/games/clients/me/available-games",
         method: "GET",
       }),
-      providesTags: ["logged-in-client-available-games"],
+      providesTags: ["client-available-games-list"],
     }),
 
     joinGame: build.mutation<gameTypes.GamePortfolio, { gameId: string }>({
@@ -40,9 +42,10 @@ const gameApi = api.injectEndpoints({
         url: `/games/${gameId}/clients/me/join`,
         method: "POST",
       }),
-      invalidatesTags: [
-        "logged-in-client-game-portfolios",
-        "logged-in-client-available-games",
+      invalidatesTags: (_res, _err, args) => [
+        "client-available-games-list",
+        "client-game-portfolios-list",
+        { type: "game-leaderboards", id: args.gameId },
       ],
     }),
 
@@ -51,6 +54,8 @@ const gameApi = api.injectEndpoints({
         url: `/games/${gameId}/leaderboard`,
         method: "GET",
       }),
+      providesTags: (res, _err, args) =>
+        res ? [{ type: "game-leaderboards", id: args.gameId }] : [],
     }),
   }),
 });

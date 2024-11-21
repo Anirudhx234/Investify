@@ -93,6 +93,7 @@ export function PaperPortfolioAddTradeForm({ id }: { id: string }) {
             label="Quantity"
             form={form}
             isBuffering={isLoading}
+            decimal
             required
           />
 
