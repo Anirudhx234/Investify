@@ -117,8 +117,10 @@ export function ProfileGeneralFormEdit() {
           </label>
         </div>
 
-        <div className="flex w-full justify-center">
-          <div className="flex max-w-40 flex-wrap">
+        <div className="my-6 flex w-full flex-col items-center gap-2">
+          <h2 className="font-semibold">Badges & Achievements</h2>
+
+          <div className="lex max-w-40 flex-wrap">
             {clientData?.badges.map((badge) => (
               <Badge key={badge.id} {...badge} />
             ))}
@@ -167,7 +169,9 @@ export function ProfileGeneralFormView() {
         />
       </div>
 
-      <div className="flex w-full justify-center">
+      <div className="my-6 flex w-full flex-col items-center gap-2">
+        <h2 className="font-semibold">Badges & Achievements</h2>
+
         <div className="flex max-w-40 flex-wrap">
           {clientData?.badges.map((badge) => (
             <Badge key={badge.id} {...badge} />
