@@ -1,6 +1,7 @@
 package com.investify.backend.controllers;
 
 import com.investify.backend.dtos.*;
+import com.investify.backend.entities.Client;
 import com.investify.backend.exceptions.RestException;
 import com.investify.backend.services.AuthService;
 import com.investify.backend.services.ClientService;
@@ -15,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
+import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
@@ -33,6 +35,11 @@ public class ClientController {
         ClientDto client = clientService.findDtoById(clientId);
 
         return ResponseEntity.ok(client);
+    }
+
+    @GetMapping("/fetchAll")
+    public List<Client> getAllClients() {
+        return clientService.getAllClients();
     }
 
     @PatchMapping("/{clientId}")
@@ -73,5 +80,20 @@ public class ClientController {
 
         return ResponseEntity.ok(new MessageDto("Client successfully deleted."));
     }
+
+    @PostMapping("/addFriend")
+    public ResponseEntity<Client> addFriend(@PathVariable UUID clientId, @PathVariable UUID friendId) {
+        Client updatedClient = clientService.addFriend(clientId, friendId);
+        return ResponseEntity.ok(updatedClient);
+    }
+
+    // Remove a friend from the client's list
+    @DeleteMapping("/removeFriend")
+    public ResponseEntity<Client> removeFriend(@PathVariable UUID clientId, @PathVariable UUID friendId) {
+        Client updatedClient = clientService.removeFriend(clientId, friendId);
+        return ResponseEntity.ok(updatedClient);
+    }
+
+
 }
 

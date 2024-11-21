@@ -9,6 +9,7 @@ import { PortfoliosPage } from "../pages/PortfoliosPage";
 import { NotFoundPage } from "../pages/NotFoundPage";
 import { ResetPasswordForm } from "../forms/ResetPasswordForm";
 import { AssetPage } from "../pages/AssetPage";
+import { FriendPage } from "../pages/FriendPage";
 
 /* list of top-level routes for the app */
 export const pages: routerTypes.Page[] = [
@@ -89,6 +90,14 @@ export const pages: routerTypes.Page[] = [
     navbar: true,
     protection: "signed-in",
     nest: true,
+  },
+  {
+    path: "/friends",
+    component: <FriendPage />,
+    args: { type: "page" },
+    label: "Connections",
+    protection: "signed-in",
+    navbar: true,
   },
   {
     path: "/",

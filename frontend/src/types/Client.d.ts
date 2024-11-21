@@ -7,6 +7,7 @@ export interface Client {
   id: string;
   username: string;
   profilePicture?: string | null | undefined;
+  friends?: Client[];
 }
 
 export interface LoggedInClient extends Client {
@@ -18,4 +19,5 @@ export interface LoggedInClient extends Client {
   investmentRisk?: "LOW" | "MEDIUM" | "HIGH";
   userSavings?: number | undefined | null;
   currentSavings?: number | undefined | null;
+  friends?: Client[];
 }

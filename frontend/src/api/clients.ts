@@ -28,6 +28,28 @@ const clientsApi = api.injectEndpoints({
       providesTags: ["logged-in-client"],
     }),
 
+    fetchClients: build.query<clientTypes.Client[], void>({
+      query: () => ({
+        url: `/clients/fetchAll`,
+        method: "GET",
+      }),
+    }),
+    // Add a friend (POST request)
+    addFriend: build.query<clientTypes.Client, { clientId: string, friendId: string }>({
+      query: () => ({
+        url: `/clients/addFriend`,
+        method: 'POST',
+      }),
+    }),
+
+    // Remove a friend (DELETE request)
+    removeFriend: build.query<clientTypes.Client, { clientId: string, friendId: string }>({
+      query: () => ({
+        url: `/clients/removeFriend`,
+        method: 'DELETE',
+      }),
+    }),
+    
     modifyEmail: build.mutation<
       clientTypes.LoggedInClient,
       { newEmail: string }
@@ -61,6 +83,9 @@ const clientsApi = api.injectEndpoints({
 export const {
   useClientProfileQuery,
   useLoggedInClientProfileQuery,
+  useFetchClientsQuery,
+  useAddFriendQuery,
+  useRemoveFriendQuery,
   useModifyEmailMutation,
   useModifyProfileMutation,
   useDeleteClientMutation,

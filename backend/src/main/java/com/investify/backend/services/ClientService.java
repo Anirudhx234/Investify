@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.nio.CharBuffer;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -186,6 +187,16 @@ public class ClientService {
         return clientMapper.toClientDto(client);
     }
 
+    public ClientDto findByDtoUserName(String userName) {
+        Client client = findByUserName(userName);
+        return clientMapper.toClientDto(client);
+    }
+
+    public Client findByUserName(String userName) {
+        return clientRepository.findByUsername(userName)
+                .orElseThrow(() -> new RestException("Unknown client", HttpStatus.NOT_FOUND));
+    }
+
     public Client findById(String clientId) {
         if ("me".equals(clientId)) {
             clientId = authService.getLoggedInClient().getId(); // TODO: Return logged in client directly (fix lazy loading issue)
@@ -203,5 +214,54 @@ public class ClientService {
         return clientRepository.findByVerificationToken(token)
                 .orElseThrow(() -> new RestException("Unknown client", HttpStatus.NOT_FOUND));
     }
+
+    public List<Client> getAllClients() {
+        return clientRepository.findAll();
+    }
+
+    public Client addFriend(UUID clientId, UUID friendId) {
+        Client client = clientRepository.findById(clientId)
+                .orElseThrow(() -> new RuntimeException("Client not found"));
+
+        Client friend = clientRepository.findById(friendId)
+                .orElseThrow(() -> new RuntimeException("Friend not found"));
+
+        // Check if the friend is not already in the client's friend list
+        if (!client.getFriends().contains(friend)) {
+            client.getFriends().add(friend); // Add the friend to the client's list
+        }
+
+        // Check if the client is not already in the friend's friend list
+        if (!friend.getFriends().contains(client)) {
+            friend.getFriends().add(client); // Add the client to the friend's list
+        }
+
+        // Save both entities to update the friends lists
+        clientRepository.save(client);
+        clientRepository.save(friend);
+
+        return client;
+    }
+
+    // Remove a friend from the client's list
+    public Client removeFriend(UUID clientId, UUID friendId) {
+        Client client = clientRepository.findById(clientId)
+                .orElseThrow(() -> new RuntimeException("Client not found"));
+
+        Client friend = clientRepository.findById(friendId)
+                .orElseThrow(() -> new RuntimeException("Friend not found"));
+
+        client.getFriends().remove(friend);
+
+        friend.getFriends().remove(client);
+
+        clientRepository.save(client);
+        clientRepository.save(friend);
+
+        return client;
+    }
+
+
+
 
 }

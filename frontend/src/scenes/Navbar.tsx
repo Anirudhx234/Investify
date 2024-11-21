@@ -13,6 +13,8 @@ import { FaMoon, FaSun } from "react-icons/fa";
 import { IoMdArrowDropdown } from "react-icons/io";
 import { pages } from "../app/pages";
 
+// import { FaUserFriends } from 'react-icons/fa';
+
 export function Navbar() {
   const drawerMode = useAppSelector(
     (state) => state.route.attributes?.drawerMode,
@@ -35,7 +37,12 @@ export function Navbar() {
           <NavLinks />
         </ul>
         {isLoggedIn ? (
+          <>
+          <Link href="/friend/me">
+          {/* <Friends /> */}
+          </Link>
           <ProfilePicture />
+        </>
         ) : (
           <Link href="/login" className="btn btn-secondary btn-sm">
             Login
@@ -45,6 +52,18 @@ export function Navbar() {
     </nav>
   );
 }
+
+// export function Friends() {
+
+//   return (
+//     <button
+//       className="btn btn-square btn-ghost hidden ~text-lg/xl lg:inline-flex"
+//     >
+//       {  <FaUserFriends/>}
+//     </button>
+//   );
+
+// }
 
 export function DrawerMenu() {
   const drawerMode = useAppSelector(

@@ -90,4 +90,8 @@ public class Client {
 
     @ManyToMany(fetch = FetchType.EAGER)
     private List<Badge> badges;
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    private List<Client> friends;
+
 }
