@@ -14,7 +14,7 @@ const gameApi = api.injectEndpoints({
 
     getGamePortfolio: build.query<gameTypes.GamePortfolio, { gameId: string }>({
       query: ({ gameId }) => ({
-        url: `/games/${gameId}`,
+        url: `/games/${gameId}/clients/me`,
         method: "GET",
       }),
     }),

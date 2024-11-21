@@ -143,15 +143,15 @@ export function GamePortfolio() {
   if (!isSuccess || !data) return component;
   return (
     <div className="flex w-full flex-col items-center justify-center">
-      <div className="flex flex-col gap-2">
-        <h1 className="text-3xl font-bold">{data.game.name}</h1>
+      <div className="flex flex-col items-center gap-1">
+        <h1 className="text-3xl font-bold">
+          {data.game.name} (${formatNumber(data.game.buyingPower)})
+        </h1>
 
         <p>
-          {data.game.startTime.replace("T", " ")} --{" "}
+          {data.game.startTime.replace("T", " ")} to{" "}
           {data.game.endTime.replace("T", " ")}
         </p>
-
-        <p>Buying Power: ${formatNumber(data.game.buyingPower)}</p>
       </div>
 
       <div className="divider"></div>
