@@ -201,7 +201,7 @@ public class ClientService {
         ClientDto clientDto = clientMapper.toClientDto(client);
         clientDto.setBadges(badgeDtos);
 
-        return clientMapper.toClientDto(client);
+        return clientDto;
     }
 
     public Client findById(String clientId) {
