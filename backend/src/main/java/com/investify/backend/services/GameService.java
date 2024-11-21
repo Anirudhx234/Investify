@@ -151,12 +151,30 @@ public class GameService {
     public List<LeaderboardPositionDto> getLeaderboard(UUID gameId) {
         Game game = findById(gameId);
 
-        return game.getGamePortfolios().stream()
-                .map(portfolio ->
-                        new LeaderboardPositionDto(clientMapper.toBasicClientDto(portfolio.getClient()),
+        List<LeaderboardPositionDto> leaderboard = game.getGamePortfolios().stream()
+                .map(portfolio -> new LeaderboardPositionDto(
+                        clientMapper.toBasicClientDto(portfolio.getClient()),
                         portfolioService.getTotalPortfolioValue(portfolio.getId()) + portfolio.getBuyingPower()))
                 .sorted((dto1, dto2) -> Double.compare(dto2.getTotalValue(), dto1.getTotalValue()))
                 .toList();
+
+        int rank = 0;
+        int skip = 0;
+        double previousValue = Double.NaN;
+
+        for (LeaderboardPositionDto current : leaderboard) {
+            if (Double.compare(current.getTotalValue(), previousValue) != 0) {
+                rank += 1 + skip;
+                skip = 0;
+            } else {
+                skip++;
+            }
+
+            current.setRank(rank);
+            previousValue = current.getTotalValue();
+        }
+
+        return leaderboard;
     }
 
     @Scheduled(fixedRate = 10000)
@@ -185,18 +203,10 @@ public class GameService {
             clientRepository.save(client);
         }
 
-        int rank = 0;
-        double previousValue = -1;
         for (LeaderboardPositionDto position : leaderboard) {
             Client client = clientService.findById(position.getClient().getId());
 
-            double currentValue = position.getTotalValue();
-            if (currentValue != previousValue) {
-                rank++;
-            }
-            previousValue = currentValue;
-
-            RankBadge rankBadge = new RankBadge(rank, game, client);
+            RankBadge rankBadge = new RankBadge(position.getRank(), game, client);
             badgeRepository.save(rankBadge);
 
             rankBadge.getClients().add(client);
