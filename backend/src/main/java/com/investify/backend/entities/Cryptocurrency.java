@@ -16,6 +16,6 @@ public class Cryptocurrency extends Asset {
 
     @Override
     public String getType() {
-        return "STOCKS";
+        return "CRYPTO";
     }
 }
