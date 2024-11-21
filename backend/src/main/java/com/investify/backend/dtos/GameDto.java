@@ -11,4 +11,5 @@ public class GameDto {
     private String startTime;
     private String endTime;
     private double buyingPower;
+    private String mode;
 }

@@ -6,6 +6,7 @@ import { ForgotPasswordForm } from "../forms/ForgotPasswordForm";
 import { ClientPage } from "../pages/ClientPage";
 import { HomePage } from "../pages/HomePage";
 import { PortfoliosPage } from "../pages/PortfoliosPage";
+import { GamesPage } from "../pages/GamesPage";
 import { NotFoundPage } from "../pages/NotFoundPage";
 import { ResetPasswordForm } from "../forms/ResetPasswordForm";
 import { AssetPage } from "../pages/AssetPage";
@@ -85,6 +86,16 @@ export const pages: routerTypes.Page[] = [
     component: <PortfoliosPage />,
     args: { type: "page" },
     label: "Portfolio",
+    drawerMode: "open",
+    navbar: true,
+    protection: "signed-in",
+    nest: true,
+  },
+  {
+    path: "/games",
+    component: <GamesPage />,
+    args: { type: "page" },
+    label: "Games",
     drawerMode: "open",
     navbar: true,
     protection: "signed-in",

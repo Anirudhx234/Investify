@@ -10,4 +10,5 @@ public class CreateGameDto {
     private LocalDateTime startTime;
     private LocalDateTime endTime;
     private double buyingPower;
+    private String mode;
 }

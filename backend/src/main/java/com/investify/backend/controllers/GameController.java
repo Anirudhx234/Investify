@@ -24,6 +24,8 @@ public class GameController {
 
     @PostMapping("/clients/{clientId}")
     public ResponseEntity createGame(@PathVariable String clientId, @RequestBody CreateGameDto request) {
+        System.out.println("Request received for clientId: " + clientId);
+        System.out.println("Request body: " + request);
         GameDto game = gameService.createGame(clientId, request);
         return ResponseEntity.ok(game);
     }
