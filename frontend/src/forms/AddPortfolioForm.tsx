@@ -56,7 +56,7 @@ export function AddPortfolioForm() {
             form={realForm}
             isBuffering={isLoading}
             required
-            inputAttributes={{ autoComplete: "name" }}
+            inputAttributes={{ autoComplete: "off" }}
           />
 
           <FormSubmit className="btn-primary" isBuffering={isLoading} />

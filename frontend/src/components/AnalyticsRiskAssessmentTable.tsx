@@ -1,11 +1,8 @@
-import { useParams } from "wouter";
 import { useRiskScoreQuery } from "../api/portfolio";
 import { convertAssetTypeToLabel } from "../util/convertAsset";
 import { formatNumber } from "../util/formatNumber";
 
-export function AnalyticsRiskAssessmentTable() {
-  const params = useParams() as { id: string };
-  const { id } = params;
+export function AnalyticsRiskAssessmentTable({ id }: { id: string }) {
   const { data } = useRiskScoreQuery({ portfolioId: id });
 
   return (

@@ -1,4 +1,3 @@
-import { useParams } from "wouter";
 import { useRiskReturnsQuery } from "../api/portfolio";
 import {
   CartesianGrid,
@@ -13,9 +12,7 @@ import { chartColors } from "./AnalyticsChartColors";
 import { convertAssetTypeToLabel } from "../util/convertAsset";
 import { convertToTitleCase } from "../util/convertToTitleCase";
 
-export function AnalyticsRiskReturnChart() {
-  const params = useParams() as { id: string };
-  const { id } = params;
+export function AnalyticsRiskReturnChart({ id }: { id: string }) {
   const { data } = useRiskReturnsQuery({ portfolioId: id });
 
   if (!data?.length) return <p className="italic">No assets yet</p>;

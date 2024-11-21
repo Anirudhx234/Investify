@@ -1,4 +1,3 @@
-import { useParams } from "wouter";
 import {
   useRiskReturnsQuery,
   useRiskScoreQuery,
@@ -10,10 +9,7 @@ import { AnalyticsRiskReturnChart } from "../components/AnalyticsRiskReturnChart
 import { AnalyticsRiskAssessmentTable } from "../components/AnalyticsRiskAssessmentTable";
 import { AnalyticsHeatMap } from "../components/AnalyticsHeatMap";
 
-export function PortfolioAnalytics() {
-  const params = useParams() as { id: string };
-  const { id } = params;
-
+export function PortfolioAnalytics({ id }: { id: string }) {
   const pieChartState = useSectorValuationsQuery({ portfolioId: id });
   const riskReturnsState = useRiskReturnsQuery({ portfolioId: id });
   const riskScoreState = useRiskScoreQuery({ portfolioId: id });
@@ -45,7 +41,7 @@ export function PortfolioAnalytics() {
       <div className="flex flex-col items-center gap-2 ~py-4/8">
         <h3 className="text-center text-lg font-semibold">Pie Chart</h3>
 
-        <AnalyticsPieChart />
+        <AnalyticsPieChart id={id} />
       </div>
 
       <div className="flex flex-col items-center gap-2 ~py-4/8">
@@ -53,19 +49,19 @@ export function PortfolioAnalytics() {
           Risk To Return Plot
         </h3>
 
-        <AnalyticsRiskReturnChart />
+        <AnalyticsRiskReturnChart id={id} />
       </div>
 
       <div className="flex flex-col items-center gap-2 ~py-4/8 lg:col-span-2">
         <h3 className="text-center text-lg font-semibold">Risk Assessment</h3>
 
-        <AnalyticsRiskAssessmentTable />
+        <AnalyticsRiskAssessmentTable id={id} />
       </div>
 
       <div className="flex flex-col items-center gap-2 ~py-4/8 lg:col-span-2">
         <h3 className="text-center text-lg font-semibold">Heatmap</h3>
 
-        <AnalyticsHeatMap />
+        <AnalyticsHeatMap id={id} />
       </div>
     </div>
   );

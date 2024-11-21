@@ -1,9 +1,6 @@
 package com.investify.backend.services;
 
-import com.investify.backend.dtos.CreateGameDto;
-import com.investify.backend.dtos.GameDto;
-import com.investify.backend.dtos.GamePortfolioListDto;
-import com.investify.backend.dtos.LeaderboardPositionDto;
+import com.investify.backend.dtos.*;
 import com.investify.backend.entities.*;
 import com.investify.backend.exceptions.RestException;
 import com.investify.backend.mappers.ClientMapper;
@@ -68,7 +65,7 @@ public class GameService {
         return gameMapper.toGameDto(game);
     }
 
-    public Map<String, List<GamePortfolioListDto>> getClientGamePortfolios(String clientId) {
+    public Map<String, List<GamePortfolioListDto>> getGamePortfolios(String clientId) {
         Client client = clientService.findById(clientId);
 
         List<GamePortfolio> gamePortfolios = client.getGamePortfolios();
@@ -127,6 +124,12 @@ public class GameService {
                 "activeGames", activeGames,
                 "upcomingGames", upcomingGames
         );
+    }
+
+    public GamePortfolioListDto getGamePortfolio(UUID gameId, String clientId) {
+        Client client = clientService.findById(clientId);
+        GamePortfolio portfolio = findByClientAndGameId(client, gameId);
+        return toGamePortfolioListDto(portfolio);
     }
 
     public GamePortfolioListDto joinGame(String clientId, UUID gameId) {
@@ -208,6 +211,11 @@ public class GameService {
     public Game findById(UUID gameId) {
         return gameRepository.findById(gameId)
                 .orElseThrow(() -> new RestException("Unknown game", HttpStatus.NOT_FOUND));
+    }
+
+    public GamePortfolio findByClientAndGameId(Client client, UUID gameId) {
+        return gamePortfolioRepository.findByClientAndGameId(client, gameId)
+                .orElseThrow(() -> new RestException("Unknown game portfolio", HttpStatus.NOT_FOUND));
     }
 
     private GamePortfolioListDto toGamePortfolioListDto(GamePortfolio portfolio) {

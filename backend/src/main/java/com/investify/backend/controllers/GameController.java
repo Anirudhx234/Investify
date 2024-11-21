@@ -1,11 +1,6 @@
 package com.investify.backend.controllers;
 
-import com.investify.backend.dtos.CreateGameDto;
-import com.investify.backend.dtos.GameDto;
-import com.investify.backend.dtos.GamePortfolioListDto;
-import com.investify.backend.dtos.LeaderboardPositionDto;
-import com.investify.backend.entities.Game;
-import com.investify.backend.entities.GamePortfolio;
+import com.investify.backend.dtos.*;
 import com.investify.backend.services.GameService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -29,9 +24,15 @@ public class GameController {
     }
 
     @GetMapping("/clients/{clientId}")
-    public ResponseEntity getClientGamePortfolios(@PathVariable String clientId) {
-        Map<String, List<GamePortfolioListDto>> games = gameService.getClientGamePortfolios(clientId);
+    public ResponseEntity getGamePortfolios(@PathVariable String clientId) {
+        Map<String, List<GamePortfolioListDto>> games = gameService.getGamePortfolios(clientId);
         return ResponseEntity.ok(games);
+    }
+
+    @GetMapping("/{gameId}/clients/{clientId}")
+    public ResponseEntity getGamePortfolio(@PathVariable UUID gameId, @PathVariable String clientId) {
+        GamePortfolioListDto gamePortfolio = gameService.getGamePortfolio(gameId, clientId);
+        return ResponseEntity.ok(gamePortfolio);
     }
 
     @GetMapping("/clients/{clientId}/available-games")

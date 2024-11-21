@@ -6,21 +6,29 @@ import { twMerge } from "../util/twMerge";
 
 export interface MenuLink {
   key: string;
-  link: string;
+  url: string;
   label: string;
 }
 
 export interface LinksListProps {
-  links: string[];
+  links: (string | { url: string; label: string })[];
   className?: string | undefined;
 }
 
 export function LinksList({ links, className }: LinksListProps) {
-  const menuLinks = links.map((link) => ({
-    key: link,
-    link,
-    label: convertToTitleCase(getLastPartOfUrl(link)),
-  }));
+  const menuLinks = links.map((link) => {
+    let url, label;
+
+    if (typeof link === "string") {
+      url = link;
+      label = convertToTitleCase(getLastPartOfUrl(link));
+    } else {
+      url = link.url;
+      label = link.label;
+    }
+
+    return { key: url, url, label };
+  });
 
   return (
     <RecursiveMenu
@@ -28,7 +36,7 @@ export function LinksList({ links, className }: LinksListProps) {
       className={className}
       renderItem={(link) => (
         <Link
-          href={link.link}
+          href={link.url}
           className={(active) => twMerge(active && "active")}
         >
           {link.label}

@@ -9,6 +9,7 @@ import { PortfoliosPage } from "../pages/PortfoliosPage";
 import { NotFoundPage } from "../pages/NotFoundPage";
 import { ResetPasswordForm } from "../forms/ResetPasswordForm";
 import { AssetPage } from "../pages/AssetPage";
+import { GamesPage } from "../pages/GamesPage";
 
 /* list of top-level routes for the app */
 export const pages: routerTypes.Page[] = [
@@ -89,6 +90,16 @@ export const pages: routerTypes.Page[] = [
     navbar: true,
     protection: "signed-in",
     nest: true,
+  },
+  {
+    path: "/games",
+    component: <GamesPage />,
+    args: { type: "page" },
+    label: "Games",
+    drawerMode: "open",
+    navbar: true,
+    nest: true,
+    protection: "signed-in",
   },
   {
     path: "/",

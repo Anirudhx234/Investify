@@ -12,6 +12,8 @@ export const api = createApi({
     "sector-valuations",
     "risk-charts",
     "risk-assessments",
+    "logged-in-client-game-portfolios",
+    "logged-in-client-available-games",
   ],
   endpoints: () => ({}),
 });

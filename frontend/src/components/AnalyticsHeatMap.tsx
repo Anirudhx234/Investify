@@ -1,3 +1,3 @@
-export function AnalyticsHeatMap() {
+export function AnalyticsHeatMap({ id }: { id: string }) {
   return <>Heat Map</>;
 }
