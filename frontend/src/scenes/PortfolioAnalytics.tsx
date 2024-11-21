@@ -41,7 +41,7 @@ export function PortfolioAnalytics({ id }: { id: string }) {
       <div className="flex flex-col items-center gap-2 ~py-4/8">
         <h3 className="text-center text-lg font-semibold">Pie Chart</h3>
 
-        <AnalyticsPieChart />
+        <AnalyticsPieChart id={id} />
       </div>
 
       <div className="flex flex-col items-center gap-2 ~py-4/8">
@@ -49,19 +49,19 @@ export function PortfolioAnalytics({ id }: { id: string }) {
           Risk To Return Plot
         </h3>
 
-        <AnalyticsRiskReturnChart />
+        <AnalyticsRiskReturnChart id={id} />
       </div>
 
       <div className="flex flex-col items-center gap-2 ~py-4/8 lg:col-span-2">
         <h3 className="text-center text-lg font-semibold">Risk Assessment</h3>
 
-        <AnalyticsRiskAssessmentTable />
+        <AnalyticsRiskAssessmentTable id={id} />
       </div>
 
       <div className="flex flex-col items-center gap-2 ~py-4/8 lg:col-span-2">
         <h3 className="text-center text-lg font-semibold">Heatmap</h3>
 
-        <AnalyticsHeatMap />
+        <AnalyticsHeatMap id={id} />
       </div>
     </div>
   );

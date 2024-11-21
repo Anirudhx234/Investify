@@ -5,7 +5,13 @@ import { PaperPortfolioTable } from "../components/PaperPortfolioTable";
 import { useGetPaperPortfolioQuery } from "../api/portfolio";
 import { PortfolioStats } from "../components/PortfolioStats";
 
-export function PaperPortfolioEditorPage({ id }: { id: string }) {
+export function PaperPortfolioEditorPage({
+  id,
+  disabled,
+}: {
+  id: string;
+  disabled?: boolean | undefined;
+}) {
   const portfolioState = useGetPaperPortfolioQuery({ id });
   const data = portfolioState.data;
 
@@ -19,19 +25,21 @@ export function PaperPortfolioEditorPage({ id }: { id: string }) {
   return (
     <div className="flex w-full flex-col ~gap-4/8">
       <div className="flex flex-col items-center gap-8">
-        <h1 className="text-center text-3xl font-bold">{data.name}</h1>
+        <h2 className="text-center text-2xl font-bold">{data.name}</h2>
 
         <PortfolioStats id={id} />
       </div>
 
       <div className="divider"></div>
 
-      <div className="flex flex-col items-center gap-8">
-        <h2 className="text-center text-xl font-bold">Trade</h2>
-        <PaperPortfolioAddTradeForm id={id} />
-      </div>
+      {!disabled && (
+        <div className="flex flex-col items-center gap-8">
+          <h2 className="text-center text-xl font-bold">Trade</h2>
+          <PaperPortfolioAddTradeForm id={id} />
+        </div>
+      )}
 
-      <div className="divider"></div>
+      {!disabled && <div className="divider"></div>}
 
       <div className="flex flex-col items-center gap-8">
         <h2 className="text-center text-xl font-bold">Trade History</h2>

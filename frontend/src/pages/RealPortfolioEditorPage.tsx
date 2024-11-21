@@ -19,7 +19,7 @@ export function RealPortfolioEditorPage({ id }: { id: string }) {
   return (
     <div className="flex w-full flex-col ~gap-4/8">
       <div className="flex flex-col items-center gap-8">
-        <h1 className="text-center text-3xl font-bold">{data.name}</h1>
+        <h2 className="text-center text-2xl font-bold">{data.name}</h2>
 
         <PortfolioStats id={id} />
       </div>

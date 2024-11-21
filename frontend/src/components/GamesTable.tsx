@@ -4,7 +4,11 @@ import { formatNumber } from "../util/formatNumber";
 import { useJoinGameMutation } from "../api/game";
 import { useToastForRequest } from "../hooks/useToastForRequests";
 
-export function GamesTable({ games }: { games: gameTypes.Game[] }) {
+export function JoinedGamesTable({
+  gamePortfolios,
+}: {
+  gamePortfolios: gameTypes.GamePortfolio[];
+}) {
   return (
     <div className="w-full max-w-[100vw] overflow-auto px-2">
       <table className="table-zebra w-full">
@@ -17,27 +21,30 @@ export function GamesTable({ games }: { games: gameTypes.Game[] }) {
           </tr>
         </thead>
         <tbody>
-          {games.map((game) => (
-            <tr key={game.id} className="hover">
+          {gamePortfolios.map((gamePortfolio) => (
+            <tr key={gamePortfolio.game.id} className="hover">
               <td className="py-2 text-center">
-                <Link href={`~/games/${game.id}`} className="link">
-                  {game.name}
+                <Link
+                  href={`~/games/${gamePortfolio.game.id}/leaderboard`}
+                  className="link"
+                >
+                  {gamePortfolio.game.name}
                 </Link>
               </td>
               <td className="py-2 text-center">
-                {formatNumber(game.buyingPower)}
+                {formatNumber(gamePortfolio.game.buyingPower)}
               </td>
               <td className="py-2 text-center">
-                {game.startTime.replace("T", " ")}
+                {gamePortfolio.game.startTime.replace("T", " ")}
               </td>
               <td className="py-2 text-center">
-                {game.endTime.replace("T", " ")}
+                {gamePortfolio.game.endTime.replace("T", " ")}
               </td>
             </tr>
           ))}
         </tbody>
       </table>
-      {games.length === 0 && (
+      {gamePortfolios.length === 0 && (
         <p className="mt-4 text-center italic">No games</p>
       )}
     </div>
@@ -51,9 +58,7 @@ export function JoinableGamesTable({ games }: { games: gameTypes.Game[] }) {
     backupErrorMessage: "Game joined!",
     onSuccess: () => {
       if (joinGameState.data)
-        navigate(
-          `~/games/${joinGameState.data.game.id}/portfolios/${joinGameState.data.id}`,
-        );
+        navigate(`~/games/${joinGameState.data.game.id}/leaderboard`);
     },
   });
 
@@ -63,20 +68,16 @@ export function JoinableGamesTable({ games }: { games: gameTypes.Game[] }) {
         <thead>
           <tr>
             <th className="w-1/5 px-1 py-2">Name</th>
-            <th className="w-1/5 py-2">Buying Power</th>
-            <th className="w-1/5 py-2">Start Time</th>
-            <th className="w-1/5 py-2">End Time</th>
-            <th className="w-1/5 py-2"></th>
+            <th className="w-1/5 px-1 py-2">Buying Power</th>
+            <th className="w-1/5 px-1 py-2">Start Time</th>
+            <th className="w-1/5 px-1 py-2">End Time</th>
+            <th className="w-1/5 px-1 py-2"></th>
           </tr>
         </thead>
         <tbody>
           {games.map((game) => (
             <tr key={game.id} className="hover">
-              <td className="px-1 py-2 text-center">
-                <Link href={`~/games/${game.id}`} className="link">
-                  {game.name}
-                </Link>
-              </td>
+              <th className="px-1 py-2 text-center">{game.name}</th>
 
               <td className="px-1 py-2 text-center">
                 {formatNumber(game.buyingPower)}

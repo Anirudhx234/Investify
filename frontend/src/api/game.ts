@@ -9,6 +9,14 @@ const gameApi = api.injectEndpoints({
         method: "POST",
         body,
       }),
+      invalidatesTags: ["logged-in-client-game-portfolios"],
+    }),
+
+    getGamePortfolio: build.query<gameTypes.GamePortfolio, { gameId: string }>({
+      query: ({ gameId }) => ({
+        url: `/games/${gameId}`,
+        method: "GET",
+      }),
     }),
 
     gamePortfolios: build.query<apiTypes.GamePortfoliosRes, void>({
@@ -16,6 +24,7 @@ const gameApi = api.injectEndpoints({
         url: "/games/clients/me",
         method: "GET",
       }),
+      providesTags: ["logged-in-client-game-portfolios"],
     }),
 
     availableGames: build.query<apiTypes.AvailableGamesRes, void>({
@@ -23,6 +32,7 @@ const gameApi = api.injectEndpoints({
         url: "/games/clients/me/available-games",
         method: "GET",
       }),
+      providesTags: ["logged-in-client-available-games"],
     }),
 
     joinGame: build.mutation<gameTypes.GamePortfolio, { gameId: string }>({
@@ -30,13 +40,17 @@ const gameApi = api.injectEndpoints({
         url: `/games/${gameId}/clients/me/join`,
         method: "POST",
       }),
+      invalidatesTags: [
+        "logged-in-client-game-portfolios",
+        "logged-in-client-available-games",
+      ],
     }),
-    
+
     leaderboardData: build.query<gameTypes.Player[], { gameId: string }>({
       query: ({ gameId }) => ({
-        url: "/games/" + gameId + "/leaderboard",
+        url: `/games/${gameId}/leaderboard`,
         method: "GET",
-      })
+      }),
     }),
   }),
 });
@@ -47,4 +61,5 @@ export const {
   useGamePortfoliosQuery,
   useJoinGameMutation,
   useLeaderboardDataQuery,
+  useGetGamePortfolioQuery,
 } = gameApi;

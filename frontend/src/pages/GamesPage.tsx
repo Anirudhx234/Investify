@@ -1,10 +1,16 @@
 import { Link, Redirect, Route, Switch, useParams } from "wouter";
 import { CreateGameForm } from "../forms/CreateGameForm";
 import { twMerge } from "../util/twMerge";
-import { GamesTable, JoinableGamesTable } from "../components/GamesTable";
-import { useAvailableGamesQuery, useGamePortfoliosQuery } from "../api/game";
+import { JoinedGamesTable, JoinableGamesTable } from "../components/GamesTable";
+import {
+  useAvailableGamesQuery,
+  useGamePortfoliosQuery,
+  useGetGamePortfolioQuery,
+} from "../api/game";
 import { useToastForRequest } from "../hooks/useToastForRequests";
 import { PaperPortfolioEditorPage } from "./PaperPortfolioEditorPage";
+import { GameLeaderboard } from "../scenes/GameLeaderboard";
+import { formatNumber } from "../util/formatNumber";
 
 export function GamesPage() {
   return (
@@ -12,11 +18,10 @@ export function GamesPage() {
       <Route path="/create" component={CreateGameForm} />
       <Route path="/joined" component={JoinedGames} nest />
       <Route path="/browse" component={BrowseGames} nest />
-      <Route
-        path="/:gameId/portfolios/:portfolioId"
-        component={GamePortfolio}
-      />
-      <Route path="*" component={() => <Redirect to="/create" replace />} />
+
+      <Route path="/:gameId/leaderboard" component={GameLeaderboard} />
+      <Route path="/:gameId/portfolios/me" component={GamePortfolio} nest />
+      <Route path="*" component={() => <Redirect to="/browse" replace />} />
     </Switch>
   );
 }
@@ -59,23 +64,15 @@ export function JoinedGames() {
 
       <Switch>
         <Route path="/past">
-          <GamesTable
-            games={data.pastGames.map((gamePortfolio) => gamePortfolio.game)}
-          />
+          <JoinedGamesTable gamePortfolios={data.pastGames} />
         </Route>
 
         <Route path="/active">
-          <GamesTable
-            games={data.activeGames.map((gamePortfolio) => gamePortfolio.game)}
-          />
+          <JoinedGamesTable gamePortfolios={data.activeGames} />
         </Route>
 
         <Route path="/upcoming">
-          <GamesTable
-            games={data.upcomingGames.map(
-              (gamePortfolio) => gamePortfolio.game,
-            )}
-          />
+          <JoinedGamesTable gamePortfolios={data.upcomingGames} />
         </Route>
 
         <Route path="*" component={() => <Redirect to="/active" replace />} />
@@ -130,8 +127,39 @@ export function BrowseGames() {
 }
 
 export function GamePortfolio() {
-  const params = useParams() as { gameId: string; portfolioId: string };
-  const portfolioId = params.portfolioId;
+  const params = useParams() as { gameId: string };
+  const { gameId } = params;
 
-  return <PaperPortfolioEditorPage id={portfolioId} />;
+  const gamePortfolioState = useGetGamePortfolioQuery({ gameId });
+  const { isSuccess, component } = useToastForRequest(
+    "Game Portfolio",
+    gamePortfolioState,
+    { backupSuccessMessage: "Retrieved game portfolio!" },
+  );
+
+  const data = gamePortfolioState.data;
+  const currTime = new Date().toISOString();
+
+  if (!isSuccess || !data) return component;
+  return (
+    <div className="flex w-full flex-col items-center justify-center">
+      <div className="flex flex-col gap-2">
+        <h1 className="text-3xl font-bold">{data.game.name}</h1>
+
+        <p>
+          {data.game.startTime.replace("T", " ")} --{" "}
+          {data.game.endTime.replace("T", " ")}
+        </p>
+
+        <p>Buying Power: ${formatNumber(data.game.buyingPower)}</p>
+      </div>
+
+      <div className="divider"></div>
+
+      <PaperPortfolioEditorPage
+        id={data.id}
+        disabled={data.game.endTime < currTime}
+      />
+    </div>
+  );
 }
