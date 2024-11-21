@@ -1,7 +1,7 @@
 import { useToastForRequest } from "../hooks/useToastForRequests";
 import { PortfolioAnalytics } from "../scenes/PortfolioAnalytics";
 import { PaperPortfolioAddTradeForm } from "../forms/PaperPortfolioAddTradeForm";
-import { PaperPortfolioTable } from "../components/PaperPortfolioTable";
+import { PaperPortfolioAssetsTable, PaperPortfolioTradeHistoryTable } from "../components/PaperPortfolioTables";
 import { useGetPaperPortfolioQuery } from "../api/portfolio";
 import { PortfolioStats } from "../components/PortfolioStats";
 
@@ -42,8 +42,15 @@ export function PaperPortfolioEditorPage({
       {!disabled && <div className="divider"></div>}
 
       <div className="flex flex-col items-center gap-8">
+        <h2 className="text-center text-xl font-bold">Assets</h2>
+        <PaperPortfolioAssetsTable id={id} />
+      </div>
+
+      <div className="divider"></div>
+
+      <div className="flex flex-col items-center gap-8">
         <h2 className="text-center text-xl font-bold">Trade History</h2>
-        <PaperPortfolioTable id={id} />
+        <PaperPortfolioTradeHistoryTable id={id} />
       </div>
 
       <div className="divider"></div>
