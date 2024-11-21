@@ -31,7 +31,7 @@ public class GameController {
 
     @GetMapping("/{gameId}/clients/{clientId}")
     public ResponseEntity getGamePortfolio(@PathVariable UUID gameId, @PathVariable String clientId) {
-        PortfolioResponse gamePortfolio = gameService.getGamePortfolio(gameId, clientId);
+        GamePortfolioListDto gamePortfolio = gameService.getGamePortfolio(gameId, clientId);
         return ResponseEntity.ok(gamePortfolio);
     }
 

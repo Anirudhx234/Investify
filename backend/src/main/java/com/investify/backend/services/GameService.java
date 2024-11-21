@@ -94,16 +94,6 @@ public class GameService {
         );
     }
 
-    public PortfolioResponse getGamePortfolio(UUID gameId, String clientId) {
-        Client client = clientService.findById(clientId);
-        Optional<GamePortfolio> portfolio = gamePortfolioRepository.findByClientAndGameId(client, gameId);
-        if (portfolio.isEmpty()) {
-            throw new RestException("Game portfolio not found", HttpStatus.NOT_FOUND);
-        }
-
-        return portfolioService.getPortfolio(portfolio.get().getId());
-    }
-
     public Map<String, List<GameDto>> getAvailableGamesToJoin(String clientId) {
         Client client = clientService.findById(clientId);
 
@@ -134,6 +124,12 @@ public class GameService {
                 "activeGames", activeGames,
                 "upcomingGames", upcomingGames
         );
+    }
+
+    public GamePortfolioListDto getGamePortfolio(UUID gameId, String clientId) {
+        Client client = clientService.findById(clientId);
+        GamePortfolio portfolio = findByClientAndGameId(client, gameId);
+        return toGamePortfolioListDto(portfolio);
     }
 
     public GamePortfolioListDto joinGame(String clientId, UUID gameId) {
@@ -215,6 +211,11 @@ public class GameService {
     public Game findById(UUID gameId) {
         return gameRepository.findById(gameId)
                 .orElseThrow(() -> new RestException("Unknown game", HttpStatus.NOT_FOUND));
+    }
+
+    public GamePortfolio findByClientAndGameId(Client client, UUID gameId) {
+        return gamePortfolioRepository.findByClientAndGameId(client, gameId)
+                .orElseThrow(() -> new RestException("Unknown game portfolio", HttpStatus.NOT_FOUND));
     }
 
     private GamePortfolioListDto toGamePortfolioListDto(GamePortfolio portfolio) {
