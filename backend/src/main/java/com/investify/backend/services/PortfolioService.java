@@ -167,7 +167,6 @@ public class PortfolioService {
 
         Asset asset = assetService.findOrCreateAsset(request.getAsset());
 
-        // Check if the asset already exists in the portfolio
         Optional<PortfolioAsset> existingAsset = portfolioAssetRepository.findByPortfolioAndAsset(portfolio, asset);
         if (existingAsset.isPresent()) {
             throw new RestException("Asset already exists in the portfolio", HttpStatus.CONFLICT);
