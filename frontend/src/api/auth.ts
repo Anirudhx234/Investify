@@ -40,8 +40,11 @@ const authApi = api.injectEndpoints({
       }),
       invalidatesTags: [
         "logged-in-client",
-        "logged-in-client-game-portfolios",
-        "logged-in-client-available-games",
+        "client-portfolios",
+        "portfolios",
+        "sector-valuations",
+        "risk-charts",
+        "risk-assessments",
       ],
     }),
 

@@ -10,7 +10,7 @@ const clientsApi = api.injectEndpoints({
         method: "GET",
       }),
       providesTags: (res, _err, args) => {
-        if (args.id === "me") {
+        if (res && args.id === "me") {
           return ["logged-in-client"];
         } else if (res) {
           return [{ type: "clients", id: res.id }];
@@ -53,7 +53,14 @@ const clientsApi = api.injectEndpoints({
         url: "/clients/me",
         method: "DELETE",
       }),
-      invalidatesTags: ["logged-in-client"],
+      invalidatesTags: [
+        "logged-in-client",
+        "client-portfolios",
+        "portfolios",
+        "sector-valuations",
+        "risk-charts",
+        "risk-assessments",
+      ],
     }),
   }),
 });
