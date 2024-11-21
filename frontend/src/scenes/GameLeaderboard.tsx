@@ -3,6 +3,16 @@ import { Link, useParams } from "wouter";
 import { useLeaderboardDataQuery } from "../api/game.ts";
 import { useToastForRequest } from "../hooks/useToastForRequests.tsx";
 import { formatNumber } from "../util/formatNumber.ts";
+import {Player} from "../types/Game";
+
+function topNValues(players: Player[], n: number) {
+  const uniqueValues = Array.from(
+      new Set(players.map(player => player.totalValue))
+  );
+  const sortedUniqueValues = uniqueValues.sort((a, b) => b - a);
+
+  return sortedUniqueValues.slice(0, n);
+}
 
 export function GameLeaderboard() {
   const params = useParams() as { gameId: string };
@@ -20,6 +30,9 @@ export function GameLeaderboard() {
   const players = playersState.data;
 
   if (!isSuccess || !players) return component;
+
+  const topThree = topNValues(players, 3)
+
   return (
     <div className="w-full max-w-[100vw] overflow-auto px-2">
       <table className="table-zebra w-full">
@@ -35,16 +48,16 @@ export function GameLeaderboard() {
             <tr key={player.client.id} className="hover">
               <td className="py-2">
                 <div className="flex items-center justify-center space-x-2">
-                  {index === 0 ? (
+                  {player.totalValue === topThree[0] ? (
                     <FaTrophy className="text-yellow-500" title="1st Place" />
-                  ) : index === 1 ? (
+                  ) : player.totalValue === topThree[1] ? (
                     <FaTrophy className="text-gray-400" title="2nd Place" />
-                  ) : index === 2 ? (
+                  ) : player.totalValue === topThree[2] ? (
                     <FaTrophy className="text-amber-600" title="3rd Place" />
                   ) : (
                     <FaTrophy className="opacity-0" title="unranked" />
                   )}
-                  <span>{index + 1}</span>
+                  <span>{topThree.indexOf(player.totalValue) !== -1 ? topThree.indexOf(player.totalValue) + 1 : (index + 1)}</span>
                 </div>
               </td>
 
