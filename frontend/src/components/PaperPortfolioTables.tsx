@@ -88,7 +88,9 @@ export function PaperPortfolioAssetsTable({ id }: { id: string }) {
                 {formatNumber(portfolioAsset.currentPrice)}
               </td>
 
-              <td className="text-center">{portfolioAsset.quantity}</td>
+              <td className="text-center">
+                {formatNumber(portfolioAsset.quantity)}
+              </td>
             </tr>
           ))}
           {!data?.portfolioAssets.length && (
