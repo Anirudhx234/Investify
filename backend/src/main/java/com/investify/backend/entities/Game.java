@@ -29,6 +29,8 @@ public class Game {
 
     private double buyingPower;
 
+    private String mode;
+
     @OneToMany(mappedBy = "game", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     private List<GamePortfolio> gamePortfolios;
@@ -39,10 +41,11 @@ public class Game {
 
     private boolean processed;
 
-    public Game(String name, LocalDateTime startTime, LocalDateTime endTime, double buyingPower) {
+    public Game(String name, LocalDateTime startTime, LocalDateTime endTime, double buyingPower, String mode) {
         this.name = name;
         this.startTime = startTime;
         this.endTime = endTime;
         this.buyingPower = buyingPower;
+        this.mode = mode;
     }
 }
