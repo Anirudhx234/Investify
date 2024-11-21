@@ -7,7 +7,7 @@ import {
   useLoggedInClientProfileQuery,
   useModifyProfileMutation,
 } from "../api/clients";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useFormReset } from "../hooks/useFormReset";
 import { ProfilePicture } from "../components/ProfilePicture";
@@ -15,6 +15,7 @@ import { FormInput } from "../components/FormInput";
 import { FormSubmit } from "../components/FormSubmit";
 import { ReadonlyInput } from "../components/ReadonlyInput";
 import { useToastForRequest } from "../hooks/useToastForRequests";
+import { Badge } from "../components/Badge";
 
 export function ProfileGeneralForm() {
   const params = useParams() as { id?: string | undefined };
@@ -79,6 +80,11 @@ export function ProfileGeneralFormEdit() {
       .catch(() => {});
   };
 
+  const refetch = clientProfileState.refetch;
+  useEffect(() => {
+    refetch();
+  }, [refetch]);
+
   return (
     <div className="flex w-full flex-col gap-4 ~text-sm/base">
       <h1 className="text-center font-bold ~text-2xl/3xl">
@@ -93,7 +99,7 @@ export function ProfileGeneralFormEdit() {
         aria-label="form"
         aria-disabled={isLoading}
       >
-        <div className="mb-8 flex flex-col items-center gap-8">
+        <div className="mb-6 flex flex-col items-center gap-8">
           <ProfilePicture src={uploadedImgURL} className="~h-20/40 ~w-20/40" />
           <label
             htmlFor="profilePicture"
@@ -109,6 +115,14 @@ export function ProfileGeneralFormEdit() {
               {...profilePictureRegister}
             />
           </label>
+        </div>
+
+        <div className="flex w-full justify-center">
+          <div className="flex max-w-40 flex-wrap">
+            {clientData?.badges.map((badge) => (
+              <Badge key={badge.id} {...badge} />
+            ))}
+          </div>
         </div>
 
         <FormInput
@@ -131,6 +145,12 @@ export function ProfileGeneralFormEdit() {
 export function ProfileGeneralFormView() {
   const params = useParams() as { id: string };
   const clientProfileState = useClientProfileQuery({ id: params.id });
+  const clientData = clientProfileState.data;
+
+  const refetch = clientProfileState.refetch;
+  useEffect(() => {
+    refetch();
+  }, [refetch]);
 
   return (
     <div className="flex w-full flex-col gap-4 ~text-sm/base">
@@ -142,15 +162,23 @@ export function ProfileGeneralFormView() {
 
       <div className="flex flex-col items-center gap-4">
         <ProfilePicture
-          src={clientProfileState.data?.profilePicture ?? undefined}
+          src={clientData?.profilePicture ?? undefined}
           className="~h-20/40 ~w-20/40"
         />
+      </div>
+
+      <div className="flex w-full justify-center">
+        <div className="flex max-w-40 flex-wrap">
+          {clientData?.badges.map((badge) => (
+            <Badge key={badge.id} {...badge} />
+          ))}
+        </div>
       </div>
 
       <ReadonlyInput
         name="username"
         label="Username"
-        value={clientProfileState.data?.username}
+        value={clientData?.username}
       />
     </div>
   );
