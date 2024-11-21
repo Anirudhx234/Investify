@@ -3,7 +3,7 @@ import { PortfolioAnalytics } from "../scenes/PortfolioAnalytics";
 import { PaperPortfolioAddTradeForm } from "../forms/PaperPortfolioAddTradeForm";
 import { PaperPortfolioAssetsTable, PaperPortfolioTradeHistoryTable } from "../components/PaperPortfolioTables";
 import { useGetPaperPortfolioQuery } from "../api/portfolio";
-import { PortfolioStats } from "../components/PortfolioStats";
+import {PaperPortfolioStats} from "../components/PaperPortfolioStats.tsx";
 
 export function PaperPortfolioEditorPage({
   id,
@@ -24,16 +24,16 @@ export function PaperPortfolioEditorPage({
   if (!isSuccess || !data) return component;
   return (
     <div className="flex w-full flex-col ~gap-4/8">
-      <div className="flex flex-col items-center gap-8">
-        <h2 className="text-center text-2xl font-bold">{data.name}</h2>
-
-        <PortfolioStats id={id} />
-      </div>
-
-      <div className="divider"></div>
-
-      {!disabled && (
         <div className="flex flex-col items-center gap-8">
+            <h2 className="text-center text-2xl font-bold">{data.name}</h2>
+
+            <PaperPortfolioStats id={id}/>
+        </div>
+
+        <div className="divider"></div>
+
+        {!disabled && (
+            <div className="flex flex-col items-center gap-8">
           <h2 className="text-center text-xl font-bold">Trade</h2>
           <PaperPortfolioAddTradeForm id={id} />
         </div>
