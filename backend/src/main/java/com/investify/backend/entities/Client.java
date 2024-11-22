@@ -90,4 +90,10 @@ public class Client {
 
     @ManyToMany
     private List<Badge> badges;
+
+    @ManyToMany
+    private List<Client> friends;
+
+    @ManyToMany
+    private List<Client> friendRequests;
 }

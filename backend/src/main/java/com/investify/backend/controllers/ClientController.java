@@ -14,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @RequiredArgsConstructor
@@ -26,6 +27,14 @@ public class ClientController {
     private final EmailService emailService;
     @Value("${spring.frontend.url}")
     private String frontendURL;
+
+    @GetMapping("")
+    public ResponseEntity<List<BasicClientDto>> getAllClients() {
+
+        List<BasicClientDto> clients = clientService.getAllClients();
+
+        return ResponseEntity.ok(clients);
+    }
 
     @GetMapping("/{clientId}")
     public ResponseEntity<ClientDto> getClient(@PathVariable String clientId) {
@@ -62,6 +71,30 @@ public class ClientController {
         clientService.saveVerificationToken(client.getEmail(), verificationToken);
 
         return ResponseEntity.ok(client);
+    }
+
+    @PostMapping("/{clientId}/create-friend-request")
+    public ResponseEntity createFriendRequest(@PathVariable String clientId, @RequestBody FriendRequestDto request) {
+        clientService.createFriendRequest(clientId, request);
+        return ResponseEntity.ok(new MessageDto("Completed"));
+    }
+
+    @PostMapping("/{clientId}/accept-friend-request")
+    public ResponseEntity acceptFriendRequest(@PathVariable String clientId, @RequestBody FriendRequestDto request) {
+        clientService.acceptFriendRequest(clientId, request);
+        return ResponseEntity.ok(new MessageDto("Completed"));
+    }
+
+    @PostMapping("/{clientId}/decline-friend-request")
+    public ResponseEntity declineFriendRequest(@PathVariable String clientId, @RequestBody FriendRequestDto request) {
+        clientService.declineFriendRequest(clientId, request);
+        return ResponseEntity.ok(new MessageDto("Completed"));
+    }
+
+    @PostMapping("/{clientId}/remove-friend")
+    public ResponseEntity removeFriend(@PathVariable String clientId, @RequestBody FriendRequestDto request) {
+        clientService.removeFriend(clientId, request);
+        return ResponseEntity.ok(new MessageDto("Completed"));
     }
 
     @DeleteMapping("/{clientId}")
