@@ -1,6 +1,10 @@
 import {
     useFetchClientsQuery,
-    useLoggedInClientProfileQuery, useRemoveFriendMutation
+    useLoggedInClientProfileQuery, 
+    useAddFriendMutation,
+    useRemoveFriendMutation,
+    useAddFriendRequestMutation,
+    useRemoveFriendRequestMutation,
 } from "../api/clients";
 import { FriendSearchBar } from "../components/FriendSearchBar";
 import { useToastForRequest } from "../hooks/useToastForRequests";
@@ -69,6 +73,37 @@ export function FriendPage() {
     </div>
   ) : (
       <p>No friends found.</p>
+  )}
+      </div>
+      <div>
+  {data && data.friendreq && data.friendreq.length > 0 ? (
+    <div>
+      <p>Friend Requests!!!</p>
+      <ul>
+        {data.friendreq.map((friendreq, index) => (
+            <li key={index}>
+                <span className="text-lg font-medium">{friendreq.username}</span>
+
+                <button
+                    className="btn btn-sm btn-ghost text-red-500 flex items-center gap-2 hover:text-red-700"
+                    disabled={isLoadingRemove}
+                >
+                    <FiX className="text-xl"/>
+                    <span className="font-bold">Ok</span>
+                </button>
+                <button
+                    className="btn btn-sm btn-ghost text-red-500 flex items-center gap-2 hover:text-red-700"
+                    disabled={isLoadingRemove}
+                >
+                    <FiX className="text-xl"/>
+                    <span className="font-bold">No</span>
+                </button>
+            </li>
+        ))}
+      </ul>
+    </div>
+  ) : (
+      <p>No friend requests found.</p>
   )}
       </div>
 

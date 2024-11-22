@@ -30,4 +30,5 @@ public class ClientDto {
     private Integer currentSavings;
     private List<Badge> badges;
     private List<Client> friends;
+    private List<Client> friendreq;
 }

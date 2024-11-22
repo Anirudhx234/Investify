@@ -94,6 +94,19 @@ public class ClientController {
         return ResponseEntity.ok(updatedClient);
     }
 
+    @PostMapping("/{clientId}/add-friend-request/{friendId}")
+    public ResponseEntity<Client> addFriendRequest(@PathVariable String clientId, @PathVariable String friendId) {
+        Client updatedClient = clientService.addFriendRequest(clientId, friendId);
+        return ResponseEntity.ok(updatedClient);
+    }
+
+    // Remove a friend from the client's list
+    @DeleteMapping("/{clientId}/remove-friend-request/{friendId}")
+    public ResponseEntity<Client> removeFriendRequest(@PathVariable String clientId, @PathVariable String friendId) {
+        Client updatedClient = clientService.removeFriendRequest(clientId, friendId);
+        return ResponseEntity.ok(updatedClient);
+    }
+
 
 }
 

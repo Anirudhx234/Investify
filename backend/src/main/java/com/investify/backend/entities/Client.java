@@ -94,4 +94,7 @@ public class Client {
     @ManyToMany(fetch = FetchType.EAGER)
     private List<Client> friends;
 
+    @ManyToMany(fetch = FetchType.EAGER)
+    private List<Client> friendreq;
+
 }

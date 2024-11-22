@@ -11,6 +11,7 @@ export interface Client {
 }
 
 export interface LoggedInClient extends Client {
+  friendreq: LoggedInClient | undefined;
   email: string;
   age?: number | undefined | null;
   income?: number | undefined | null;

@@ -257,6 +257,35 @@ public class ClientService {
         return client;
     }
 
+    public Client addFriendRequest(String clientId, String friendId) {
+        Client client = findById(clientId);
+
+        Client friend = findById(friendId);
+
+        // Check if the friend is not already in the client's friend request list
+        if (!client.getFriendreq().contains(friend)) {
+            client.getFriendreq().add(friend); // Add the friend to the client's list
+        }
+
+        // Save both entities to update the friends lists
+        clientRepository.save(client);
+
+        return client;
+    }
+
+    // Remove a friend from the client's list
+    public Client removeFriendRequest(String clientId, String friendId) {
+        Client client = findById(clientId);
+
+        Client friend = findById(friendId);
+
+        client.getFriends().remove(friend);
+
+        clientRepository.save(client);
+
+        return client;
+    }
+
 
 
 

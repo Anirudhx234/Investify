@@ -34,30 +34,31 @@ const clientsApi = api.injectEndpoints({
         method: "GET",
       }),
     }),
-    // Add a friend (POST request)
-    addFriend: build.query<clientTypes.Client, { clientId: string, friendId: string }>({
-      query: () => ({
-        url: `/clients/addFriend`,
+    addFriend: build.mutation<clientTypes.Client, { clientId: string; friendId: string }>({
+      query: ({ clientId, friendId }) => ({
+        url: `/clients/${clientId}/add-friend/${friendId}`,
         method: 'POST',
       }),
     }),
-
-    // // Remove a friend (DELETE request)
-    // removeFriend: build.query<clientTypes.Client, { clientId: string, friendId: string }>({
-    //   query: () => ({
-    //     url: `/clients/removeFriend`,
-    //     method: 'DELETE',
-    //   }),
-    // }),
     removeFriend: build.mutation<clientTypes.Client, { clientId: string; friendId: string }>({
       query: ({ clientId, friendId }) => ({
-        url: "/removeFriend",
-        method: "DELETE",
-        body: { clientId, friendId },
+        url: `/clients/${clientId}/remove-friend/${friendId}`,
+        method: 'DELETE',
       }),
-      // invalidatesTags: (res) =>
-      //     res ? [{ type: "clients", id: res.id }] : [],
     }),
+    addFriendRequest: build.mutation<clientTypes.Client, { clientId: string; friendId: string }>({
+      query: ({ clientId, friendId }) => ({
+        url: `/clients/${clientId}/add-friend-request/${friendId}`,
+        method: 'POST',
+      }),
+    }),
+    removeFriendRequest: build.mutation<clientTypes.Client, { clientId: string; friendId: string }>({
+      query: ({ clientId, friendId }) => ({
+        url: `/clients/${clientId}/remove-friend-request/${friendId}`,
+        method: 'DELETE',
+      }),
+    }),
+    
     modifyEmail: build.mutation<
       clientTypes.LoggedInClient,
       { newEmail: string }
@@ -92,8 +93,10 @@ export const {
   useClientProfileQuery,
   useLoggedInClientProfileQuery,
   useFetchClientsQuery,
-  useAddFriendQuery,
+  useAddFriendMutation,
   useRemoveFriendMutation,
+  useAddFriendRequestMutation,
+  useRemoveFriendRequestMutation,
   useModifyEmailMutation,
   useModifyProfileMutation,
   useDeleteClientMutation,

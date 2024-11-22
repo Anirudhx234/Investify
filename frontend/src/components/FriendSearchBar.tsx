@@ -1,9 +1,11 @@
 import { useState, useEffect } from "react";
 import { clientTypes } from "../types";
 import {
-    useAddFriendQuery,
+    useAddFriendMutation,
+    useRemoveFriendMutation,
+    useAddFriendRequestMutation,
+    useRemoveFriendRequestMutation,
     useLoggedInClientProfileQuery,
-    useRemoveFriendQuery
   } from "../api/clients";
 
 interface SearchBarProps {
