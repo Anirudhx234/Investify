@@ -81,15 +81,15 @@ public class ClientController {
         return ResponseEntity.ok(new MessageDto("Client successfully deleted."));
     }
 
-    @PostMapping("/addFriend")
-    public ResponseEntity<Client> addFriend(@PathVariable UUID clientId, @PathVariable UUID friendId) {
+    @PostMapping("/{clientId}/add-friend/{friendId}")
+    public ResponseEntity<Client> addFriend(@PathVariable String clientId, @PathVariable String friendId) {
         Client updatedClient = clientService.addFriend(clientId, friendId);
         return ResponseEntity.ok(updatedClient);
     }
 
     // Remove a friend from the client's list
-    @DeleteMapping("/removeFriend")
-    public ResponseEntity<Client> removeFriend(@PathVariable UUID clientId, @PathVariable UUID friendId) {
+    @DeleteMapping("/{clientId}/remove-friend/{friendId}")
+    public ResponseEntity<Client> removeFriend(@PathVariable String clientId, @PathVariable String friendId) {
         Client updatedClient = clientService.removeFriend(clientId, friendId);
         return ResponseEntity.ok(updatedClient);
     }

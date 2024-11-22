@@ -219,12 +219,10 @@ public class ClientService {
         return clientRepository.findAll();
     }
 
-    public Client addFriend(UUID clientId, UUID friendId) {
-        Client client = clientRepository.findById(clientId)
-                .orElseThrow(() -> new RuntimeException("Client not found"));
+    public Client addFriend(String clientId, String friendId) {
+        Client client = findById(clientId);
 
-        Client friend = clientRepository.findById(friendId)
-                .orElseThrow(() -> new RuntimeException("Friend not found"));
+        Client friend = findById(friendId);
 
         // Check if the friend is not already in the client's friend list
         if (!client.getFriends().contains(friend)) {
@@ -244,12 +242,10 @@ public class ClientService {
     }
 
     // Remove a friend from the client's list
-    public Client removeFriend(UUID clientId, UUID friendId) {
-        Client client = clientRepository.findById(clientId)
-                .orElseThrow(() -> new RuntimeException("Client not found"));
+    public Client removeFriend(String clientId, String friendId) {
+        Client client = findById(clientId);
 
-        Client friend = clientRepository.findById(friendId)
-                .orElseThrow(() -> new RuntimeException("Friend not found"));
+        Client friend = findById(friendId);
 
         client.getFriends().remove(friend);
 
