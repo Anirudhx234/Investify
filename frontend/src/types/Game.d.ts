@@ -15,6 +15,7 @@ export interface GamePortfolio {
 }
 
 export interface Player {
+  rank: number
   client: Client;
   totalValue: number;
 }
