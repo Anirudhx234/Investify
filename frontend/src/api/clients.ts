@@ -42,14 +42,22 @@ const clientsApi = api.injectEndpoints({
       }),
     }),
 
-    // Remove a friend (DELETE request)
-    removeFriend: build.query<clientTypes.Client, { clientId: string, friendId: string }>({
-      query: () => ({
-        url: `/clients/removeFriend`,
-        method: 'DELETE',
+    // // Remove a friend (DELETE request)
+    // removeFriend: build.query<clientTypes.Client, { clientId: string, friendId: string }>({
+    //   query: () => ({
+    //     url: `/clients/removeFriend`,
+    //     method: 'DELETE',
+    //   }),
+    // }),
+    removeFriend: build.mutation<clientTypes.Client, { clientId: string; friendId: string }>({
+      query: ({ clientId, friendId }) => ({
+        url: "/removeFriend",
+        method: "DELETE",
+        body: { clientId, friendId },
       }),
+      // invalidatesTags: (res) =>
+      //     res ? [{ type: "clients", id: res.id }] : [],
     }),
-    
     modifyEmail: build.mutation<
       clientTypes.LoggedInClient,
       { newEmail: string }
@@ -85,7 +93,7 @@ export const {
   useLoggedInClientProfileQuery,
   useFetchClientsQuery,
   useAddFriendQuery,
-  useRemoveFriendQuery,
+  useRemoveFriendMutation,
   useModifyEmailMutation,
   useModifyProfileMutation,
   useDeleteClientMutation,

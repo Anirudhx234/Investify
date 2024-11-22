@@ -1,14 +1,20 @@
 import {
-  useFetchClientsQuery,
-  useLoggedInClientProfileQuery
+    useFetchClientsQuery,
+    useLoggedInClientProfileQuery, useRemoveFriendMutation
 } from "../api/clients";
 import { FriendSearchBar } from "../components/FriendSearchBar";
 import { useToastForRequest } from "../hooks/useToastForRequests";
+import {FiX} from "react-icons/fi";
+
+export interface RemoveFriendFormShape {
+    clientId: string,
+    friendId:string
+}
 
 export function FriendPage() {
   // Ask swastik
     const { data } = useLoggedInClientProfileQuery();
-//   const currentUser = data!.username;
+  // const currentUser = data!.username;
 
   // Fetch all users details
   const fetchUsernamesState = useFetchClientsQuery();
@@ -16,9 +22,18 @@ export function FriendPage() {
     backupSuccessMessage: "Retrieved users!",
   });
 
+  const [removeFriend, removeFriendState] = useRemoveFriendMutation();
+  const { isLoading: isLoadingRemove } = useToastForRequest("Remove Friend", removeFriendState, {
+      backupSuccessMessage: "Friend removed!",
+  });
 
   const { data: clients = [], isLoading, error } = useFetchClientsQuery();
   console.log(clients);
+
+  const handleRemoveFriend = async (clientId: string, friendId: string) => {
+      await removeFriend({clientId, friendId }).unwrap()
+          .catch(() => {});
+  };
 
   return (
     <div className="mt-6 flex w-full flex-col items-center gap-12">
@@ -32,22 +47,30 @@ export function FriendPage() {
         <FriendSearchBar values={clients} />
       )}
       <div>
-  {data?.friends.length > 0 ? (
+  {data && data.friends && data.friends.length > 0 ? (
     <div>
       <p>Friends!!!</p>
       <ul>
         {data.friends.map((friend, index) => (
-          <li key={index}>
-            {/* Assuming 'friend' is an object with a 'username' property */}
-            {friend.username}
-          </li>
+            <li key={index}>
+                <span className="text-lg font-medium">{friend.username}</span>
+
+                <button
+                    className="btn btn-sm btn-ghost text-red-500 flex items-center gap-2 hover:text-red-700"
+                    onClick={() => handleRemoveFriend(data.id, friend.id)}
+                    disabled={isLoadingRemove}
+                >
+                    <FiX className="text-xl"/>
+                    <span className="font-bold">Remove</span>
+                </button>
+            </li>
         ))}
       </ul>
     </div>
   ) : (
-    <p>No friends found.</p>
+      <p>No friends found.</p>
   )}
-</div>
+      </div>
 
     </div>
   );
