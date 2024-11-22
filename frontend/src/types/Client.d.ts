@@ -28,4 +28,6 @@ export interface LoggedInClient extends Client {
   investmentRisk?: "LOW" | "MEDIUM" | "HIGH";
   userSavings?: number | undefined | null;
   currentSavings?: number | undefined | null;
+  friends: BasicClient[];
+  friendRequests: BasicClient[];
 }

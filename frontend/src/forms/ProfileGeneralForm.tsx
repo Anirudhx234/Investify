@@ -117,15 +117,17 @@ export function ProfileGeneralFormEdit() {
           </label>
         </div>
 
-        <div className="my-6 flex w-full flex-col items-center gap-2">
-          <h2 className="font-semibold">Badges & Achievements</h2>
+        {clientData && clientData.badges.length > 0 && (
+          <div className="my-6 flex w-full flex-col items-center gap-2">
+            <h2 className="font-semibold">Badges & Achievements</h2>
 
-          <div className="lex max-w-40 flex-wrap">
-            {clientData?.badges.map((badge) => (
-              <Badge key={badge.id} {...badge} />
-            ))}
+            <div className="lex max-w-40 flex-wrap">
+              {clientData.badges.map((badge) => (
+                <Badge key={badge.id} {...badge} />
+              ))}
+            </div>
           </div>
-        </div>
+        )}
 
         <FormInput
           name="username"
@@ -169,15 +171,17 @@ export function ProfileGeneralFormView() {
         />
       </div>
 
-      <div className="my-6 flex w-full flex-col items-center gap-2">
-        <h2 className="font-semibold">Badges & Achievements</h2>
+      {clientData && clientData.badges.length > 0 && (
+        <div className="my-6 flex w-full flex-col items-center gap-2">
+          <h2 className="font-semibold">Badges & Achievements</h2>
 
-        <div className="flex max-w-40 flex-wrap">
-          {clientData?.badges.map((badge) => (
-            <Badge key={badge.id} {...badge} />
-          ))}
+          <div className="lex max-w-40 flex-wrap">
+            {clientData.badges.map((badge) => (
+              <Badge key={badge.id} {...badge} />
+            ))}
+          </div>
         </div>
-      </div>
+      )}
 
       <ReadonlyInput
         name="username"

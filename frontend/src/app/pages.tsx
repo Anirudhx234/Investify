@@ -10,6 +10,7 @@ import { NotFoundPage } from "../pages/NotFoundPage";
 import { ResetPasswordForm } from "../forms/ResetPasswordForm";
 import { AssetPage } from "../pages/AssetPage";
 import { GamesPage } from "../pages/GamesPage";
+import { SocialPage } from "../pages/SocialPage";
 
 /* list of top-level routes for the app */
 export const pages: routerTypes.Page[] = [
@@ -100,6 +101,15 @@ export const pages: routerTypes.Page[] = [
     navbar: true,
     nest: true,
     protection: "signed-in",
+  },
+  {
+    path: "/social",
+    component: <SocialPage />,
+    args: { type: "page" },
+    label: "Social",
+    navbar: true,
+    protection: "signed-in",
+    nest: true,
   },
   {
     path: "/",

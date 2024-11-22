@@ -26,6 +26,7 @@ export function ReadonlyInput({
         value={value}
         readOnly
         name={name}
+        autoComplete="off"
       />
     </label>
   );
