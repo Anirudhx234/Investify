@@ -184,7 +184,7 @@ export function GamePortfolio() {
           {data.game.endTime.replace("T", " ")}
         </p>
 
-        <p>{data.game.mode}</p>
+        <p>{data.game.type}</p>
 
         <p>
           Join Link:{" "}

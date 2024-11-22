@@ -6,7 +6,7 @@ export interface Game {
   startTime: string;
   endTime: string;
   buyingPower: number;
-  mode: "PUBLIC" | "PRIVATE";
+  type: "PUBLIC" | "PRIVATE";
 }
 
 export interface GamePortfolio {

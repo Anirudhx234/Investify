@@ -45,6 +45,9 @@ const authApi = api.injectEndpoints({
         "sector-valuations",
         "risk-charts",
         "risk-assessments",
+        "client-game-portfolios-list",
+        "client-available-games-list",
+        "client-game-portfolios",
       ],
     }),
 

@@ -15,7 +15,7 @@ export interface CreateGameFormShape {
   startTime: string;
   endTime: string;
   buyingPower: number;
-  mode: "PUBLIC" | "PRIVATE";
+  type: "PUBLIC" | "PRIVATE";
 }
 
 export function CreateGameForm() {
@@ -36,7 +36,7 @@ export function CreateGameForm() {
       buyingPower: data.buyingPower,
       startTime: data.startTime,
       endTime: data.endTime,
-      mode: data.mode,
+      type: data.type,
     })
       .unwrap()
       .catch(() => {});
@@ -96,8 +96,8 @@ export function CreateGameForm() {
             />
 
             <FormSelectInput
-              name="mode"
-              label="Mode"
+              name="type"
+              label="Type"
               form={form}
               required
               isBuffering={isLoading}
