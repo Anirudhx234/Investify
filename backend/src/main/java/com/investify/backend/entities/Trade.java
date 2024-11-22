@@ -37,12 +37,15 @@ public class Trade {
 
     private double quantity;
 
-    public Trade(PaperPortfolio paperPortfolio, Asset asset, TradeType type, double price, double quantity) {
+    private double totalPortfolioValue;
+
+    public Trade(PaperPortfolio paperPortfolio, Asset asset, TradeType type, double price, double quantity, double totalPortfolioValue) {
         this.paperPortfolio = paperPortfolio;
         this.asset = asset;
         this.time = LocalDateTime.now();
         this.type = type;
         this.price = price;
         this.quantity = quantity;
+        this.totalPortfolioValue = totalPortfolioValue;
     }
 }

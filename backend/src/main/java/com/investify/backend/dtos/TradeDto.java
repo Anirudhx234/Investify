@@ -14,4 +14,5 @@ public class TradeDto {
     private TradeType type;
     private double price;
     private double quantity;
+    private double totalPortfolioValue;
 }

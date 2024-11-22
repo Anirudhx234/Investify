@@ -1,5 +1,6 @@
 package com.investify.backend.dtos;
 
+import com.investify.backend.enums.GameType;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -10,4 +11,5 @@ public class CreateGameDto {
     private LocalDateTime startTime;
     private LocalDateTime endTime;
     private double buyingPower;
+    private GameType type;
 }

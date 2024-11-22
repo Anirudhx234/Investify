@@ -1,6 +1,7 @@
 package com.investify.backend.entities;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.investify.backend.enums.GameType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -29,6 +30,8 @@ public class Game {
 
     private double buyingPower;
 
+    private GameType type;
+
     @OneToMany(mappedBy = "game", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     private List<GamePortfolio> gamePortfolios;
@@ -39,10 +42,11 @@ public class Game {
 
     private boolean processed;
 
-    public Game(String name, LocalDateTime startTime, LocalDateTime endTime, double buyingPower) {
+    public Game(String name, LocalDateTime startTime, LocalDateTime endTime, double buyingPower, GameType type) {
         this.name = name;
         this.startTime = startTime;
         this.endTime = endTime;
         this.buyingPower = buyingPower;
+        this.type = type;
     }
 }

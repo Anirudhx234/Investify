@@ -1,5 +1,6 @@
 package com.investify.backend.dtos;
 
+import com.investify.backend.enums.GameType;
 import lombok.Data;
 
 import java.util.UUID;
@@ -11,4 +12,5 @@ public class GameDto {
     private String startTime;
     private String endTime;
     private double buyingPower;
+    private GameType type;
 }

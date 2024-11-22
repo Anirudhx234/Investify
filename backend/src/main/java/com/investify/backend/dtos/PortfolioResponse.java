@@ -19,4 +19,10 @@ public class PortfolioResponse {
         this.roi = roi;
         this.portfolioAssets = portfolioAssets;
     }
+
+    public PortfolioResponse(String name, double totalPortfolioValue, double roi) {
+        this.name = name;
+        this.totalPortfolioValue = totalPortfolioValue;
+        this.roi = roi;
+    }
 }

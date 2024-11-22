@@ -12,6 +12,10 @@ import lombok.NoArgsConstructor;
 @Entity
 public class GamePortfolio extends PaperPortfolio {
 
+    private double totalPortfolioValue;
+
+    private double roi;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JsonBackReference
     private Game game;
