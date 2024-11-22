@@ -1,4 +1,5 @@
 import type { apiTypes, portfolioTypes } from "../types";
+import { convertUTCToLocalTime } from "../util/convertTimezone";
 import { api } from "./api";
 
 const portfolioApi = api.injectEndpoints({
@@ -62,6 +63,14 @@ const portfolioApi = api.injectEndpoints({
         url: `/portfolios/${id}`,
         method: "GET",
       }),
+      transformResponse: (res: portfolioTypes.PaperPortfolio) => {
+        const trades = res.trades.map((trade) => ({
+          ...trade,
+          time: convertUTCToLocalTime(trade.time),
+        }));
+
+        return { ...res, trades };
+      },
       providesTags: (res, _err, args) =>
         res ? [{ type: "portfolios", id: args.id }] : [],
     }),

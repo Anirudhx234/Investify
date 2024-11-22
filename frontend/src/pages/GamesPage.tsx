@@ -13,6 +13,7 @@ import { PaperPortfolioEditorPage } from "./PaperPortfolioEditorPage";
 import { GameLeaderboard } from "../scenes/GameLeaderboard";
 import { formatNumber } from "../util/formatNumber";
 import { useEffect } from "react";
+import { convertUTCToLocalTime } from "../util/convertTimezone";
 
 export function GamesPage() {
   return (
@@ -169,7 +170,7 @@ export function GamePortfolio() {
   );
 
   const data = gamePortfolioState.data;
-  const currTime = new Date().toISOString();
+  const currTime = convertUTCToLocalTime(new Date().toISOString());
 
   if (!isSuccess || !data) return component;
   return (

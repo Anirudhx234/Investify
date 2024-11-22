@@ -10,13 +10,13 @@ export function PaperPortfolioTradeHistoryTable({ id }: { id: string }) {
       <table className="table-zebra-zebra w-full">
         <thead>
           <tr>
-            <th className="w-1/6 py-2">DateTime</th>
-            <th className="w-1/6 py-2">Symbol</th>
-            <th className="w-1/6 py-2">Type</th>
-            <th className="w-1/6 py-2">Buy/Sell</th>
-            <th className="w-1/6 py-2">Price</th>
-            <th className="w-1/6 py-2">Quantity</th>
-            <th className="w-1/6 py-2">Portfolio Value</th>
+            <th className="w-1/7 py-2">DateTime</th>
+            <th className="w-1/7 py-2">Symbol</th>
+            <th className="w-1/7 py-2">Type</th>
+            <th className="w-1/7 py-2">Buy/Sell</th>
+            <th className="w-1/7 py-2">Price</th>
+            <th className="w-1/7 py-2">Quantity</th>
+            <th className="w-1/7 py-2">Value</th>
           </tr>
         </thead>
         <tbody>
@@ -49,7 +49,7 @@ export function PaperPortfolioTradeHistoryTable({ id }: { id: string }) {
           })}
           {!data?.trades.length && (
             <tr>
-              <td colSpan={6} className="pb-4 pt-2 text-center italic">
+              <td colSpan={7} className="pb-4 pt-2 text-center italic">
                 No trades yet
               </td>
             </tr>
