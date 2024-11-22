@@ -21,7 +21,7 @@ const gameApi = api.injectEndpoints({
         // }),
 
 
-        getGames: build.query<gameTypes.GamePortfolioResponse>({
+        getGames: build.query<gameTypes.GamePortfolioResponse, void>({
             query: () => ({
                 url: `/games/clients/me`,
                 method: "GET",
