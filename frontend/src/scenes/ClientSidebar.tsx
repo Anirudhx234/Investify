@@ -75,7 +75,7 @@ export function ClientSidebarEdit() {
   );
 }
 
-const viewItems = ["/account", "/general"];
+const viewItems = ["/general"];
 export function ClientSidebarView() {
   return <LinksList links={viewItems} />;
 }
