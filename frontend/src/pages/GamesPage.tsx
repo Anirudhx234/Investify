@@ -49,6 +49,8 @@ export function GamesPage() {
                                 Buying Power: ${portfolio.game.buyingPower.toFixed(2)}
                                 <br />
                                 Mode: {portfolio.game.mode ?? "Not Specified"}
+                                <br />
+                                Join link: <a href={`http://localhost:5173/game/${portfolio.game.id}/join`}>localhost:5173/game/{portfolio.game.id}/join</a>
                             </li>
                         ))}
                     </ul>

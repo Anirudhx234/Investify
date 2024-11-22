@@ -10,6 +10,7 @@ import { GamesPage } from "../pages/GamesPage";
 import { NotFoundPage } from "../pages/NotFoundPage";
 import { ResetPasswordForm } from "../forms/ResetPasswordForm";
 import { AssetPage } from "../pages/AssetPage";
+import { JoinGamePage } from "../pages/JoinGamePage";
 
 /* list of top-level routes for the app */
 export const pages: routerTypes.Page[] = [
@@ -98,6 +99,16 @@ export const pages: routerTypes.Page[] = [
     label: "Games",
     drawerMode: "open",
     navbar: true,
+    protection: "signed-in",
+    nest: true,
+  },
+  {
+    path: "game/:gameId/join",
+    component: <JoinGamePage />,
+    args: { type: "page" },
+    label: "JoinGamePage",
+    drawerMode: "open",
+    navbar: false,
     protection: "signed-in",
     nest: true,
   },

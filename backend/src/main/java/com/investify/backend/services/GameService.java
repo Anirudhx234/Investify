@@ -52,6 +52,8 @@ public class GameService {
         LocalDateTime startTime = request.getStartTime();
         LocalDateTime endTime = request.getEndTime();
 
+        System.out.println("game mode=" + request.getMode());
+
         if (startTime.isAfter(endTime)) {
             throw new RestException("Start time must be before end time", HttpStatus.BAD_REQUEST);
         }
@@ -60,10 +62,13 @@ public class GameService {
             throw new RestException("Buying power must be positive", HttpStatus.BAD_REQUEST);
         }
 
-        Game game = new Game(request.getName(), startTime, endTime, request.getBuyingPower());
+        Game game = new Game(request.getName(), startTime, endTime, request.getBuyingPower(), request.getMode());
         gameRepository.save(game);
 
         joinGame(clientId, game.getId());
+
+        GameDto test = gameMapper.toGameDto(game);
+        System.out.println("gameDto mode=" + test.getMode());
 
         return gameMapper.toGameDto(game);
     }

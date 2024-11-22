@@ -14,6 +14,7 @@ public interface GameMapper {
 
     @Mapping(target = "startTime", source = "game.startTime", qualifiedByName = "localDateTimeToString")
     @Mapping(target = "endTime", source = "game.endTime", qualifiedByName = "localDateTimeToString")
+    @Mapping(target = "mode", source = "game.mode") // Explicitly map "game.mode" to "mode"
     GameDto toGameDto(Game game);
 
     @Named("localDateTimeToString")

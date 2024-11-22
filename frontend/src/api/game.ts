@@ -53,6 +53,13 @@ const gameApi = api.injectEndpoints({
             }),
             providesTags: (_res, _err, args) => [{ type: "games", id: args.id }],
         }),
+
+        joinGame: build.mutation<void, { gameId: string }>({
+            query: ({ gameId }) => ({
+                url: `/games/${gameId}/clients/me/join`,
+                method: "POST",
+            }),
+        }),
     }),
 });
 
@@ -61,4 +68,5 @@ export const {
     useCreateGameMutation,
     useDeleteGameMutation,
     useGetGameByIdQuery,
+    useJoinGameMutation,
 } = gameApi;
