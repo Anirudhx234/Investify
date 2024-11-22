@@ -2,6 +2,7 @@ package com.investify.backend.entities;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.investify.backend.enums.TradeType;
+import com.investify.backend.utils.Utils;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -10,6 +11,7 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
+
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -42,7 +44,7 @@ public class Trade {
     public Trade(PaperPortfolio paperPortfolio, Asset asset, TradeType type, double price, double quantity, double totalPortfolioValue) {
         this.paperPortfolio = paperPortfolio;
         this.asset = asset;
-        this.time = LocalDateTime.now();
+        this.time = Utils.currentUTCTime();
         this.type = type;
         this.price = price;
         this.quantity = quantity;

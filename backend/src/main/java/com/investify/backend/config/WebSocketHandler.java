@@ -2,6 +2,7 @@ package com.investify.backend.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.investify.backend.services.TwelveDataService;
+import com.investify.backend.utils.Utils;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
@@ -75,7 +76,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
 
     private String priceMessage(String symbol, double price) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-        String datetime = LocalDateTime.now().format(formatter);
+        String datetime = Utils.currentUTCTime().format(formatter);
         return String.format("{\"symbol\":\"%s\", \"price\":%s, \"datetime\":\"%s\"}", symbol, price, datetime);
     }
 
