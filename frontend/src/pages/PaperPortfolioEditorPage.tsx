@@ -41,12 +41,12 @@ export function PaperPortfolioEditorPage({
 
       {!disabled && <div className="divider"></div>}
 
-      <div className="flex flex-col items-center gap-8">
+      {data.portfolioAssets && <div className="flex flex-col items-center gap-8">
         <h2 className="text-center text-xl font-bold">Assets</h2>
         <PaperPortfolioAssetsTable id={id} />
-      </div>
+      </div>}
 
-      <div className="divider"></div>
+      {data.portfolioAssets && <div className="divider"></div>}
 
       <div className="flex flex-col items-center gap-8">
         <h2 className="text-center text-xl font-bold">Trade History</h2>

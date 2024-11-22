@@ -1,4 +1,4 @@
-import { Link, Redirect, Route, Switch, useParams } from "wouter";
+import { Link, Redirect, Route, Switch, useLocation, useParams } from "wouter";
 import { CreateGameForm } from "../forms/CreateGameForm";
 import { twMerge } from "../util/twMerge";
 import { JoinedGamesTable, JoinableGamesTable } from "../components/GamesTable";
@@ -6,11 +6,13 @@ import {
   useAvailableGamesQuery,
   useGamePortfoliosQuery,
   useGetGamePortfolioQuery,
+  useJoinGameMutation,
 } from "../api/game";
 import { useToastForRequest } from "../hooks/useToastForRequests";
 import { PaperPortfolioEditorPage } from "./PaperPortfolioEditorPage";
 import { GameLeaderboard } from "../scenes/GameLeaderboard";
 import { formatNumber } from "../util/formatNumber";
+import { useEffect } from "react";
 
 export function GamesPage() {
   return (
@@ -19,6 +21,7 @@ export function GamesPage() {
       <Route path="/joined" component={JoinedGames} nest />
       <Route path="/browse" component={BrowseGames} nest />
 
+      <Route path="/:gameId/join" component={JoinGame} />
       <Route path="/:gameId/leaderboard" component={GameLeaderboard} />
       <Route path="/:gameId/portfolios/me" component={GamePortfolio} nest />
       <Route path="*" component={() => <Redirect to="/browse" replace />} />
@@ -126,6 +129,34 @@ export function BrowseGames() {
   );
 }
 
+export function JoinGame() {
+  const params = useParams() as { gameId: string };
+  const { gameId } = params;
+
+  const [, navigate] = useLocation();
+  const [joinGame, joinGameState] = useJoinGameMutation();
+  const { isSuccess, component } = useToastForRequest(
+    "Join Game",
+    joinGameState,
+    {
+      backupSuccessMessage: "Game Joined!",
+      onSuccess: () => {
+        if (joinGameState.data)
+          navigate(`/${joinGameState.data.game.id}/leaderboard`);
+      },
+    },
+  );
+
+  useEffect(() => {
+    joinGame({ gameId })
+      .unwrap()
+      .catch(() => {});
+  }, [joinGame, gameId]);
+
+  if (!isSuccess) return component;
+  return <p>Processing...</p>;
+}
+
 export function GamePortfolio() {
   const params = useParams() as { gameId: string };
   const { gameId } = params;
@@ -151,6 +182,18 @@ export function GamePortfolio() {
         <p>
           {data.game.startTime.replace("T", " ")} to{" "}
           {data.game.endTime.replace("T", " ")}
+        </p>
+
+        <p>{data.game.mode}</p>
+
+        <p>
+          Join Link:{" "}
+          <Link
+            href={`~/games/${data.game.id}/join`}
+            className="link link-primary"
+          >
+            localhost:5173/games/{data.game.id}/join
+          </Link>
         </p>
       </div>
 

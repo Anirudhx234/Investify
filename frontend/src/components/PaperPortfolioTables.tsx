@@ -16,6 +16,7 @@ export function PaperPortfolioTradeHistoryTable({ id }: { id: string }) {
             <th className="w-1/6 py-2">Buy/Sell</th>
             <th className="w-1/6 py-2">Price</th>
             <th className="w-1/6 py-2">Quantity</th>
+            <th className="w-1/6 py-2">Portfolio Value</th>
           </tr>
         </thead>
         <tbody>
@@ -40,6 +41,9 @@ export function PaperPortfolioTradeHistoryTable({ id }: { id: string }) {
 
                 <td className="text-center">{formatNumber(trade.price)}</td>
                 <td className="text-center">{formatNumber(trade.quantity)}</td>
+                <td className="text-center">
+                  {formatNumber(trade.totalPortfolioValue)}
+                </td>
               </tr>
             );
           })}
@@ -72,7 +76,7 @@ export function PaperPortfolioAssetsTable({ id }: { id: string }) {
           </tr>
         </thead>
         <tbody>
-          {data?.portfolioAssets.map((portfolioAsset) => (
+          {data?.portfolioAssets?.map((portfolioAsset) => (
             <tr key={portfolioAsset.id}>
               <th>{portfolioAsset.asset.symbol}</th>
 
@@ -93,7 +97,7 @@ export function PaperPortfolioAssetsTable({ id }: { id: string }) {
               </td>
             </tr>
           ))}
-          {!data?.portfolioAssets.length && (
+          {!data?.portfolioAssets?.length && (
             <tr>
               <td colSpan={6} className="pb-4 pt-2 text-center italic">
                 No assets

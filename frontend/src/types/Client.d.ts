@@ -5,14 +5,17 @@
 
 import { Game } from "./Game";
 
+export interface BasicClient {
+  id: string;
+  username: string;
+  profilePicture?: string | null | undefined;
+}
+
 export type Badge =
   | { id: string; type: "participation"; game: Game }
   | { id: string; type: "rank"; rank: number; game: Game };
 
-export interface Client {
-  id: string;
-  username: string;
-  profilePicture?: string | null | undefined;
+export interface Client extends BasicClient {
   badges: Badge[];
 }
 

@@ -33,12 +33,14 @@ export function RealPortfolioEditorPage({ id }: { id: string }) {
 
       <div className="divider"></div>
 
-      <div className="flex flex-col items-center gap-8">
-        <h2 className="text-center text-xl font-bold">Owned Assets</h2>
-        <RealPortfolioTable id={id} />
-      </div>
+      {data.portfolioAssets && (
+        <div className="flex flex-col items-center gap-8">
+          <h2 className="text-center text-xl font-bold">Owned Assets</h2>
+          <RealPortfolioTable id={id} />
+        </div>
+      )}
 
-      <div className="divider"></div>
+      {data.portfolioAssets && <div className="divider"></div>}
 
       <div className="flex flex-col items-center gap-8">
         <h2 className="text-center text-xl font-bold">Analytics</h2>

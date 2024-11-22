@@ -8,12 +8,14 @@ import { FormSubmit } from "../components/FormSubmit";
 import { FormInput } from "../components/FormInput";
 import { FormNumberInput } from "../components/FormNumberInput";
 import { FormDateTimeInput } from "../components/FormDateTimeInput";
+import { FormSelectInput } from "../components/FormSelectInput";
 
 export interface CreateGameFormShape {
   name: string;
   startTime: string;
   endTime: string;
   buyingPower: number;
+  mode: "PUBLIC" | "PRIVATE";
 }
 
 export function CreateGameForm() {
@@ -29,13 +31,12 @@ export function CreateGameForm() {
   });
 
   const onSubmit: SubmitHandler<CreateGameFormShape> = (data) => {
-    console.log(data);
-
     createGame({
       name: data.name,
       buyingPower: data.buyingPower,
       startTime: data.startTime,
       endTime: data.endTime,
+      mode: data.mode,
     })
       .unwrap()
       .catch(() => {});
@@ -92,6 +93,18 @@ export function CreateGameForm() {
                   }
                 },
               }}
+            />
+
+            <FormSelectInput
+              name="mode"
+              label="Mode"
+              form={form}
+              required
+              isBuffering={isLoading}
+              options={[
+                { label: "Public", value: "PUBLIC" },
+                { label: "Private", value: "PRIVATE" },
+              ]}
             />
 
             <FormSubmit className="btn-primary" isBuffering={isLoading} />

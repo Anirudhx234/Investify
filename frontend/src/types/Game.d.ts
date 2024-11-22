@@ -1,4 +1,4 @@
-import type { Client } from "./Client";
+import type { BasicClient } from "./Client";
 
 export interface Game {
   id: string;
@@ -6,6 +6,7 @@ export interface Game {
   startTime: string;
   endTime: string;
   buyingPower: number;
+  mode: "PUBLIC" | "PRIVATE";
 }
 
 export interface GamePortfolio {
@@ -16,6 +17,6 @@ export interface GamePortfolio {
 
 export interface Player {
   rank: number
-  client: Client;
+  client: BasicClient;
   totalValue: number;
 }

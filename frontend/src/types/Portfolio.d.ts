@@ -16,13 +16,14 @@ export interface PaperPortfolioTrade {
   type: "BUY" | "SELL";
   price: number;
   quantity: number;
+  totalPortfolioValue: number;
 }
 
 export interface RealPortfolio {
   name: string;
   totalPortfolioValue: number;
   roi: number;
-  portfolioAssets: PortfolioAsset[];
+  portfolioAssets?: PortfolioAsset[] | undefined | null;
 }
 
 export interface PaperPortfolio extends RealPortfolio {

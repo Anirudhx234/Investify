@@ -35,7 +35,7 @@ export function RealPortfolioTable({ id }: RealPortfolioTableProps) {
           </tr>
         </thead>
         <tbody>
-          {data?.portfolioAssets.map((portfolioAsset, idx) => (
+          {data?.portfolioAssets?.map((portfolioAsset, idx) => (
             <RealPortfolioTableRow
               key={portfolioAsset.id}
               portfolioId={id}
@@ -44,7 +44,7 @@ export function RealPortfolioTable({ id }: RealPortfolioTableProps) {
               isLoading={isLoading}
             />
           ))}
-          {!data?.portfolioAssets.length && (
+          {!data?.portfolioAssets?.length && (
             <tr>
               <td colSpan={6} className="pb-4 pt-2 text-center italic">
                 No assets yet
