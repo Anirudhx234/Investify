@@ -116,6 +116,7 @@ public class GameService {
         // Filter all games into upcomingGames and activeGames, excluding games the client has already joined
         List<Game> allAvailableGames = gameRepository.findAll().stream()
                 .filter(game -> !joinedGameIds.contains(game.getId()))
+                .filter(game -> "Public".equals(game.getMode()))
                 .toList();
 
         List<GameDto> activeGames = allAvailableGames.stream()
