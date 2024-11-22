@@ -126,12 +126,12 @@ public class PortfolioService {
 
         double buyingPower = portfolio.getBuyingPower();
 
-        if (portfolio instanceof GamePortfolio gamePortfolio && Utils.isPastGame(LocalDateTime.now(), gamePortfolio.getGame())) {
+        if (portfolio instanceof GamePortfolio gamePortfolio && Utils.isPastGame(Utils.currentUTCTime(), gamePortfolio.getGame())) {
             return new PaperPortfolioResponse(portfolio.getName(), gamePortfolio.getTotalPortfolioValue(), buyingPower, gamePortfolio.getRoi(), trades);
         }
         else {
             ROIDto info = getPortfolioROI(portfolio.getId());
-            
+
             List<PortfolioAssetResponse> portfolioAssets = portfolio.getPortfolioAssets()
                     .stream()
                     .map(asset -> {
@@ -470,7 +470,7 @@ public class PortfolioService {
         double totalPortfolioValue = getTotalPortfolioValue(paperPortfolioId);
 
         if (portfolio instanceof GamePortfolio) {
-            LocalDateTime currentTime = LocalDateTime.now();
+            LocalDateTime currentTime = Utils.currentUTCTime();
             Game game = ((GamePortfolio) portfolio).getGame();
 
             if (Utils.isUpcomingGame(currentTime, game)) {

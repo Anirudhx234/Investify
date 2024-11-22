@@ -71,7 +71,7 @@ public class GameService {
 
         List<GamePortfolio> gamePortfolios = client.getGamePortfolios();
 
-        LocalDateTime currentTime = LocalDateTime.now();
+        LocalDateTime currentTime = Utils.currentUTCTime();;
 
         List<GamePortfolioListDto> activeGames = gamePortfolios.stream()
                 .filter(portfolio -> Utils.isActiveGame(currentTime, portfolio.getGame()))
@@ -104,7 +104,7 @@ public class GameService {
                 .map(portfolio -> portfolio.getGame().getId())
                 .toList();
 
-        LocalDateTime currentTime = LocalDateTime.now();
+        LocalDateTime currentTime = Utils.currentUTCTime();
 
         // Filter all games into upcomingGames and activeGames, excluding games the client has already joined
         // and private games
@@ -190,7 +190,7 @@ public class GameService {
     @Scheduled(fixedRate = 10000)
     public void checkGameEndTimes() {
         List<Game> activeGames = gameRepository.findAll();
-        LocalDateTime currentTime = LocalDateTime.now();
+        LocalDateTime currentTime = Utils.currentUTCTime();
 
         activeGames.stream()
                 .filter(game -> !game.isProcessed() && currentTime.isAfter(game.getEndTime()))
