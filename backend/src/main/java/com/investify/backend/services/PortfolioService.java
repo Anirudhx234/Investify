@@ -122,33 +122,38 @@ public class PortfolioService {
     }
 
     private PaperPortfolioResponse getPaperPortfolio(PaperPortfolio portfolio) {
-        List<PortfolioAssetResponse> portfolioAssets = portfolio.getPortfolioAssets()
-                .stream()
-                .map(asset -> {
-                    double currentPrice = twelveDataService.getLivePrice(asset.getAsset().getSymbol());
-                    double totalAssetValue = asset.getQuantity() * currentPrice;
-                    return new PortfolioAssetResponse(
-                            asset.getId(),
-                            asset.getAsset(),
-                            asset.getQuantity(),
-                            asset.getAverageCost(),
-                            currentPrice,
-                            totalAssetValue
-                    );
-                })
-                .collect(Collectors.toList());
-
         List<TradeDto> trades = getTrades(portfolio.getId());
-
-        double totalPortfolioValue = portfolioAssets.stream()
-                .mapToDouble(PortfolioAssetResponse::getTotalAssetValue)
-                .sum();
 
         double buyingPower = portfolio.getBuyingPower();
 
-        ROIDto info = getPortfolioROI(portfolio.getId());
+        if (portfolio instanceof GamePortfolio gamePortfolio && Utils.isPastGame(LocalDateTime.now(), gamePortfolio.getGame())) {
+            return new PaperPortfolioResponse(portfolio.getName(), gamePortfolio.getTotalPortfolioValue(), buyingPower, gamePortfolio.getRoi(), trades);
+        }
+        else {
+            ROIDto info = getPortfolioROI(portfolio.getId());
+            
+            List<PortfolioAssetResponse> portfolioAssets = portfolio.getPortfolioAssets()
+                    .stream()
+                    .map(asset -> {
+                        double currentPrice = twelveDataService.getLivePrice(asset.getAsset().getSymbol());
+                        double totalAssetValue = asset.getQuantity() * currentPrice;
+                        return new PortfolioAssetResponse(
+                                asset.getId(),
+                                asset.getAsset(),
+                                asset.getQuantity(),
+                                asset.getAverageCost(),
+                                currentPrice,
+                                totalAssetValue
+                        );
+                    })
+                    .toList();
 
-        return new PaperPortfolioResponse(portfolio.getName(), totalPortfolioValue, buyingPower, info.getRoi(), portfolioAssets, trades);
+            double totalPortfolioValue = portfolioAssets.stream()
+                    .mapToDouble(PortfolioAssetResponse::getTotalAssetValue)
+                    .sum();
+
+            return new PaperPortfolioResponse(portfolio.getName(), totalPortfolioValue, buyingPower, info.getRoi(), portfolioAssets, trades);
+        }
     }
 
     public Portfolio updatePortfolio(UUID portfolioId, UpdatePortfolioDto request) {
@@ -462,6 +467,8 @@ public class PortfolioService {
     public TradeDto createTrade(UUID paperPortfolioId, CreateTradeDto request) {
         PaperPortfolio portfolio = findPaperPortfolioById(paperPortfolioId);
 
+        double totalPortfolioValue = getTotalPortfolioValue(paperPortfolioId);
+
         if (portfolio instanceof GamePortfolio) {
             LocalDateTime currentTime = LocalDateTime.now();
             Game game = ((GamePortfolio) portfolio).getGame();
@@ -498,6 +505,8 @@ public class PortfolioService {
                     newAverageCost = 0;
                 }
 
+                totalPortfolioValue -= currentPrice * sellQuantity;
+
                 portfolioAsset.setAverageCost(newAverageCost);
                 portfolioAsset.setQuantity(newQuantity);
                 portfolio.setBuyingPower(buyingPower + totalValue);
@@ -518,6 +527,8 @@ public class PortfolioService {
                     newAverageCost = 0;
                 }
 
+                totalPortfolioValue += currentPrice * buyQuantity;
+
                 portfolioAsset.setAverageCost(newAverageCost);
                 portfolioAsset.setQuantity(newQuantity);
                 portfolio.setBuyingPower(buyingPower - totalValue);
@@ -525,7 +536,7 @@ public class PortfolioService {
             default -> throw new RestException("Invalid order type", HttpStatus.BAD_REQUEST);
         }
 
-        Trade trade = new Trade(portfolio, asset, request.getType(), currentPrice, request.getQuantity());
+        Trade trade = new Trade(portfolio, asset, request.getType(), currentPrice, request.getQuantity(), totalPortfolioValue);
 
         tradeRepository.save(trade);
         portfolioAssetRepository.save(portfolioAsset);

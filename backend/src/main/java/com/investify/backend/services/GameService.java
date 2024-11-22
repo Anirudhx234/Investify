@@ -2,6 +2,7 @@ package com.investify.backend.services;
 
 import com.investify.backend.dtos.*;
 import com.investify.backend.entities.*;
+import com.investify.backend.enums.GameType;
 import com.investify.backend.exceptions.RestException;
 import com.investify.backend.mappers.ClientMapper;
 import com.investify.backend.mappers.GameMapper;
@@ -57,7 +58,7 @@ public class GameService {
             throw new RestException("Buying power must be positive", HttpStatus.BAD_REQUEST);
         }
 
-        Game game = new Game(request.getName(), startTime, endTime, request.getBuyingPower());
+        Game game = new Game(request.getName(), startTime, endTime, request.getBuyingPower(), request.getType());
         gameRepository.save(game);
 
         joinGame(clientId, game.getId());
@@ -103,10 +104,12 @@ public class GameService {
                 .map(portfolio -> portfolio.getGame().getId())
                 .toList();
 
-        LocalDateTime currentTime = LocalDateTime.now();  // Using LocalDateTime
+        LocalDateTime currentTime = LocalDateTime.now();
 
         // Filter all games into upcomingGames and activeGames, excluding games the client has already joined
+        // and private games
         List<Game> allAvailableGames = gameRepository.findAll().stream()
+                .filter(game -> game.getType() == GameType.PUBLIC)
                 .filter(game -> !joinedGameIds.contains(game.getId()))
                 .toList();
 
@@ -152,9 +155,16 @@ public class GameService {
         Game game = findById(gameId);
 
         List<LeaderboardPositionDto> leaderboard = game.getGamePortfolios().stream()
+                .peek(portfolio -> {
+                    double totalPortfolioValue = portfolioService.getTotalPortfolioValue(portfolio.getId());
+                    ROIDto info = portfolioService.getPortfolioROI(portfolio.getId());
+                    portfolio.setTotalPortfolioValue(totalPortfolioValue);
+                    portfolio.setRoi(info.getRoi());
+                    gamePortfolioRepository.save(portfolio);
+                })
                 .map(portfolio -> new LeaderboardPositionDto(
                         clientMapper.toBasicClientDto(portfolio.getClient()),
-                        portfolioService.getTotalPortfolioValue(portfolio.getId()) + portfolio.getBuyingPower()))
+                        portfolio.getTotalPortfolioValue() + portfolio.getBuyingPower()))
                 .sorted((dto1, dto2) -> Double.compare(dto2.getTotalValue(), dto1.getTotalValue()))
                 .toList();
 

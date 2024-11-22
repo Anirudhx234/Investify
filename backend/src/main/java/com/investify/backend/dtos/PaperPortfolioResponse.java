@@ -14,4 +14,10 @@ public class PaperPortfolioResponse extends PortfolioResponse {
         this.buyingPower = buyingPower;
         this.trades = trades;
     }
+
+    public PaperPortfolioResponse(String name, double totalPortfolioValue, double buyingPower, double roi, List<TradeDto> trades) {
+        super(name, totalPortfolioValue, roi);
+        this.buyingPower = buyingPower;
+        this.trades = trades;
+    }
 }
