@@ -27,4 +27,6 @@ public class ClientDto {
     private Integer userSavings;
     private Integer currentSavings;
     private List<BadgeDto> badges;
+    private List<BasicClientDto> friends;
+    private List<BasicClientDto> friendRequests;
 }

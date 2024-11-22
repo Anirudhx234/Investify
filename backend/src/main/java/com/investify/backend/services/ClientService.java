@@ -11,6 +11,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.parameters.P;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -95,12 +96,15 @@ public class ClientService {
         throw new RestException("Token is invalid or client not found", HttpStatus.BAD_REQUEST);
     }
 
-    public ClientDto getClient(String clientId) {
-        ClientDto client = findDtoById(clientId);
-
-        return client;
+    public List<BasicClientDto> getAllClients() {
+        return clientRepository.findAll().stream()
+                .map(clientMapper::toBasicClientDto)
+                .toList();
     }
 
+    public ClientDto getClient(String clientId) {
+        return findDtoById(clientId);
+    }
 
     public ClientDto updateProfile(String clientId, UpdateProfileDto updateProfileDto) {
         Client client = findById(clientId);
@@ -170,13 +174,58 @@ public class ClientService {
         return clientMapper.toClientDto(client);
     }
 
-    public ClientDto updateEmail(String clientId, String newEmail) {
+    public void createFriendRequest(String clientId, FriendRequestDto request) {
         Client client = findById(clientId);
+        Client friend = findById(String.valueOf(request.getFriendId()));
 
-        client.setEmail(newEmail);
+        if (!client.getFriends().contains(friend) && !friend.getFriendRequests().contains(client)) {
+            friend.getFriendRequests().add(client);
+            clientRepository.save(friend);
+        }
+    }
+
+    public void acceptFriendRequest(String clientId, FriendRequestDto request) {
+        Client client = findById(clientId);
+        Client friend = findById(String.valueOf(request.getFriendId()));
+
+        if (!client.getFriendRequests().contains(friend)) {
+            throw new RestException("No friend request found", HttpStatus.NOT_FOUND);
+        }
+
+        client.getFriendRequests().remove(friend);
+        client.getFriends().add(friend);
+        friend.getFriends().add(client);
+
         clientRepository.save(client);
+        clientRepository.save(friend);
+    }
 
-        return clientMapper.toClientDto(client);
+    public void declineFriendRequest(String clientId, FriendRequestDto request) {
+        Client client = findById(clientId);
+        Client friend = findById(String.valueOf(request.getFriendId()));
+
+        if (!client.getFriendRequests().contains(friend)) {
+            throw new RestException("No friend request found", HttpStatus.NOT_FOUND);
+        }
+
+        client.getFriendRequests().remove(friend);
+
+        clientRepository.save(client);
+    }
+
+    public void removeFriend(String clientId, FriendRequestDto request) {
+        Client client = findById(clientId);
+        Client friend = findById(String.valueOf(request.getFriendId()));
+
+        if (!client.getFriends().contains(friend)) {
+            throw new RestException("Friend not found", HttpStatus.NOT_FOUND);
+        }
+
+        client.getFriends().remove(friend);
+        friend.getFriends().remove(client);
+
+        clientRepository.save(client);
+        clientRepository.save(friend);
     }
 
     public ClientDto deleteClient(String clientId) {
@@ -198,8 +247,18 @@ public class ClientService {
                 .map(badgeMapper::toBadgeDto)
                 .toList();
 
+        List<BasicClientDto> friends = client.getFriends().stream()
+                .map(clientMapper::toBasicClientDto)
+                .toList();
+
+        List<BasicClientDto> friendRequests = client.getFriendRequests().stream()
+                .map(clientMapper::toBasicClientDto)
+                .toList();
+
         ClientDto clientDto = clientMapper.toClientDto(client);
         clientDto.setBadges(badgeDtos);
+        clientDto.setFriends(friends);
+        clientDto.setFriendRequests(friendRequests);
 
         return clientDto;
     }
