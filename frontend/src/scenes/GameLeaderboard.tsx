@@ -3,6 +3,7 @@ import { Link, useParams } from "wouter";
 import { useLeaderboardDataQuery } from "../api/game.ts";
 import { useToastForRequest } from "../hooks/useToastForRequests.tsx";
 import { formatNumber } from "../util/formatNumber.ts";
+import { useEffect } from "react";
 
 export function GameLeaderboard() {
   const params = useParams() as { gameId: string };
@@ -16,6 +17,11 @@ export function GameLeaderboard() {
       backupSuccessMessage: "Retrieved game leaderboard!",
     },
   );
+
+  const refetch = playersState.refetch;
+  useEffect(() => {
+    refetch();
+  }, [refetch]);
 
   const players = playersState.data;
 
@@ -36,7 +42,7 @@ export function GameLeaderboard() {
             <tr key={player.client.id} className="hover">
               <td className="py-2">
                 <div className="flex items-center justify-center space-x-2">
-                  {player.rank == 1? (
+                  {player.rank == 1 ? (
                     <FaTrophy className="text-yellow-500" title="1st Place" />
                   ) : player.rank == 2 ? (
                     <FaTrophy className="text-gray-400" title="2nd Place" />
