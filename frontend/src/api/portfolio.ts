@@ -39,7 +39,8 @@ const portfolioApi = api.injectEndpoints({
         url: `/portfolios/${id}`,
         method: "GET",
       }),
-      providesTags: (_res, _err, args) => [{ type: "portfolios", id: args.id }],
+      providesTags: (res, _err, args) =>
+        res ? [{ type: "portfolios", id: args.id }] : [],
     }),
 
     getRealPortfolio: build.query<portfolioTypes.RealPortfolio, { id: string }>(
@@ -48,9 +49,8 @@ const portfolioApi = api.injectEndpoints({
           url: `/portfolios/${id}`,
           method: "GET",
         }),
-        providesTags: (_res, _err, args) => [
-          { type: "portfolios", id: args.id },
-        ],
+        providesTags: (res, _err, args) =>
+          res ? [{ type: "portfolios", id: args.id }] : [],
       },
     ),
 
@@ -62,7 +62,8 @@ const portfolioApi = api.injectEndpoints({
         url: `/portfolios/${id}`,
         method: "GET",
       }),
-      providesTags: (_res, _err, args) => [{ type: "portfolios", id: args.id }],
+      providesTags: (res, _err, args) =>
+        res ? [{ type: "portfolios", id: args.id }] : [],
     }),
 
     addRealPortfolioAsset: build.mutation<
@@ -123,9 +124,8 @@ const portfolioApi = api.injectEndpoints({
         url: `/portfolios/${portfolioId}/sector-valuations`,
         method: "GET",
       }),
-      providesTags: (_res, _err, args) => [
-        { type: "sector-valuations", id: args.portfolioId },
-      ],
+      providesTags: (res, _err, args) =>
+        res ? [{ type: "sector-valuations", id: args.portfolioId }] : [],
     }),
 
     riskReturns: build.query<
@@ -136,9 +136,8 @@ const portfolioApi = api.injectEndpoints({
         url: `/portfolios/${portfolioId}/risk-chart`,
         method: "GET",
       }),
-      providesTags: (_res, _err, args) => [
-        { type: "risk-charts", id: args.portfolioId },
-      ],
+      providesTags: (res, _err, args) =>
+        res ? [{ type: "risk-charts", id: args.portfolioId }] : [],
     }),
 
     riskScore: build.query<portfolioTypes.RiskScore, { portfolioId: string }>({
@@ -146,9 +145,8 @@ const portfolioApi = api.injectEndpoints({
         url: `/portfolios/${portfolioId}/risk-assessment`,
         method: "GET",
       }),
-      providesTags: (_res, _err, args) => [
-        { type: "risk-assessments", id: args.portfolioId },
-      ],
+      providesTags: (res, _err, args) =>
+        res ? [{ type: "risk-assessments", id: args.portfolioId }] : [],
     }),
 
     addPaperPortfolioTrade: build.mutation<

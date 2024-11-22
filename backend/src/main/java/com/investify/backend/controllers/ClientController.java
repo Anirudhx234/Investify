@@ -30,7 +30,7 @@ public class ClientController {
     @GetMapping("/{clientId}")
     public ResponseEntity<ClientDto> getClient(@PathVariable String clientId) {
 
-        ClientDto client = clientService.findDtoById(clientId);
+        ClientDto client = clientService.getClient(clientId);
 
         return ResponseEntity.ok(client);
     }

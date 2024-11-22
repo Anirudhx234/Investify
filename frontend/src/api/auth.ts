@@ -38,7 +38,14 @@ const authApi = api.injectEndpoints({
         url: "/auth/logout",
         method: "POST",
       }),
-      invalidatesTags: ["logged-in-client"],
+      invalidatesTags: [
+        "logged-in-client",
+        "client-portfolios",
+        "portfolios",
+        "sector-valuations",
+        "risk-charts",
+        "risk-assessments",
+      ],
     }),
 
     forgotPassword: build.mutation<void, Pick<apiTypes.SignUpArgs, "email">>({

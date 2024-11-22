@@ -1,6 +1,7 @@
 /* types for the complicated api endpoints */
 
 import { Interval, Stock } from "./Asset";
+import { Game, GamePortfolio } from "./Game";
 
 export interface VerifyClientArgs {
   url: string;
@@ -93,4 +94,15 @@ export interface AddPaperPortfolioTradeArgs {
   };
   type: "BUY" | "SELL";
   quantity: number;
+}
+
+export interface GamePortfoliosRes {
+  pastGames: GamePortfolio[];
+  upcomingGames: GamePortfolio[];
+  activeGames: GamePortfolio[];
+}
+
+export interface AvailableGamesRes {
+  upcomingGames: Game[];
+  activeGames: Game[];
 }

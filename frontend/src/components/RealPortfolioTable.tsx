@@ -137,6 +137,7 @@ export function RealPortfolioTableRow({
             required
             isBuffering={isLoading}
             inputAttributes={{ className: "input-sm max-w-20 lg:max-w-32" }}
+            decimal
           />
         </div>
       </td>

@@ -1,9 +1,6 @@
 package com.investify.backend.services;
 
-import com.investify.backend.dtos.CreateGameDto;
-import com.investify.backend.dtos.GameDto;
-import com.investify.backend.dtos.GamePortfolioListDto;
-import com.investify.backend.dtos.LeaderboardPositionDto;
+import com.investify.backend.dtos.*;
 import com.investify.backend.entities.*;
 import com.investify.backend.exceptions.RestException;
 import com.investify.backend.mappers.ClientMapper;
@@ -73,7 +70,7 @@ public class GameService {
         return gameMapper.toGameDto(game);
     }
 
-    public Map<String, List<GamePortfolioListDto>> getClientGamePortfolios(String clientId) {
+    public Map<String, List<GamePortfolioListDto>> getGamePortfolios(String clientId) {
         Client client = clientService.findById(clientId);
 
         List<GamePortfolio> gamePortfolios = client.getGamePortfolios();
@@ -135,31 +132,55 @@ public class GameService {
         );
     }
 
-    public Game joinGame(String clientId, UUID gameId) {
+    public GamePortfolioListDto getGamePortfolio(UUID gameId, String clientId) {
+        Client client = clientService.findById(clientId);
+        GamePortfolio portfolio = findByClientAndGameId(client, gameId);
+        return toGamePortfolioListDto(portfolio);
+    }
+
+    public GamePortfolioListDto joinGame(String clientId, UUID gameId) {
         Client client = clientService.findById(clientId);
 
-        Optional<GamePortfolio> gamePortfolio = gamePortfolioRepository.findByClientAndGameId(client, gameId);
-        if (gamePortfolio.isPresent()) {
+        Optional<GamePortfolio> existingPortfolio = gamePortfolioRepository.findByClientAndGameId(client, gameId);
+        if (existingPortfolio.isPresent()) {
             throw new RestException("Client has already joined game", HttpStatus.FORBIDDEN);
         }
 
         Game game = findById(gameId);
 
-        GamePortfolio portfolio = new GamePortfolio(client, game);
-        gamePortfolioRepository.save(portfolio);
+        GamePortfolio gamePortfolio = new GamePortfolio(client, game);
+        gamePortfolioRepository.save(gamePortfolio);
 
-        return game;
+        return toGamePortfolioListDto(gamePortfolio);
     }
 
     public List<LeaderboardPositionDto> getLeaderboard(UUID gameId) {
         Game game = findById(gameId);
 
-        return game.getGamePortfolios().stream()
-                .map(portfolio ->
-                        new LeaderboardPositionDto(clientMapper.toBasicClientDto(portfolio.getClient()),
+        List<LeaderboardPositionDto> leaderboard = game.getGamePortfolios().stream()
+                .map(portfolio -> new LeaderboardPositionDto(
+                        clientMapper.toBasicClientDto(portfolio.getClient()),
                         portfolioService.getTotalPortfolioValue(portfolio.getId()) + portfolio.getBuyingPower()))
                 .sorted((dto1, dto2) -> Double.compare(dto2.getTotalValue(), dto1.getTotalValue()))
                 .toList();
+
+        int rank = 0;
+        int skip = 0;
+        double previousValue = Double.NaN;
+
+        for (LeaderboardPositionDto current : leaderboard) {
+            if (Double.compare(current.getTotalValue(), previousValue) != 0) {
+                rank += 1 + skip;
+                skip = 0;
+            } else {
+                skip++;
+            }
+
+            current.setRank(rank);
+            previousValue = current.getTotalValue();
+        }
+
+        return leaderboard;
     }
 
     @Scheduled(fixedRate = 10000)
@@ -188,18 +209,10 @@ public class GameService {
             clientRepository.save(client);
         }
 
-        int rank = 0;
-        double previousValue = -1;
         for (LeaderboardPositionDto position : leaderboard) {
             Client client = clientService.findById(position.getClient().getId());
 
-            double currentValue = position.getTotalValue();
-            if (currentValue != previousValue) {
-                rank++;
-            }
-            previousValue = currentValue;
-
-            RankBadge rankBadge = new RankBadge(rank, game, client);
+            RankBadge rankBadge = new RankBadge(position.getRank(), game, client);
             badgeRepository.save(rankBadge);
 
             rankBadge.getClients().add(client);
@@ -214,6 +227,11 @@ public class GameService {
     public Game findById(UUID gameId) {
         return gameRepository.findById(gameId)
                 .orElseThrow(() -> new RestException("Unknown game", HttpStatus.NOT_FOUND));
+    }
+
+    public GamePortfolio findByClientAndGameId(Client client, UUID gameId) {
+        return gamePortfolioRepository.findByClientAndGameId(client, gameId)
+                .orElseThrow(() -> new RestException("Unknown game portfolio", HttpStatus.NOT_FOUND));
     }
 
     private GamePortfolioListDto toGamePortfolioListDto(GamePortfolio portfolio) {

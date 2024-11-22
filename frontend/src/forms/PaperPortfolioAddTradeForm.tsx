@@ -2,7 +2,6 @@ import type { SubmitHandler } from "react-hook-form";
 import type { assetTypes } from "../types";
 
 import { useState } from "react";
-import { useParams } from "wouter";
 import { useForm } from "react-hook-form";
 import { useAddPaperPortfolioTradeMutation } from "../api/portfolio";
 import { useToastForRequest } from "../hooks/useToastForRequests";
@@ -24,10 +23,7 @@ export interface PaperPortfolioAddTradeFormShape {
   type: "BUY" | "SELL";
 }
 
-export function PaperPortfolioAddTradeForm() {
-  const params = useParams() as { id: string };
-  const { id } = params;
-
+export function PaperPortfolioAddTradeForm({ id }: { id: string }) {
   const [selectedAsset, setSelectedAsset] = useState<SelectedAssetShape | null>(
     null,
   );
@@ -97,6 +93,7 @@ export function PaperPortfolioAddTradeForm() {
             label="Quantity"
             form={form}
             isBuffering={isLoading}
+            decimal
             required
           />
 

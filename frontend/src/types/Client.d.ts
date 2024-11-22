@@ -3,10 +3,17 @@
  * info that is expected to be available on the frontend
  */
 
+import { Game } from "./Game";
+
+export type Badge =
+  | { id: string; type: "participation"; game: Game }
+  | { id: string; type: "rank"; rank: number; game: Game };
+
 export interface Client {
   id: string;
   username: string;
   profilePicture?: string | null | undefined;
+  badges: Badge[];
 }
 
 export interface LoggedInClient extends Client {

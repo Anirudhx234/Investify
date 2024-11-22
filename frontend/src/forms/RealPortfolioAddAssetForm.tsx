@@ -5,7 +5,6 @@ import { useForm } from "react-hook-form";
 import { useAddRealPortfolioAssetMutation } from "../api/portfolio";
 import { useToastForRequest } from "../hooks/useToastForRequests";
 import { useState } from "react";
-import { useParams } from "wouter";
 import { FormSubmit } from "../components/FormSubmit";
 import { FormNumberInput } from "../components/FormNumberInput";
 import { FormInput } from "../components/FormInput";
@@ -23,10 +22,7 @@ export interface RealPortfolioAddAssetFormShape {
   averageCost: number;
 }
 
-export function RealPortfolioAddAssetForm() {
-  const params = useParams() as { id: string };
-  const { id } = params;
-
+export function RealPortfolioAddAssetForm({ id }: { id: string }) {
   const [selectedAsset, setSelectedAsset] = useState<SelectedAssetShape | null>(
     null,
   );
@@ -94,6 +90,7 @@ export function RealPortfolioAddAssetForm() {
             label="Quantity"
             form={form}
             isBuffering={isLoading}
+            decimal
             required
           />
 

@@ -6,7 +6,6 @@ import com.investify.backend.services.PolygonService;
 import com.investify.backend.services.TwelveDataService;
 import com.investify.backend.services.ScraperService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
@@ -33,7 +32,6 @@ public class AssetController {
     private ScraperService scraperService;
 
     /* TwelveData */
-    @Cacheable(value = "searchAssets", cacheManager = "cacheManager")
     @GetMapping("")
     public Mono<Map<String, List<Map<String, String>>>> searchForAssets(@RequestParam("symbol") String symbol) {
         return twelveDataService.searchForAssets(symbol);

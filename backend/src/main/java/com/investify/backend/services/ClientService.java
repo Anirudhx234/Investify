@@ -4,6 +4,7 @@ import com.investify.backend.dtos.*;
 import com.investify.backend.entities.Client;
 import com.investify.backend.enums.InvestmentRisk;
 import com.investify.backend.exceptions.RestException;
+import com.investify.backend.mappers.BadgeMapper;
 import com.investify.backend.mappers.ClientMapper;
 import com.investify.backend.repositories.ClientRepository;
 import jakarta.transaction.Transactional;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.nio.CharBuffer;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -30,6 +32,8 @@ public class ClientService {
     private final PasswordEncoder passwordEncoder;
 
     private final ClientMapper clientMapper;
+
+    private final BadgeMapper badgeMapper;
 
     @Autowired
     S3Service s3Service;
@@ -89,6 +93,12 @@ public class ClientService {
             return clientMapper.toClientDto(client);
         }
         throw new RestException("Token is invalid or client not found", HttpStatus.BAD_REQUEST);
+    }
+
+    public ClientDto getClient(String clientId) {
+        ClientDto client = findDtoById(clientId);
+
+        return client;
     }
 
 
@@ -183,7 +193,15 @@ public class ClientService {
 
     public ClientDto findDtoById(String clientId) {
         Client client = findById(clientId);
-        return clientMapper.toClientDto(client);
+
+        List<BadgeDto> badgeDtos = client.getBadges().stream()
+                .map(badgeMapper::toBadgeDto)
+                .toList();
+
+        ClientDto clientDto = clientMapper.toClientDto(client);
+        clientDto.setBadges(badgeDtos);
+
+        return clientDto;
     }
 
     public Client findById(String clientId) {

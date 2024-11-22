@@ -4,12 +4,14 @@ import { useAppSelector } from "../hooks/useAppSelector";
 import { Route, Switch } from "wouter";
 import { AssetSidebar } from "../scenes/AssetSidebar";
 import { PortfoliosSidebar } from "../scenes/PortfoliosSidebar";
+import { GamesSidebar } from "../scenes/GamesSidebar";
 
 const sidebarRoutes = [
   { path: "/clients/me", component: ClientSidebar, nest: true },
   { path: "/clients/:id", component: ClientSidebar, nest: true },
   { path: "/assets/:type/:symbol", component: AssetSidebar, nest: true },
   { path: "/portfolios", component: PortfoliosSidebar, nest: true },
+  { path: "/games", component: GamesSidebar, nest: true },
 ];
 
 export function AppSidebar() {

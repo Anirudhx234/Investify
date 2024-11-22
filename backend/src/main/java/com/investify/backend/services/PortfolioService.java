@@ -84,7 +84,7 @@ public class PortfolioService {
         return response;
     }
 
-    public Object getPortfolio(UUID portfolioId) {
+    public PortfolioResponse getPortfolio(UUID portfolioId) {
         Portfolio portfolio = findPortfolioById(portfolioId);
 
         if (portfolio instanceof RealPortfolio) {
@@ -96,7 +96,6 @@ public class PortfolioService {
     }
 
     private RealPortfolioResponse getRealPortfolio(RealPortfolio portfolio) {
-        // Retrieve the portfolio assets
         List<PortfolioAssetResponse> portfolioAssets = portfolio.getPortfolioAssets()
                 .stream()
                 .map(asset -> {
@@ -113,18 +112,16 @@ public class PortfolioService {
                 })
                 .collect(Collectors.toList());
 
-        // Calculate total portfolio value
         double totalPortfolioValue = portfolioAssets.stream()
                 .mapToDouble(PortfolioAssetResponse::getTotalAssetValue)
                 .sum();
 
-        double roi = getPortfolioROI(portfolio.getId());
+        ROIDto info = getPortfolioROI(portfolio.getId());
 
-        return new RealPortfolioResponse(portfolio.getName(), totalPortfolioValue, roi, portfolioAssets);
+        return new RealPortfolioResponse(portfolio.getName(), totalPortfolioValue, info.getRoi(), portfolioAssets);
     }
 
     private PaperPortfolioResponse getPaperPortfolio(PaperPortfolio portfolio) {
-        // Retrieve the portfolio assets
         List<PortfolioAssetResponse> portfolioAssets = portfolio.getPortfolioAssets()
                 .stream()
                 .map(asset -> {
@@ -143,16 +140,15 @@ public class PortfolioService {
 
         List<TradeDto> trades = getTrades(portfolio.getId());
 
-        // Calculate total portfolio value
         double totalPortfolioValue = portfolioAssets.stream()
                 .mapToDouble(PortfolioAssetResponse::getTotalAssetValue)
                 .sum();
 
         double buyingPower = portfolio.getBuyingPower();
 
-        double roi = getPortfolioROI(portfolio.getId());
+        ROIDto info = getPortfolioROI(portfolio.getId());
 
-        return new PaperPortfolioResponse(portfolio.getName(), totalPortfolioValue, buyingPower, roi, portfolioAssets, trades);
+        return new PaperPortfolioResponse(portfolio.getName(), totalPortfolioValue, buyingPower, info.getRoi(), portfolioAssets, trades);
     }
 
     public Portfolio updatePortfolio(UUID portfolioId, UpdatePortfolioDto request) {
@@ -171,7 +167,6 @@ public class PortfolioService {
 
         Asset asset = assetService.findOrCreateAsset(request.getAsset());
 
-        // Check if the asset already exists in the portfolio
         Optional<PortfolioAsset> existingAsset = portfolioAssetRepository.findByPortfolioAndAsset(portfolio, asset);
         if (existingAsset.isPresent()) {
             throw new RestException("Asset already exists in the portfolio", HttpStatus.CONFLICT);
@@ -211,7 +206,7 @@ public class PortfolioService {
         return portfolioAsset;
     }
 
-    public double getPortfolioROI(UUID portfolioId) {
+    public ROIDto getPortfolioROI(UUID portfolioId) {
         Portfolio portfolio = findPortfolioById(portfolioId);
 
         // Retrieve portfolio assets and calculate total current value and initial investment
@@ -219,15 +214,17 @@ public class PortfolioService {
         double totalCost = 0;
 
         for (PortfolioAsset portfolioAsset : portfolio.getPortfolioAssets()) {
-            PortfolioAssetROI info = getPortfolioAssetROI(portfolioAsset);
+            ROIDto info = getPortfolioAssetROI(portfolioAsset);
             totalGain += info.getGain();
             totalCost += info.getCost();
         }
 
-        return (totalCost != 0) ? (totalGain - totalCost) / totalCost : 0;
+        double roi = (totalCost != 0) ? (totalGain - totalCost) / totalCost : 0;
+
+        return new ROIDto(totalCost, totalGain, roi);
     }
 
-    private PortfolioAssetROI getPortfolioAssetROI(PortfolioAsset portfolioAsset) {
+    private ROIDto getPortfolioAssetROI(PortfolioAsset portfolioAsset) {
         double averageCost = portfolioAsset.getAverageCost();  // Assume initial price is stored
         double currentPrice = twelveDataService.getLivePrice(portfolioAsset.getAsset().getSymbol());
         double quantity = portfolioAsset.getQuantity();
@@ -244,7 +241,7 @@ public class PortfolioService {
                 if (trade.getAsset() != portfolioAsset.getAsset()) {
                     continue;
                 }
-                
+
                 double totalValue = trade.getPrice() * trade.getQuantity();
                 if (trade.getType() == TradeType.SELL) {
                     totalGain += totalValue;
@@ -259,7 +256,7 @@ public class PortfolioService {
 
         double roi = (totalCost != 0) ? (totalGain - totalCost) / totalCost : 0;
 
-        return new PortfolioAssetROI(totalCost, totalGain, roi);
+        return new ROIDto(totalCost, totalGain, roi);
     }
 
     private double scaleRisk(double riskScore, String riskPreference) {
@@ -299,7 +296,7 @@ public class PortfolioService {
                 continue;
             }
 
-            PortfolioAssetROI info = getPortfolioAssetROI(portfolioAsset);
+            ROIDto info = getPortfolioAssetROI(portfolioAsset);
             double roi = Math.abs(info.getRoi());
             double assetRisk = 0;
 
@@ -358,7 +355,7 @@ public class PortfolioService {
             }
 
             Asset asset = portfolioAsset.getAsset();
-            PortfolioAssetROI info = getPortfolioAssetROI(portfolioAsset);
+            ROIDto info = getPortfolioAssetROI(portfolioAsset);
             double roi = info.getRoi();
             double returnPercentage = Math.abs(roi);
             double risk = 0;

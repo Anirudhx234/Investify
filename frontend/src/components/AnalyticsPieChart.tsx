@@ -1,4 +1,3 @@
-import { useParams } from "wouter";
 import { useSectorValuationsQuery } from "../api/portfolio";
 import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
 import { convertToTitleCase } from "../util/convertToTitleCase";
@@ -6,9 +5,7 @@ import { convertAssetTypeToLabel } from "../util/convertAsset";
 import { chartColors } from "./AnalyticsChartColors";
 import { formatNumber } from "../util/formatNumber";
 
-export function AnalyticsPieChart() {
-  const params = useParams() as { id: string };
-  const { id } = params;
+export function AnalyticsPieChart({ id }: { id: string }) {
   const { data } = useSectorValuationsQuery({ portfolioId: id });
 
   const valuations = Object.entries(data || {}).map(([name, value]) => ({
