@@ -11,7 +11,7 @@ import java.util.stream.Stream;
 @Component
 public class TwelveDataApiKeyManager {
 
-    @Value("${twelveData.api.keys}")
+    @Value("${spring.api.key.twelveData}")
     private String apiKeysProperty;
 
     private List<String> apiKeys;

@@ -1,7 +1,6 @@
 package com.investify.backend.entities;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.investify.backend.exceptions.RestException;
 import jakarta.persistence.*;
 import lombok.*;

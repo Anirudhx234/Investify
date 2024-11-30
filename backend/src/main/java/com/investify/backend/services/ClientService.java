@@ -11,7 +11,6 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.core.parameters.P;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -27,6 +26,8 @@ import java.util.UUID;
 public class ClientService {
 
     private final AuthService authService;
+
+    private final OpenAIService openAIService;
 
     private final ClientRepository clientRepository;
 
@@ -97,9 +98,7 @@ public class ClientService {
     }
 
     public List<BasicClientDto> getAllClients() {
-        return clientRepository.findAll().stream()
-                .map(clientMapper::toBasicClientDto)
-                .toList();
+        return clientRepository.findAll().stream().map(clientMapper::toBasicClientDto).toList();
     }
 
     public ClientDto getClient(String clientId) {
@@ -108,6 +107,8 @@ public class ClientService {
 
     public ClientDto updateProfile(String clientId, UpdateProfileDto updateProfileDto) {
         Client client = findById(clientId);
+
+        boolean generateNewFinancialAdvice = false;
 
         if (updateProfileDto.getUsername() != null) {
             client.setUsername(updateProfileDto.getUsername());
@@ -129,34 +130,44 @@ public class ClientService {
 
         if (updateProfileDto.getAge() != null && updateProfileDto.getAge() > 0) {
             client.setAge(updateProfileDto.getAge());
+            generateNewFinancialAdvice = true;
         }
 
         if (updateProfileDto.getIncome() != null && updateProfileDto.getIncome() > 0.0) {
             client.setIncome(updateProfileDto.getIncome());
+            generateNewFinancialAdvice = true;
         }
 
         if (updateProfileDto.getFinancialGoals() != null) {
             client.setFinancialGoals(updateProfileDto.getFinancialGoals());
+            generateNewFinancialAdvice = true;
         }
 
-        if (updateProfileDto.getShortTermGoal() != null){
+        if (updateProfileDto.getShortTermGoal() != null) {
             client.setShortTermGoal(updateProfileDto.getShortTermGoal());
+            generateNewFinancialAdvice = true;
         }
 
-        if (updateProfileDto.getLongTermGoal() != null){
+        if (updateProfileDto.getLongTermGoal() != null) {
             client.setLongTermGoal(updateProfileDto.getLongTermGoal());
+            generateNewFinancialAdvice = true;
         }
 
-        if (updateProfileDto.getInvestmentRisk() != null){
+        if (updateProfileDto.getInvestmentRisk() != null) {
             client.setInvestmentRisk(updateProfileDto.getInvestmentRisk());
+            generateNewFinancialAdvice = true;
         }
 
-        if (updateProfileDto.getUserSavings() != null){
+        if (updateProfileDto.getUserSavings() != null) {
             client.setUserSavings(updateProfileDto.getUserSavings());
         }
 
-        if (updateProfileDto.getCurrentSavings() != null){
+        if (updateProfileDto.getCurrentSavings() != null) {
             client.setCurrentSavings(updateProfileDto.getCurrentSavings());
+        }
+
+        if (generateNewFinancialAdvice) {
+            client.setFinancialAdvice(openAIService.generateFinancialAdvice(client));
         }
 
         Client updatedClient = clientRepository.save(client);
@@ -243,17 +254,11 @@ public class ClientService {
     public ClientDto findDtoById(String clientId) {
         Client client = findById(clientId);
 
-        List<BadgeDto> badgeDtos = client.getBadges().stream()
-                .map(badgeMapper::toBadgeDto)
-                .toList();
+        List<BadgeDto> badgeDtos = client.getBadges().stream().map(badgeMapper::toBadgeDto).toList();
 
-        List<BasicClientDto> friends = client.getFriends().stream()
-                .map(clientMapper::toBasicClientDto)
-                .toList();
+        List<BasicClientDto> friends = client.getFriends().stream().map(clientMapper::toBasicClientDto).toList();
 
-        List<BasicClientDto> friendRequests = client.getFriendRequests().stream()
-                .map(clientMapper::toBasicClientDto)
-                .toList();
+        List<BasicClientDto> friendRequests = client.getFriendRequests().stream().map(clientMapper::toBasicClientDto).toList();
 
         ClientDto clientDto = clientMapper.toClientDto(client);
         clientDto.setBadges(badgeDtos);
@@ -267,18 +272,15 @@ public class ClientService {
         if ("me".equals(clientId)) {
             clientId = authService.getLoggedInClient().getId(); // TODO: Return logged in client directly (fix lazy loading issue)
         }
-        return clientRepository.findById(UUID.fromString(clientId))
-                .orElseThrow(() -> new RestException("Unknown client", HttpStatus.NOT_FOUND));
+        return clientRepository.findById(UUID.fromString(clientId)).orElseThrow(() -> new RestException("Unknown client", HttpStatus.NOT_FOUND));
     }
 
     private Client findByEmail(String email) {
-        return clientRepository.findByEmail(email)
-                .orElseThrow(() -> new RestException("Unknown client", HttpStatus.NOT_FOUND));
+        return clientRepository.findByEmail(email).orElseThrow(() -> new RestException("Unknown client", HttpStatus.NOT_FOUND));
     }
 
     private Client findByVerificationToken(String token) {
-        return clientRepository.findByVerificationToken(token)
-                .orElseThrow(() -> new RestException("Unknown client", HttpStatus.NOT_FOUND));
+        return clientRepository.findByVerificationToken(token).orElseThrow(() -> new RestException("Unknown client", HttpStatus.NOT_FOUND));
     }
 
 }

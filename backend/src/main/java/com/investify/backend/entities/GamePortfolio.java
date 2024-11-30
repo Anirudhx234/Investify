@@ -10,6 +10,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 @Entity
+@Table(name = "game_portfolio", uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"client_id", "game_id"})
+})
 public class GamePortfolio extends PaperPortfolio {
 
     private double totalPortfolioValue;

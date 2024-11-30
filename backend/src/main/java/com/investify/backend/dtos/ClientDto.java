@@ -26,6 +26,7 @@ public class ClientDto {
     private InvestmentRisk investmentRisk;
     private Integer userSavings;
     private Integer currentSavings;
+    private String financialAdvice;
     private List<BadgeDto> badges;
     private List<BasicClientDto> friends;
     private List<BasicClientDto> friendRequests;

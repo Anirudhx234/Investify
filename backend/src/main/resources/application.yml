@@ -1,6 +1,8 @@
 spring:
   application:
     name: backend
+  config:
+    import: optional:classpath:application-APIs.properties
   codec:
     max-in-memory-size: 1000MB
   servlet:
@@ -9,15 +11,15 @@ spring:
       max-file-size: 10MB
       max-request-size: 10MB
   aws:
-    access-key: AKIA6JQ44NFNSDFLEEVR
-    secret-key: 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
+    access-key: ${aws.access-key}
+    secret-key: ${aws.secret-key}
     s3:
-      bucket-name: investify-dev
-      region: us-east-2
+      bucket-name: ${s3.bucket-name}
+      region: ${s3.region}
   datasource:
-    username: postgres
-    password: postgres
-    url: jdbc:postgresql://0.0.0.0:5432/investify_db
+    username: ${db.username}
+    password: ${db.password}
+    url: ${db.url}
     driver-class-name: org.postgresql.Driver
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
@@ -27,8 +29,8 @@ spring:
   mail:
     host: smtp.gmail.com
     port: 587
-    username: investify16@gmail.com
-    password: ibbnisixbrfemtku
+    username: ${investify.email}
+    password: ${investify.password}
     properties:
       mail:
         smtp:
@@ -39,5 +41,14 @@ spring:
           connectiontimeout: 5000
           timeout: 3000
           writetimeout: 5000
+  api:
+    key:
+      alphaVantage: ${alphaVantage.api.key}
+      coinMarket: ${coinMarket.api.key}
+      openAI: ${azure.openAI.api.key}
+      polygon: ${polygon.api.key}
+      twelveData: ${twelveData.api.keys}
+    demokey:
+      twelveData: ${twelveData.api.demokey}
   frontend:
     url: http://localhost:5173
