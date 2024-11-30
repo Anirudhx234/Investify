@@ -145,6 +145,10 @@ public class GameService {
 
         Game game = findById(gameId);
 
+        if (Utils.isPastGame(LocalDateTime.now(), game)) {
+            throw new RestException("Cannot join past game", HttpStatus.FORBIDDEN);
+        }
+
         GamePortfolio gamePortfolio = new GamePortfolio(client, game);
         gamePortfolioRepository.save(gamePortfolio);
 

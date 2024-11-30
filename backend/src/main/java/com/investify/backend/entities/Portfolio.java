@@ -3,18 +3,15 @@ package com.investify.backend.entities;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 @NoArgsConstructor
 @Data
-@Inheritance(strategy = InheritanceType.JOINED) // Subclasses will be mapped to their own tables
+@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 @Entity
 @Table(name = "portfolio")
 public abstract class Portfolio {
@@ -23,6 +20,7 @@ public abstract class Portfolio {
     private UUID id;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "client_id", nullable = false)
     @JsonBackReference
     private Client client;
 

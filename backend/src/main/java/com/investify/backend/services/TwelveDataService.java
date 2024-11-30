@@ -18,9 +18,9 @@ import reactor.core.publisher.Mono;
 import java.util.*;
 
 @Service
-@PropertySource("classpath:application-APIs.properties")
 public class TwelveDataService {
-    @Value("${twelveData.demoapi.key}")
+
+    @Value("${spring.api.demokey.twelveData}")
     private String twelveDataDemoApiKey;
 
     @Autowired

@@ -16,9 +16,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Service
-@PropertySource("classpath:application-APIs.properties")
 public class CoinMarketService {
-    @Value("${coinMarket.api.key}")
+
+    @Value("${spring.api.key.coinMarket}")
     private String coinMarketApiKey;
 
     private final WebClient webClient;

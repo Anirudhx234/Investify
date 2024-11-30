@@ -45,7 +45,7 @@ public class Client {
     @Column(name = "verified", nullable = false)
     private boolean verified;
 
-    @Column(name = "profile_picture", columnDefinition = "TEXT")
+    @Column(name = "profile_picture")
     private String profilePicture;
 
     @Column(name = "age")
@@ -54,7 +54,7 @@ public class Client {
     @Column(name = "income")
     private Double income;
 
-    @Column(name = "financial_goals")
+    @Column(name = "financial_goals", columnDefinition = "TEXT")
     private String financialGoals;
 
     @Column(name = "verification_token")
@@ -75,6 +75,9 @@ public class Client {
 
     @Column(name = "currentSavings")
     private Integer currentSavings;
+
+    @Column(name = "financialAdvice", columnDefinition = "TEXT")
+    private String financialAdvice;
 
     @OneToMany(mappedBy = "client", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference

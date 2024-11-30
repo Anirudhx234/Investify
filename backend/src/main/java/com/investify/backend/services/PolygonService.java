@@ -8,10 +8,9 @@ import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
 @Service
-@PropertySource("classpath:application-APIs.properties")
 public class PolygonService {
 
-    @Value("${polygon.api.key}")
+    @Value("${spring.api.key.polygon}")
     private String polygonApiKey;
 
     private final WebClient webClient;

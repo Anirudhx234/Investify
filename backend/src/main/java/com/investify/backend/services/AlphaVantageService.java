@@ -13,10 +13,9 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
-@PropertySource("classpath:application-APIs.properties")
 public class AlphaVantageService {
 
-    @Value("${alphaVantage.api.key}")
+    @Value("${spring.api.key.alphaVantage}")
     private String alphaVantageApiKey;
 
     private final WebClient webClient;
