@@ -30,4 +30,5 @@ export interface LoggedInClient extends Client {
   currentSavings?: number | undefined | null;
   friends: BasicClient[];
   friendRequests: BasicClient[];
+  financialAdvice?: string | undefined | null;
 }

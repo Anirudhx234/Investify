@@ -7,7 +7,6 @@ import { useToastForRequests } from "../hooks/useToastForRequests";
 import { AnalyticsPieChart } from "../components/AnalyticsPieChart";
 import { AnalyticsRiskReturnChart } from "../components/AnalyticsRiskReturnChart";
 import { AnalyticsRiskAssessmentTable } from "../components/AnalyticsRiskAssessmentTable";
-import { AnalyticsHeatMap } from "../components/AnalyticsHeatMap";
 
 export function PortfolioAnalytics({ id }: { id: string }) {
   const pieChartState = useSectorValuationsQuery({ portfolioId: id });
@@ -56,12 +55,6 @@ export function PortfolioAnalytics({ id }: { id: string }) {
         <h3 className="text-center text-lg font-semibold">Risk Assessment</h3>
 
         <AnalyticsRiskAssessmentTable id={id} />
-      </div>
-
-      <div className="flex flex-col items-center gap-2 ~py-4/8 lg:col-span-2">
-        <h3 className="text-center text-lg font-semibold">Heatmap</h3>
-
-        <AnalyticsHeatMap id={id} />
       </div>
     </div>
   );

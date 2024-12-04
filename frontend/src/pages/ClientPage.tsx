@@ -5,7 +5,7 @@ import { useAppSelector } from "../hooks/useAppSelector";
 import { ProfileGeneralForm } from "../forms/ProfileGeneralForm";
 import { ProfilePersonalForm } from "../forms/ProfilePersonalForm";
 import { ProfileFinancialForm } from "../forms/ProfileFinancialForm";
-import { InvestmentAdvice } from "../scenes/InvestmentAdvice";
+import { FinancialAdvice } from "../scenes/FinancialAdvice";
 import { useToastForRequest } from "../hooks/useToastForRequests";
 
 export function ClientPage() {
@@ -42,7 +42,7 @@ export function ClientProfilePage() {
           <Route path="/account" component={ProfileAccountForm} />
           <Route path="/personal" component={ProfilePersonalForm} />
           <Route path="/financial-goals" component={ProfileFinancialForm} />
-          <Route path="/investment-advice" component={InvestmentAdvice} />
+          <Route path="/financial-advice" component={FinancialAdvice} />
         </>
       )}
       <Route path="*" component={() => <Redirect to="/general" replace />} />

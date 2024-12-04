@@ -11,6 +11,7 @@ import {
 import { chartColors } from "./AnalyticsChartColors";
 import { convertAssetTypeToLabel } from "../util/convertAsset";
 import { convertToTitleCase } from "../util/convertToTitleCase";
+import { formatNumber } from "../util/formatNumber";
 
 export function AnalyticsRiskReturnChart({ id }: { id: string }) {
   const { data } = useRiskReturnsQuery({ portfolioId: id });
@@ -64,8 +65,8 @@ export function AnalyticsRiskReturnChart({ id }: { id: string }) {
                         {convertToTitleCase(convertAssetTypeToLabel(name))}
                       </strong>
                     </p>
-                    <p>Risk: {risk}%</p>
-                    <p>Return: {returnValue}%</p>
+                    <p>Risk: {formatNumber(risk)}%</p>
+                    <p>Return: {formatNumber(returnValue)}%</p>
                   </div>
                 );
               }

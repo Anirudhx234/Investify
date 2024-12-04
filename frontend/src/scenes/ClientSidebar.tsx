@@ -19,7 +19,7 @@ const editItems = [
   "/general",
   "/personal",
   "/financial-goals",
-  "/investment-advice",
+  "/financial-advice",
 ];
 export function ClientSidebarEdit() {
   const dispatch = useDispatch();

@@ -21,7 +21,7 @@ export function ProfilePersonalForm() {
   const [modifyProfile, modifyProfileState] = useModifyProfileMutation();
 
   const { isLoading } = useToastForRequest(
-    "Profile updated!",
+    "Modify Profile",
     modifyProfileState,
     {
       backupSuccessMessage: "Profile updated!",
