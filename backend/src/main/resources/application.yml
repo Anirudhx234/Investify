@@ -51,4 +51,4 @@ spring:
     demokey:
       twelveData: ${twelveData.api.demokey}
   frontend:
-    url: http://localhost:5173
+    url: ${frontend.url}
